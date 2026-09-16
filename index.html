@@ -86,6 +86,28 @@ h1 .e{font-size:11.5px;opacity:.55;letter-spacing:.06em}
 
 main{padding:8px 16px calc(112px + var(--safe-b))}
 
+/* 煮嘢食計劃 */
+.vgroup{margin-bottom:20px}
+.vhead{display:flex;align-items:baseline;gap:8px;font-size:14px;font-weight:700;margin-bottom:4px;line-height:1.25}
+.vhead .n{font-size:12px;font-weight:600;opacity:.65;font-variant-numeric:tabular-nums}
+.vhead.bad{color:var(--gone)} .vhead.warn{color:var(--soon)}
+.vwhy{font-size:12px;color:var(--mute);margin:0 0 9px;line-height:1.45}
+.vwhy .e{font-size:11px}
+.vitem{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--chill);margin-bottom:6px}
+.vitem.bad{background:var(--gone-bg)}
+.vitem img{width:40px;height:40px;border-radius:7px;object-fit:contain;background:var(--card);flex:none}
+.vitem .nm{flex:1;min-width:0;font-size:14px;font-weight:600;line-height:1.25}
+.vitem .nm .e{font-size:11.5px;font-weight:500}
+.vitem .dd{font-size:11.5px;color:var(--mute);flex:none;text-align:right;font-variant-numeric:tabular-nums;line-height:1.25}
+.vnote{background:var(--brand-tint);border-radius:10px;padding:11px 13px;font-size:12.5px;color:var(--brand);line-height:1.5;margin-bottom:16px}
+.vnote .e{font-size:11.5px;opacity:.8}
+.dish{border-left:3px solid var(--brand);padding:2px 0 2px 12px;margin-bottom:14px}
+.dish .t{font-size:15px;font-weight:700;line-height:1.3}
+.dish .t .e{font-size:12px;font-weight:500}
+.dish .u{font-size:11.5px;color:var(--mute);margin-top:4px}
+.kids{background:var(--soon-bg);border-radius:10px;padding:11px 13px;font-size:12.5px;color:var(--soon);line-height:1.5;margin-bottom:16px;font-weight:600}
+.kids .e{font-size:11.5px;font-weight:500}
+
 /* 保安警告條 */
 #ruleWarn{background:var(--gone-bg);border:1px solid var(--gone);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;font-size:13.5px;color:var(--gone);font-weight:600}
 #ruleWarn .e{font-weight:500}
@@ -335,6 +357,7 @@ details.more .inner{padding-top:14px}
     <div class="signals" id="signals"></div>
     <div class="chips" id="chips"></div>
   </header>
+  <div style="padding:0 16px"><button id="planBtn" class="btn ghost" style="margin-bottom:10px"><span class="z">🍳 煮嘢食計劃</span><span class="e">Cooking plan — what to cook, what to bin</span></button></div>
   <main id="list"></main>
   <button id="fab"><span class="plus">＋</span><span><span class="z">入貨</span><span class="e">Add food</span></span></button>
 </div>
@@ -361,6 +384,16 @@ details.more .inner{padding-top:14px}
     <input id="fDate" type="date">
   </div>
   <div class="quick" id="quickDates"></div>
+
+  <div class="fld" style="margin-top:16px">
+    <div class="flab"><span class="z">包裝上面點寫？（分得清安全同品質）</span><span class="e">What does the pack say? This decides the safety advice</span></div>
+    <div class="picker" id="fDateType"></div>
+  </div>
+  <div class="fld">
+    <button type="button" id="fOpened" class="pk" aria-pressed="false" style="width:100%">
+      <span class="z">已經開咗封</span><span class="e">Already opened — the printed date no longer applies</span>
+    </button>
+  </div>
 
   <div class="fld" style="margin-top:18px">
     <div class="flab"><span class="z">放喺邊</span><span class="e">Where it is kept</span></div>
@@ -426,7 +459,9 @@ details.more .inner{padding-top:14px}
     </div>
   </details>
 
+  <div id="dVerdict"></div>
   <button id="dAte" class="btn"><span class="z">食咗 / 用完</span><span class="e">Eaten or used up</span></button>
+  <div class="brow"><button id="dToss" class="btn danger"><span class="z">掉咗佢（過咗期）</span><span class="e">Thrown out — expired</span></button></div>
   <div class="brow"><button id="dEdit" class="btn ghost"><span class="z">改資料</span><span class="e">Edit details</span></button></div>
 </section>
 
@@ -467,6 +502,17 @@ details.more .inner{padding-top:14px}
   <button id="agSave" class="btn"><span class="z">入返落去</span><span class="e">Add it back</span></button>
 </section>
 
+<!-- 煮嘢食計劃 -->
+<div id="planScrim" class="scrim hide"></div>
+<section id="planSheet" class="sheet hide" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+  <div class="shead">
+    <h2 id="planTitle"><span class="z">煮嘢食計劃</span><span class="e">Cooking plan</span></h2>
+    <button class="x" data-close="plan" aria-label="閂 Close">✕</button>
+  </div>
+  <div id="planBody"></div>
+</section>
+
 <!-- 設定 -->
 <div id="setScrim" class="scrim hide"></div>
 <section id="setSheet" class="sheet hide" role="dialog" aria-modal="true">
@@ -498,6 +544,15 @@ details.more .inner{padding-top:14px}
   <div class="brow"><button id="aiTest" class="btn plain"><span class="z">試一次</span><span class="e">Test the connection</span></button></div>
   <div class="brow"><button id="aiClear" class="btn danger hide"><span class="z">清除呢部電話嘅 API Key</span><span class="e">Clear the API key on this phone</span></button></div>
   <p class="hintline" style="margin-top:14px">只需要喺**一部**電話設定。所有電話共用同一份食物清單，所以其他人影嘅相，一樣會喺你部機出現喺「AI 幫我填」入面，撳一次就全部改晒。<span class="e">Set this up on ONE phone only. Everyone shares one food list, so photos taken on other phones also get named when you tap the button here.</span></p>
+
+  <div class="ghead"><span class="z">匯出資料</span><span class="e">Export your data</span></div>
+  <p class="hintline">匯出一份唔含相片嘅清單（食物、日期、分區、浪費記錄），可以拎去俾人分析。<span class="e">Exports a photo-free summary — food, dates, areas, and what got thrown out.</span></p>
+  <div class="fld">
+    <div class="flab"><span class="z">屋企情況（會寫入匯出檔）</span><span class="e">About your household — included in the export</span></div>
+    <textarea id="household" rows="3" placeholder="例如：爸爸、媽媽、6 歲女、2 歲半女、工人姐姐、婆婆"></textarea>
+  </div>
+  <button id="expCopy" class="btn ghost"><span class="z">抄落剪貼簿</span><span class="e">Copy to clipboard</span></button>
+  <div class="brow"><button id="expFile" class="btn plain"><span class="z">下載做檔案</span><span class="e">Download as a file</span></button></div>
 
   <div class="ghead"><span class="z">版本同保安</span><span class="e">Version &amp; security</span></div>
   <div class="who" id="verBox"></div>
@@ -554,7 +609,7 @@ details.more .inner{padding-top:14px}
 /* 版本號用日期：yyyy-mm-dd 再加一個大楷字母。
    同一日出多過一次，就 A → B → C 咁行落去。
    格式排得好，所以直接字串比大細就已經係啱嘅時序。 */
-const APP_VERSION = "2026-09-16C";
+const APP_VERSION = "2026-09-16D";
 
 /* ═══════════════════════════════════════════════════════
    FIRESTORE SECURITY RULES —— 呢度係一份副本，方便日後查閱
@@ -562,7 +617,7 @@ const APP_VERSION = "2026-09-16C";
    → Firestore Database → Rules。改咗嗰邊記得返嚟改埋呢度同
    RULES_COPY_DATE，否則呢段註釋會變成誤導。
 
-   RULES_COPY_DATE: 2026-09-16
+   RULES_COPY_DATE: 2026-09-16 (D)
 
    rules_version = '2';
    service cloud.firestore {
@@ -580,6 +635,7 @@ const APP_VERSION = "2026-09-16C";
        match /photos/{id}   { allow read, write: if household(); }
        match /sections/{id} { allow read, write: if household(); }
        match /library/{id}  { allow read, write: if household(); }
+       match /waste/{id}    { allow read, write: if household(); }
        match /meta/{id}     { allow read, write: if household(); }
      }
    }
@@ -854,7 +910,8 @@ const AI_PROMPT =
  "5. Singular. No adjectives such as fresh, delicious, organic, premium. No packaging words such as bottle, pack, box, carton.\n" +
  "6. \"brand\": the brand printed on the package, only when clearly legible. Otherwise an empty string.\n" +
  "7. If several foods are visible, name the most prominent one.\n" +
- "8. If you cannot tell what it is, use zh \"未知\" and en \"Unknown\".";
+ "8. If you cannot tell what it is, use zh \"未知\" and en \"Unknown\".\n" +
+ "9. Also add a \"dateType\" field. Look at the date label printed on the pack: if it says 此日期或之前食用 / Use by, answer \"use\". If it says 此日期前最佳 / Best before, answer \"best\". If you cannot read which one it is, answer \"\" (empty). Do not guess from the kind of food — only report what is actually printed.";
 
 /* 已經用過嘅名 — 餵返俾模型，等佢重用而唔係每次創作新講法 */
 function knownNames(){
@@ -915,7 +972,8 @@ async function askVision(dataUrl, known){
       { type:"text", text:prompt }
     ]}]
   });
-  return { zh:clean(o.zh), en:clean(o.en), brand:clean(o.brand) };
+  const dt = (o.dateType==="use"||o.dateType==="best") ? o.dateType : "";
+  return { zh:clean(o.zh), en:clean(o.en), brand:clean(o.brand), dateType:dt };
 }
 
 /* 純翻譯，唔會再睇幅相 */
@@ -948,7 +1006,7 @@ $("#aiTest").onclick=async()=>{
 /* ═══ Firebase ═══════════════════════════════════════ */
 const V="10.12.5";
 let db,auth,user=null,F=null,A=null;
-let items=[],sections=[],library=[],unsub=[];
+let items=[],sections=[],library=[],waste=[],unsub=[];
 let filterSection="all", filterSignal="all", term="", seeded=false;
 
 if(!firebaseConfig.apiKey || firebaseConfig.apiKey.indexOf("PASTE")===0){
@@ -984,7 +1042,7 @@ async function boot(){
     $("#app").classList.toggle("hide",!u);
     unsub.forEach(f=>f()); unsub=[];
     if(u){ $("#whoBox").innerHTML=bi(u.email||"—","Signed in on this device"); listen(); checkRules(); }
-    else { items=[]; sections=[]; library=[]; }
+    else { items=[]; sections=[]; library=[]; waste=[]; }
   });
 }
 function listen(){
@@ -998,6 +1056,10 @@ function listen(){
     items=s.docs.map(d=>({id:d.id,...d.data()}));
     renderHints(); renderSecList(); render();
   },e=>toast("讀唔到食物："+e.code,"Could not load food")));
+
+  unsub.push(F.onSnapshot(F.collection(db,"waste"),s=>{
+    waste=s.docs.map(d=>({id:d.id,...d.data()}));
+  },()=>{}));
 
   unsub.push(F.onSnapshot(F.doc(db,"meta","app"),snap=>{
     metaErr=false;
@@ -1020,6 +1082,65 @@ async function seedSections(){
   const b=F.writeBatch(db);
   DEFAULT_SECTIONS.forEach(([z,e],i)=>b.set(F.doc(F.collection(db,"sections")),{zh:z,en:e,order:i}));
   try{ await b.commit(); }catch(e){ toast("建立唔到預設分區："+e.code,"Could not create default areas"); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   安全判斷引擎 —— 100% 寫死嘅規則，AI 完全參與唔到。
+   依據：香港食物安全中心
+   https://www.cfs.gov.hk/tc_chi/consumer_zone/safefood_all/useby_bestbefore.html
+   ‧「此日期或之前食用 Use By」= 安全日期。過咗就唔食得，
+     就算外觀同味道正常，有害微生物同毒素都可能已經大量滋生。
+   ‧「此日期前最佳 Best Before」= 品質日期，過咗通常仍然安全。
+   ‧兩者都只適用於未開封嘅產品。一開封，日期就唔作準。
+   屋企有 2 歲半同 6 歲細路，所以任何過咗期嘅嘢一律標明細路唔好食。
+   ═══════════════════════════════════════════════════════ */
+const V_TOSS ={key:"toss", rank:0, cls:"bad",  zh:"掉咗佢",   en:"Throw it out"};
+const V_JUDGE={key:"judge",rank:1, cls:"bad",  zh:"大人自己判斷，兩個女唔好食", en:"Adults judge — not for the children"};
+const V_TODAY={key:"today",rank:2, cls:"warn", zh:"今日一定要煮", en:"Must be cooked today"};
+const V_SOON ={key:"soon", rank:3, cls:"warn", zh:"盡快煮",   en:"Cook it soon"};
+const V_WATCH={key:"watch",rank:4, cls:"",     zh:"排住先",   en:"Coming up"};
+const V_OK   ={key:"ok",   rank:5, cls:"",     zh:"仲有時間", en:"Plenty of time"};
+const V_NONE ={key:"none", rank:6, cls:"",     zh:"冇入日期", en:"No date"};
+
+const dateTypeOf = it => it.dateType==="best" ? "best" : "use";   // 唔知就當安全日期
+function storageOf(sec){
+  if(!sec) return "chill";
+  if(sec.storage) return sec.storage;
+  const n=(sec.zh||sec.name||"")+" "+(sec.en||"");
+  if(/急凍|冰格|冷凍|freez/i.test(n)) return "freeze";
+  if(/雪櫃|冷藏|fridge|chill/i.test(n)) return "chill";      // 要行喺廚櫃前面：「雪櫃」都含個「櫃」字
+  if(/櫃|cabinet|pantry|cupboard/i.test(n)) return "pantry";
+  return "chill";
+}
+const STORAGE_NOTE={
+  freeze:["−18°C 之下細菌唔會生長，所以標「此日期前最佳」嘅急凍嘢過咗期通常仲安全，只係品質差咗。但有兩個前提：入櫃之前未過期，而且中間一次都冇解凍過。停過電、放軟過、買返嚟路上化過雪 —— 個鐘就要重新計。個 app 唔知道呢啲，所以唔會幫你開綠燈。",
+    "Below −18°C bacteria stop growing, so a frozen Best Before item is usually still safe past its date — but only if it went in before the date and never thawed once. A power cut or a soft patch resets the clock, and this app cannot know that."],
+  chill:["0–4°C 只係拖慢細菌，唔會停。李斯特菌喺雪櫃溫度一樣生到。標「此日期或之前食用」嘅嘢過咗期就掉，冇得酌情。",
+    "0–4°C only slows bacteria down, it does not stop them. Listeria still grows at fridge temperature. Past a Use By date means bin it, no judgement call."],
+  pantry:["室溫乾貨多數標「此日期前最佳」，過咗期通常仲食得，但要睇清楚有冇發霉、油膉味、蟲、或者罐頭脹咗。",
+    "Dry goods usually carry a Best Before date and are often fine past it — but check for mould, a rancid smell, insects, or a swollen can."]
+};
+
+function verdict(it){
+  const d=daysLeft(it.expiry);
+  const opened=!!it.opened, type=dateTypeOf(it);
+  const notes=[];
+  if(opened) notes.push(["已開封，包裝上嘅日期唔再作準。要跟生產商嘅開封後指示，例如「開封後冷藏，7 日內食完」。",
+    "Opened, so the printed date no longer applies. Follow the after-opening instructions on the pack."]);
+  if(d===null) return {...V_NONE, d, notes, why:["冇入到期日。","No expiry date recorded."]};
+  if(d<0){
+    if(opened) return {...V_TOSS, d, notes, why:["已經開咗封，而且過咗期。唔好賭。","Opened and past its date. Do not risk it."]};
+    if(type==="use") return {...V_TOSS, d, notes, why:[
+      `過咗「此日期或之前食用」${-d} 日。食安中心講明：呢類嘢過期後就算外觀同味道正常都唔食得，毒素可能已經生咗。`,
+      `${-d} days past its Use By date. Food safety guidance is explicit: do not eat it, even if it looks and smells perfectly fine.`]};
+    return {...V_JUDGE, d, notes, why:[
+      `過咗「此日期前最佳」${-d} 日。呢個係品質日期唔係安全日期，但發霉、變味、脹罐就一定要掉。細路唔好食。`,
+      `${-d} days past Best Before — a quality date, not a safety one. Bin it if it is mouldy, smells off or the can is swollen. Not for the children.`]};
+  }
+  if(d===0) return {...V_TODAY, d, notes, why:["今日到期。今日煮，唔好留到聽日。","Expires today. Cook it today, not tomorrow."]};
+  if(d<=T_SOON) return {...V_SOON, d, notes, why:[`仲有 ${d} 日。`,`${d} days left.`]};
+  if(d<=T_WATCH) return {...V_WATCH, d, notes, why:[`仲有 ${d} 日。`,`${d} days left.`]};
+  return {...V_OK, d, notes, why:[`仲有 ${d} 日。`,`${d} days left.`]};
 }
 
 /* ═══ 版本 + rules 自我檢查 ═══════════════════════════
@@ -1239,7 +1360,16 @@ function paintPicker(sel,which){
 }
 
 /* ═══ 入貨 / 改資料 add & edit ═══════════════════════ */
-let editingId=null, pendingPhoto=null, keepThumb=null;
+let editingId=null, pendingPhoto=null, keepThumb=null, formDateType="use", formOpened=false;
+const DT=[["此日期或之前食用","Use by — a SAFETY date","use"],["此日期前最佳","Best before — a QUALITY date","best"]];
+function paintDateType(){
+  $("#fDateType").innerHTML=DT.map(([z,e,k])=>
+    `<button type="button" class="pk" data-dt="${k}" aria-pressed="${formDateType===k}">${bi(z,e)}</button>`).join("");
+  $("#fDateType").querySelectorAll("[data-dt]").forEach(b=>b.onclick=()=>{ formDateType=b.dataset.dt; paintDateType(); });
+  $("#fOpened").setAttribute("aria-pressed", String(formOpened));
+}
+$("#fOpened").onclick=()=>{ formOpened=!formOpened; paintDateType(); };
+paintDateType();   // 開機畫一次，唔使等開表單
 function openForm(it){
   editingId = it?it.id:null;
   pendingPhoto=null;
@@ -1250,6 +1380,9 @@ function openForm(it){
   $("#fEn").value = it?nameEn(it):"";
   $("#fBrand").value = it?(it.brand||""):"";
   $("#fNote").value = it?(it.note||""):"";
+  formDateType = it ? dateTypeOf(it) : "use";
+  formOpened   = it ? !!it.opened : false;
+  paintDateType();
   $("#moreBox").open = !!(it && (hasName(it)||it.brand||it.note));
   formSection = it?it.sectionId:(filterSection!=="all"?filterSection:(sections[0]||{}).id);
   setPreview(keepThumb);
@@ -1284,6 +1417,7 @@ async function save(next){
       expiry, sectionId:formSection,
       zh:$("#fZh").value.trim(), en:$("#fEn").value.trim(),
       brand:$("#fBrand").value.trim(), note:$("#fNote").value.trim(),
+      dateType:formDateType, opened:formOpened,
       updatedAt:F.serverTimestamp(), updatedBy:(user&&user.email)||""
     };
     if(editingId){
@@ -1307,7 +1441,7 @@ async function save(next){
     if(next){
       editingId=null; pendingPhoto=null; keepThumb=null;
       $("#fZh").value=""; $("#fEn").value=""; $("#fBrand").value=""; $("#fNote").value="";
-      $("#fDate").value=plusDays(7); setPreview(null);
+      $("#fDate").value=plusDays(7); formOpened=false; paintDateType(); setPreview(null);
     }else show("form",false);
   }catch(e){ busy(false); toast("儲存失敗："+(e.code||e.message),"Save failed"); }
 }
@@ -1360,6 +1494,14 @@ async function openDetail(id){
   $("#dWhere").innerHTML = bi(secZh(it.sectionId), secEn(it.sectionId));
   $("#dNote").textContent = it.note||"";
   $("#dDate").value = it.expiry||"";
+  const vd=verdict(it);
+  $("#dVerdict").innerHTML =
+    `<div class="vnote" style="${vd.cls==="bad"?"background:var(--gone-bg);color:var(--gone)":vd.cls==="warn"?"background:var(--soon-bg);color:var(--soon)":""}">
+       <b>${bi(vd.zh,vd.en)}</b><div style="margin-top:6px">${bi(vd.why[0],vd.why[1])}</div>
+       ${vd.notes.map(n=>`<div style="margin-top:6px">${bi(n[0],n[1])}</div>`).join("")}
+     </div>`;
+  $("#dAte").className = vd.rank<=1 ? "btn ghost" : "btn";
+  $("#dToss").className = vd.rank<=1 ? "btn danger" : "btn plain";
   $("#dateBox").open=false;
   const img=$("#dImg");
   img.src=it.thumb||""; img.style.filter=it.thumb?"blur(6px)":"none";
@@ -1381,6 +1523,36 @@ $("#dDateSave").onclick=async()=>{
 };
 $("#dEdit").onclick=()=>{ const it=items.find(i=>i.id===detailId); show("det",false); if(it) openForm(it); };
 
+async function retire(it, wasted){
+  const lib = it.libId ? library.find(l=>l.id===it.libId) : null;
+  if(lib) await F.updateDoc(F.doc(db,"library",lib.id),{ lastUsed:F.serverTimestamp(), times:(lib.times||1)+1 });
+  else if(it.thumb) await F.addDoc(F.collection(db,"library"),{
+    zh:nameZh(it), en:nameEn(it), brand:brandOf(it), thumb:it.thumb,
+    photoId:it.photoId||"", sectionId:it.sectionId||"", lastUsed:F.serverTimestamp(), times:1 });
+  if(wasted){
+    const d=daysLeft(it.expiry);
+    await F.addDoc(F.collection(db,"waste"),{
+      zh:nameZh(it), en:nameEn(it), brand:brandOf(it),
+      sectionId:it.sectionId||"", expiry:it.expiry||"",
+      daysOver: d===null?null:Math.max(0,-d), dateType:dateTypeOf(it),
+      at:F.serverTimestamp(), by:(user&&user.email)||"" });
+  }
+  await F.deleteDoc(F.doc(db,"items",it.id));
+}
+
+$("#dToss").onclick=async()=>{
+  const it=items.find(i=>i.id===detailId); if(!it) return;
+  const vd=verdict(it);
+  const ok=await ask({ tz:"掉咗佢？", te:"Throw it out?",
+    mz:"會記低係浪費咗，幫你睇出邊類嘢成日買多咗。張相同個名會留喺「買開嘅嘢」。",
+    me:"This is recorded as waste so you can see what gets over-bought. The photo and name stay under Buy again.",
+    yz:"掉咗", ye:"Thrown out", danger:true });
+  if(!ok) return;
+  busy(true,"處理緊…","Working…");
+  try{ await retire(it,true); busy(false); toast("記低咗","Recorded"); show("det",false); }
+  catch(e){ busy(false); toast("失敗："+(e.code||e.message),"Failed"); }
+};
+
 /* 食咗 → 入返「買開嘅嘢」*/
 $("#dAte").onclick=async()=>{
   const it=items.find(i=>i.id===detailId); if(!it) return;
@@ -1391,17 +1563,7 @@ $("#dAte").onclick=async()=>{
   if(!ok) return;
   busy(true,"處理緊…","Working…");
   try{
-    const lib = it.libId ? library.find(l=>l.id===it.libId) : null;
-    if(lib){
-      await F.updateDoc(F.doc(db,"library",lib.id),{ lastUsed:F.serverTimestamp(), times:(lib.times||1)+1 });
-    }else if(it.thumb){
-      await F.addDoc(F.collection(db,"library"),{
-        zh:nameZh(it), en:nameEn(it), brand:it.brand||"",
-        thumb:it.thumb, photoId:it.photoId||"", sectionId:it.sectionId||"",
-        lastUsed:F.serverTimestamp(), times:1
-      });
-    }
-    await F.deleteDoc(F.doc(db,"items",it.id));
+    await retire(it,false);
     busy(false); toast("記低咗，下次可以直接揀返","Saved — you can add it again in one tap"); show("det",false);
   }catch(e){ busy(false); toast("失敗："+(e.code||e.message),"Failed"); }
 };
@@ -1551,7 +1713,9 @@ async function runAI(list){
       if(!ph.url) throw new Error("冇相");
       const r=await askVision(ph.url, known);
       if(r.zh||r.en){
-        await F.updateDoc(colRef(e),{ zh:r.zh, en:r.en, brand:r.brand||"", updatedAt:F.serverTimestamp() });
+        const patch={ zh:r.zh, en:r.en, brand:r.brand||"", updatedAt:F.serverTimestamp() };
+        if(r.dateType && !e.o.dateType) patch.dateType=r.dateType;   // 唔覆蓋人手揀過嘅
+        await F.updateDoc(colRef(e), patch);
         ok++;
       } else fail++;
     }catch(err){
@@ -1596,6 +1760,120 @@ async function runTranslate(list){
         `${ok} translated` + (fail?`, ${fail} failed`:""));
 }
 
+/* ═══ 煮嘢食計劃 ═══════════════════════════════════════
+   分組同判斷全部由 verdict() 決定。AI 只會收到「未過期」嗰批，
+   過咗期嗰啲根本唔會傳出去，佢想開綠燈都冇機會。
+   ═══════════════════════════════════════════════════════ */
+let planPlan=null;
+function openPlan(){ planPlan=null; renderPlan(); show("plan",true); }
+$("#planBtn").onclick=openPlan;
+
+function planItems(){
+  const r = filterSection==="all" ? items : items.filter(i=>i.sectionId===filterSection);
+  return r.map(o=>({o, v:verdict(o)})).sort((a,b)=>a.v.rank-b.v.rank || (a.v.d??999)-(b.v.d??999));
+}
+function vLine(e){
+  const nl=nameLines(e.o), d=e.v.d;
+  return `<div class="vitem ${e.v.cls==="bad"?"bad":""}">
+    ${e.o.thumb?`<img src="${e.o.thumb}" alt="">`:`<div style="width:40px;height:40px;border-radius:7px;background:var(--card);display:grid;place-items:center;flex:none">🍽</div>`}
+    <div class="nm">${nl?bi(nl.top,nl.bot):bi("未命名","Unnamed")}</div>
+    <div class="dd">${d===null?"—":d<0?bi("過咗 "+(-d)+" 日",(-d)+" days over"):bi("仲有 "+d+" 日",d+" days")}</div>
+  </div>`;
+}
+function renderPlan(){
+  const sec = filterSection==="all" ? null : sections.find(x=>x.id===filterSection);
+  $("#planTitle").innerHTML = sec ? bi("煮嘢食計劃　"+(sec.zh||sec.name||""),"Cooking plan — "+(sec.en||""))
+                                  : bi("煮嘢食計劃　全部","Cooking plan — everything");
+  const all=planItems();
+  const grp=k=>all.filter(e=>e.v.key===k);
+  const st = storageOf(sec || {zh:"雪櫃"});
+  const note = STORAGE_NOTE[st];
+  let h="";
+
+  if(sec) h+=`<div class="vnote">${bi(note[0],note[1])}</div>`;
+
+  const blocks=[
+    ["toss", V_TOSS,  "bad"],
+    ["judge",V_JUDGE, "bad"],
+    ["today",V_TODAY, "warn"],
+    ["soon", V_SOON,  "warn"],
+    ["watch",V_WATCH, ""]
+  ];
+  let any=false;
+  for(const [k,V,cls] of blocks){
+    const g=grp(k); if(!g.length) continue;
+    any=true;
+    h+=`<div class="vgroup"><div class="vhead ${cls}">${bi(V.zh,V.en)}<span class="n">${g.length}</span></div>
+      <p class="vwhy">${bi(g[0].v.why[0],g[0].v.why[1])}</p>${g.map(vLine).join("")}</div>`;
+  }
+  if(grp("toss").length||grp("judge").length){
+    h+=`<div class="kids">${bi("兩個女（2 歲半同 6 歲）唔好食任何過咗期嘅嘢。細路腸胃未夠成熟，同樣份量嘅細菌，大人可能冇事，佢哋就會發燒同腸胃炎。",
+      "Neither child (2½ and 6) should eat anything past its date. The same dose of bacteria that an adult shrugs off can give a small child a fever and gastroenteritis.")}</div>`;
+  }
+  if(!any) h+=`<div class="empty" style="padding:30px 10px"><div class="big">👍</div><p>冇嘢趕住煮。<span class="e">Nothing urgent right now.</span></p></div>`;
+
+  const safe=all.filter(e=>e.v.rank>=2 && e.v.d!==null && e.v.d<=10 && hasName(e.o));
+  if(aiReady()){
+    h+=`<button id="planAI" class="btn"${safe.length?"":" disabled"}>${bi(safe.length?"叫 AI 諗餸（"+safe.length+" 樣未過期）":"冇未過期又有名嘅嘢好諗","Ask the AI for dish ideas")}</button>`;
+  }else{
+    h+=`<p class="hintline">想叫 AI 諗餸就去 ⚙ 設定填 AI 資料。<span class="e">Set up the AI in Settings for dish ideas.</span></p>`;
+  }
+  if(planPlan) h+=planHTML(planPlan);
+
+  const wk=wasteStats();
+  if(wk.n) h+=`<div class="vnote" style="margin-top:18px;background:var(--soon-bg);color:var(--soon)">
+    <b>${bi("最近 30 日掉咗 "+wk.n+" 樣", wk.n+" items thrown out in the last 30 days")}</b>
+    <div style="margin-top:6px">${bi(wk.zh,wk.en)}</div></div>`;
+
+  $("#planBody").innerHTML=h;
+  const b=$("#planAI"); if(b) b.onclick=()=>askDishes(safe);
+}
+function planHTML(p){
+  return `<div style="margin-top:18px">${(p.plan||[]).map(x=>`<div class="dish">
+    <div class="t">${bi(x.zh||"",x.en||"")}</div>
+    ${(x.uses&&x.uses.length)?`<div class="u">${esc(x.uses.join("、"))}</div>`:""}
+  </div>`).join("")}
+  ${(p.tip_zh||p.tip_en)?`<div class="vnote">${bi(p.tip_zh||"",p.tip_en||"")}</div>`:""}</div>`;
+}
+async function askDishes(safe){
+  if(!safe.length) return;
+  busy(true,"諗緊…","Thinking…");
+  try{
+    const list=safe.map(e=>`${nameEn(e.o)||nameZh(e.o)} (${nameZh(e.o)}) — ${e.v.d} days left`).join("\n");
+    const o=await callAI({ model:aiCfg().model, max_tokens:900, temperature:0.5,
+      messages:[{role:"user",content:DISH_PROMPT+"\n\nStill-safe items, soonest first:\n"+list}] });
+    planPlan=o; busy(false); renderPlan();
+  }catch(e){
+    busy(false);
+    toast(e.message==="NET"?"接駁唔到 AI。多數係瀏覽器 CORS 擋咗。":"失敗："+e.message,
+          e.message==="NET"?"Could not reach the AI.":"Failed");
+  }
+}
+const DISH_PROMPT =
+ "You help a Hong Kong family use up food before it goes off.\n" +
+ "The household eats together: two parents, a grandmother, a domestic helper, a 6-year-old girl and a 2.5-year-old girl.\n" +
+ "IMPORTANT: the list you are given contains ONLY food that is still safe. Anything expired has already been removed before you see it. Never suggest eating expired food and never comment on whether expired food might still be fine — that is decided elsewhere.\n" +
+ 'Reply with ONE JSON object and nothing else: {"plan":[{"zh":"...","en":"...","uses":["..."]}],"tip_zh":"...","tip_en":"..."}\n' +
+ "- 2 to 4 simple home dishes, most urgent first. Use the items with the fewest days left first.\n" +
+ "- zh: dish name plus one short sentence, Traditional Chinese, Hong Kong home cooking.\n" +
+ "- en: the same in simple English that a non-native reader understands.\n" +
+ "- uses: which listed foods the dish uses.\n" +
+ "- The 2.5-year-old eats this too: cook meat, fish and eggs right through, keep it mild, and avoid choking hazards such as whole nuts, whole grapes and hard raw vegetable chunks.\n" +
+ "- tip_zh / tip_en: ONE short line of shopping advice based on what is piling up, e.g. buying too much frozen meat at once. Keep it kind.";
+
+function wasteStats(){
+  const cut=Date.now()-30*864e5;
+  const w=waste.filter(x=>ms(x.at)>=cut);
+  if(!w.length) return {n:0};
+  const by={};
+  w.forEach(x=>{ const k=nameEn(x)||nameZh(x)||"未命名"; by[k]=(by[k]||0)+1; });
+  const top=Object.entries(by).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>k+(v>1?" ×"+v:""));
+  const avg=Math.round(w.reduce((a,x)=>a+(x.daysOver||0),0)/w.length);
+  return { n:w.length,
+    zh:`最常掉：${top.join("、")}。平均過咗期 ${avg} 日先發現 —— 呢啲嘢下次買少啲。`,
+    en:`Most often binned: ${top.join(", ")}. On average ${avg} days past the date before anyone noticed — buy less of these.` };
+}
+
 /* ═══ 設定 settings ══════════════════════════════════ */
 $("#openSet").onclick=()=>{ loadAiForm(); renderSecList(); paintSecurity(); show("set",true); };
 function renderSecList(){
@@ -1609,6 +1887,11 @@ function renderSecList(){
         <input class="a" value="${esc(s.zh||s.name||"")}" data-zh aria-label="中文名">
         <input class="b" value="${esc(s.en||"")}" data-en aria-label="English name" placeholder="English name">
       </div>
+      <select data-store aria-label="存放方式 Storage" style="font-size:11px;border:1px solid var(--rule);border-radius:7px;background:var(--card);padding:3px 4px;max-width:92px">
+        <option value="chill"${storageOf(s)==="chill"?" selected":""}>雪櫃 Chilled</option>
+        <option value="freeze"${storageOf(s)==="freeze"?" selected":""}>急凍 Frozen</option>
+        <option value="pantry"${storageOf(s)==="pantry"?" selected":""}>室溫 Pantry</option>
+      </select>
       <span class="n">${n}</span>
       <button class="mini" data-up ${i===0?"disabled":""} aria-label="向上 Up">↑</button>
       <button class="mini" data-down ${i===sections.length-1?"disabled":""} aria-label="向下 Down">↓</button>
@@ -1620,6 +1903,7 @@ function renderSecList(){
     const upd=async patch=>{ try{ await F.updateDoc(F.doc(db,"sections",id),patch); toast("改咗","Updated"); }catch(e){ toast("改唔到："+e.code,"Could not update"); } };
     row.querySelector("[data-zh]").onchange=e=>{ const v=e.target.value.trim(); if(!v) return renderSecList(); upd({zh:v,name:v}); };
     row.querySelector("[data-en]").onchange=e=>upd({en:e.target.value.trim()});
+    row.querySelector("[data-store]").onchange=e=>upd({storage:e.target.value});
     row.querySelector("[data-up]").onclick=()=>moveSec(id,-1);
     row.querySelector("[data-down]").onclick=()=>moveSec(id,1);
     row.querySelector("[data-del]").onclick=async()=>{
@@ -1647,6 +1931,63 @@ $("#secAdd").onclick=async()=>{
   catch(e){ toast("加唔到："+e.code,"Could not add"); }
 };
 
+/* ═══ 匯出（唔含相）═══════════════════════════════════ */
+const HH_KEY="fm.household";
+try{ $("#household").value=localStorage.getItem(HH_KEY)||""; }catch(_){}
+$("#household").onchange=e=>{ try{ localStorage.setItem(HH_KEY,e.target.value); }catch(_){} };
+
+function buildExport(){
+  const secOf=id=>{ const x=sec(id); return x?{zh:x.zh||x.name||"",en:x.en||"",storage:storageOf(x)}:null; };
+  const now=new Date();
+  return {
+    exportedAt: now.toISOString(),
+    appVersion: APP_VERSION,
+    household: (()=>{ try{ return localStorage.getItem(HH_KEY)||""; }catch(_){ return ""; } })(),
+    note: "No photos included. daysLeft is negative when expired. dateType: use = safety date, best = quality date.",
+    sections: sections.map(x=>({zh:x.zh||x.name||"",en:x.en||"",storage:storageOf(x),
+      count:items.filter(i=>i.sectionId===x.id).length})),
+    items: items.map(i=>({ zh:nameZh(i), en:nameEn(i), brand:brandOf(i),
+      section:secOf(i.sectionId), expiry:i.expiry||"", daysLeft:daysLeft(i.expiry),
+      dateType:dateTypeOf(i), opened:!!i.opened, note:i.note||"", verdict:verdict(i).key })),
+    buyAgain: library.map(l=>({ zh:nameZh(l), en:nameEn(l), brand:brandOf(l),
+      timesBought:l.times||1, lastUsed:ms(l.lastUsed)?new Date(ms(l.lastUsed)).toISOString().slice(0,10):"" })),
+    thrownOut: waste.map(w=>({ zh:nameZh(w), en:nameEn(w), section:secOf(w.sectionId),
+      expiry:w.expiry||"", daysPastDate:w.daysOver, dateType:w.dateType||"",
+      at: ms(w.at)?new Date(ms(w.at)).toISOString().slice(0,10):"" }))
+  };
+}
+function exportText(){
+  const d=buildExport();
+  return "# 食物管理 export / Food Management export\n"
+    + "# " + d.exportedAt.slice(0,10) + "  app " + d.appVersion + "\n"
+    + (d.household?"# household: "+d.household+"\n":"")
+    + "# daysLeft < 0 = expired.  dateType: use = safety date, best = quality date.\n\n"
+    + JSON.stringify(d,null,1);
+}
+$("#expCopy").onclick=async()=>{
+  const t=exportText();
+  try{ await navigator.clipboard.writeText(t); toast("抄咗，貼去邊度都得","Copied — paste it anywhere"); }
+  catch(_){
+    const ta=document.createElement("textarea");
+    ta.value=t; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); toast("抄咗","Copied"); }
+    catch(__){ toast("抄唔到，試下「下載做檔案」","Could not copy — try the download instead"); }
+    ta.remove();
+  }
+};
+$("#expFile").onclick=()=>{
+  try{
+    const blob=new Blob([exportText()],{type:"application/json"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="food-"+todayISO()+".json";
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000);
+    toast("下載緊","Downloading");
+  }catch(_){ toast("下載唔到，試下「抄落剪貼簿」","Could not download — try Copy instead"); }
+};
+
 $("#signout").onclick=async()=>{
   const ok=await ask({ tz:"真係要登出？", te:"Sign out?",
     mz:"登出之後要再用 Google 登入一次先睇得返啲食物。", me:"You will need to sign in with Google again to see the food list.",
@@ -1655,7 +1996,7 @@ $("#signout").onclick=async()=>{
 };
 
 /* ═══ sheet 開關 ═════════════════════════════════════ */
-const SHEETS=["form","det","lib","again","set"];
+const SHEETS=["form","det","lib","again","set","plan"];
 function show(k,on){
   $("#"+k+"Scrim").classList.toggle("hide",!on);
   $("#"+k+"Sheet").classList.toggle("hide",!on);
