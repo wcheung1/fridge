@@ -101,6 +101,7 @@ main{padding:8px 16px calc(112px + var(--safe-b))}
 .vitem .dd{font-size:11.5px;color:var(--mute);flex:none;text-align:right;font-variant-numeric:tabular-nums;line-height:1.25}
 .vnote{background:var(--brand-tint);border-radius:10px;padding:11px 13px;font-size:12.5px;color:var(--brand);line-height:1.5;margin-bottom:16px}
 .vnote .e{font-size:11.5px;opacity:.8}
+.vnote .ttl{font-size:13.5px;margin-bottom:2px}
 .dish{border-left:3px solid var(--brand);padding:2px 0 2px 12px;margin-bottom:14px}
 .dish .t{font-size:15px;font-weight:700;line-height:1.3}
 .dish .t .e{font-size:12px;font-weight:500}
@@ -141,6 +142,11 @@ main{padding:8px 16px calc(112px + var(--safe-b))}
 .cal button.today{box-shadow:inset 0 0 0 1.5px var(--brand);font-weight:700}
 .cal button[aria-pressed="true"]{background:var(--brand);color:#fff;font-weight:700;box-shadow:none}
 .cal .pad{visibility:hidden}
+#pkOut{margin-top:11px;border-radius:11px;padding:10px 13px;text-align:center;line-height:1.3}
+#pkOut.none{background:var(--gone-bg);color:var(--gone);font-weight:600;font-size:13.5px}
+#pkOut.set{background:var(--brand-tint);color:var(--brand)}
+#pkOut .big{font-size:16px;font-weight:700;display:block}
+#pkOut .sub{font-size:11.5px;opacity:.8;display:block;margin-top:2px}
 
 .actbar{
   position:fixed;left:0;right:0;bottom:0;z-index:45;display:flex;gap:9px;
@@ -169,10 +175,16 @@ main{padding:8px 16px calc(112px + var(--safe-b))}
 
 /* 今日要做 — 全家都見到嘅板 */
 #jobs{background:var(--card);border:2px solid var(--brand);border-radius:var(--r);padding:14px;margin-bottom:12px}
-#jobs .hd{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
-#jobs .hd b{font-size:15px;font-weight:700;letter-spacing:-.01em}
-#jobs .hd .e{font-size:10px;letter-spacing:.06em;opacity:.6}
-#jobs .hd .dt{margin-left:auto;font-size:11px;color:var(--mute)}
+/* 中英兩行嘅 .z/.e 係 block 級，唔可以放入 <b>（inline）—— Chromium
+   喺 flex 之下會將 block-in-inline 拆成匿名盒，結果標題同下面疊晒。
+   一律用 div.ttl 包住。 */
+#jobs .hd{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.ttl{font-weight:700;line-height:1.25}
+.ttl .e{font-weight:500;opacity:.65}
+#jobs .hd .ttl{flex:1;min-width:0;font-size:15px;letter-spacing:-.01em}
+#jobs .hd .ttl .e{font-size:10px;letter-spacing:.06em}
+#jobs .hd .dt{flex:none;text-align:right;font-size:11px;color:var(--mute);line-height:1.3}
+#jobs .hd .dt .e{font-size:10px}
 .jline{display:flex;align-items:center;gap:9px;font-size:13.5px;padding:5px 0;line-height:1.3}
 .jline b{font-variant-numeric:tabular-nums;font-size:16px;min-width:20px;text-align:right}
 .jline.bad{color:var(--gone)} .jline.warn{color:var(--soon)}
@@ -318,6 +330,13 @@ details.more .inner{padding-top:14px}
 .dfacts{display:flex;align-items:center;gap:16px;margin-bottom:16px}
 .dfacts .count{text-align:left;min-width:0}
 .dline{font-size:13px;color:var(--mute);margin-top:3px}
+.prov{background:var(--chill);border-radius:11px;padding:10px 13px;margin-bottom:14px;font-size:12px;color:var(--mute);line-height:1.45}
+.prov .r{display:flex;gap:8px;align-items:baseline}
+.prov .r+.r{margin-top:6px;padding-top:6px;border-top:1px solid var(--rule)}
+.prov .k{flex:none;width:74px;font-weight:600;color:var(--ink);line-height:1.25}
+.prov .k .e{font-size:9.5px;font-weight:500}
+.prov .v{flex:1;min-width:0;word-break:break-all}
+.prov .v .t{color:var(--ink)}
 
 .srow{display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--rule)}
 .srow .ins{flex:1;min-width:0}
@@ -344,6 +363,32 @@ details.more .inner{padding-top:14px}
 .lcard .cap{padding:7px 9px 9px}
 .lcard .cap .z{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lcard .cap .e{font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pair{border:1px solid var(--rule);border-radius:var(--r);padding:12px;margin-bottom:14px}
+.pair .two{display:flex;gap:10px}
+.pair .card{flex:1;min-width:0;background:var(--chill);border-radius:11px;padding:9px;text-align:left}
+.pair .card img{width:100%;aspect-ratio:1;object-fit:contain;border-radius:8px;background:var(--card);display:block;margin-bottom:7px}
+.pair .card .nm{font-size:13.5px;font-weight:600;line-height:1.25}
+.pair .card .nm .e{font-size:11px;font-weight:500}
+.pair .card .meta{font-size:11px;color:var(--mute);margin-top:5px;line-height:1.4;word-break:break-all}
+.pair .card .meta b{color:var(--ink);font-weight:600}
+.pair .acts{display:flex;gap:8px;margin-top:11px}
+.pair .acts .btn{padding:10px 6px;font-size:13px}
+.pair .acts .btn .e{font-size:9px}
+.pair .aiout{background:var(--brand-tint);color:var(--brand);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:12.5px;line-height:1.45}
+.pair .aiout.no{background:var(--chill);color:var(--mute)}
+.pair .aiout .v{font-weight:700;display:block;margin-bottom:3px}
+.wrow{display:flex;gap:11px;align-items:center;padding:9px 0;border-bottom:1px solid var(--rule)}
+.wrow img{width:44px;height:44px;border-radius:9px;object-fit:contain;background:var(--chill);flex:none}
+.wrow .ph{width:44px;height:44px;border-radius:9px;background:var(--chill);display:grid;place-items:center;font-size:19px;flex:none}
+.wrow .mid{flex:1;min-width:0}
+.wrow .nm{font-size:14.5px;font-weight:600;line-height:1.25}
+.wrow .nm .e{font-size:11.5px;font-weight:500}
+.wrow .sub{font-size:11.5px;color:var(--mute);margin-top:3px}
+.wrow .over{flex:none;text-align:right;font-size:12px;color:var(--gone);font-weight:600;font-variant-numeric:tabular-nums;line-height:1.25}
+.wsum{display:flex;gap:9px;margin-bottom:16px}
+.wsum div{flex:1;background:var(--chill);border-radius:11px;padding:10px;text-align:center;line-height:1.25}
+.wsum b{display:block;font-size:21px;font-weight:700;font-variant-numeric:tabular-nums}
+.wsum span{font-size:10.5px;color:var(--mute)}
 .lghead{font-size:12px;font-weight:700;color:var(--brand);letter-spacing:.09em;margin:18px 0 9px;padding-bottom:5px;border-bottom:1px solid var(--rule)}
 .lghead:first-child{margin-top:0}
 .lcard .rm{position:absolute;top:5px;right:5px;width:26px;height:26px;border-radius:50%;background:rgba(10,20,26,.6);color:#fff;font-size:13px;display:grid;place-items:center}
@@ -462,6 +507,7 @@ details.more .inner{padding-top:14px}
   <div class="quick" id="pkYears"></div>
   <button type="button" id="pkMonthBtn" class="monthbtn"></button>
   <div class="cal" id="pkCal"></div>
+  <div id="pkOut"></div>
   <p class="hintline" id="dtHint" style="margin:9px 0 0"></p>
 
   <details class="more" id="moreBox">
@@ -544,6 +590,7 @@ details.more .inner{padding-top:14px}
   </details>
 
   <div id="dVerdict"></div>
+  <div id="dWho"></div>
   <button id="dAte" class="btn"><span class="z">食咗 / 用完</span><span class="e">Eaten or used up</span></button>
   <div class="brow"><button id="dToss" class="btn danger"><span class="z">掉咗佢（過咗期）</span><span class="e">Thrown out — expired</span></button></div>
   <div class="brow"><button id="dEdit" class="btn ghost"><span class="z">改資料</span><span class="e">Edit details</span></button></div>
@@ -584,6 +631,30 @@ details.more .inner{padding-top:14px}
     <div class="picker" id="agSections"></div>
   </div>
   <button id="agSave" class="btn"><span class="z">入返落去</span><span class="e">Add it back</span></button>
+</section>
+
+<!-- 可能重複咗 -->
+<div id="dupScrim" class="scrim hide"></div>
+<section id="dupSheet" class="sheet hide" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+  <div class="shead">
+    <h2><span class="z">可能重複咗</span><span class="e">Possible duplicates</span></h2>
+    <button class="x" data-close="dup" aria-label="閂 Close">✕</button>
+  </div>
+  <p class="hintline" style="margin:-6px 0 14px">名一樣、到期日差三日之內，就會攞出嚟問你。睇下邊個影、幾時影 —— 通常一眼就知係咪同一件嘢影咗兩次。<span class="e">Same name and expiry dates within three days. Look at who logged each and when — that usually settles it.</span></p>
+  <div id="dupBody"></div>
+</section>
+
+<!-- 掉咗嘅嘢 -->
+<div id="wasteScrim" class="scrim hide"></div>
+<section id="wasteSheet" class="sheet hide" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+  <div class="shead">
+    <h2><span class="z">掉咗嘅嘢</span><span class="e">Thrown out</span></h2>
+    <button class="x" data-close="waste" aria-label="閂 Close">✕</button>
+  </div>
+  <p class="hintline" style="margin:-6px 0 14px">呢度**冇記邊個掉**，亦都唔會記邊個買。撳「掉咗佢」嗰個人係做緊家務，唔係做錯嘢。要睇嘅係買嘢嘅規律，唔係人。<span class="e">This record does not name who binned it or who bought it. Whoever taps the button is doing the chore, not the wrong thing. What matters is the buying pattern.</span></p>
+  <div id="wasteBody"></div>
 </section>
 
 <!-- 煮嘢食計劃 -->
@@ -702,7 +773,7 @@ details.more .inner{padding-top:14px}
 /* 版本號用日期：yyyy-mm-dd 再加一個大楷字母。
    同一日出多過一次，就 A → B → C 咁行落去。
    格式排得好，所以直接字串比大細就已經係啱嘅時序。 */
-const APP_VERSION = "2026-09-17B";
+const APP_VERSION = "2026-09-17D";
 
 /* ═══════════════════════════════════════════════════════
    FIRESTORE SECURITY RULES —— 呢度係一份副本，方便日後查閱
@@ -786,6 +857,13 @@ function daysLeft(iso){
   return Math.round((t-n)/86400000);
 }
 function fmtZh(iso){ if(!iso) return "冇日期"; const [y,m,d]=iso.split("-").map(Number); return (y===new Date().getFullYear()?"":y+"年")+m+"月"+d+"日"; }
+function fmtDT(t){
+  if(!t) return null;
+  const d=new Date(t), M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const hm=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+  return { zh:`${d.getMonth()+1}月${d.getDate()}日 ${hm}`, en:`${d.getDate()} ${M[d.getMonth()]} ${hm}` };
+}
+const who = e => String(e||"").split("@")[0] || "—";
 function fmtEn(iso){
   if(!iso) return "No date";
   const [y,m,d]=iso.split("-").map(Number);
@@ -1159,6 +1237,7 @@ function listen(){
 
   unsub.push(F.onSnapshot(F.collection(db,"waste"),s=>{
     waste=s.docs.map(d=>({id:d.id,...d.data()}));
+    renderChips(); if(!$("#wasteSheet").classList.contains("hide")) renderWaste();
   },()=>{}));
 
   unsub.push(F.onSnapshot(F.doc(db,"meta","app"),snap=>{
@@ -1402,9 +1481,11 @@ function renderChips(){
   const list=[{id:"all",zh:"全部",en:"All"},...sections];
   c.innerHTML = list.map(s=>
     `<button class="chip" data-sec="${esc(s.id)}" aria-pressed="${filterSection===s.id}">${bi(s.zh||s.name||"",s.en||"")}</button>`
-  ).join("") + `<button class="chip lib" id="chipLib">${bi("🗂 買開嘅嘢"+(library.length?" ("+library.length+")":""),"Buy again")}</button>`;
+  ).join("") + `<button class="chip lib" id="chipLib">${bi("🗂 買開嘅嘢"+(library.length?" ("+library.length+")":""),"Buy again")}</button>`
++ `<button class="chip lib" id="chipWaste">${bi("🗑 掉咗嘅嘢"+(waste.length?" ("+waste.length+")":""),"Thrown out")}</button>`;
   c.querySelectorAll("[data-sec]").forEach(b=>b.onclick=()=>{ filterSection=b.dataset.sec; renderChips(); render(); });
   $("#chipLib").onclick=openLib;
+  const cw=$("#chipWaste"); if(cw) cw.onclick=openWaste;
 }
 function renderSignals(){
   const n=k=>items.filter(k).length;
@@ -1463,6 +1544,11 @@ function render(){
     html += `<div id="ruleWarn">${bi("⚠ 保安警告：你個 Firestore rules 太鬆，任何人都可能讀到你啲嘢。去 Firebase → Firestore → Rules 改返。",
       "Security warning: your Firestore rules are too open. Anyone could read your data. Fix them in Firebase → Firestore → Rules.")}</div>`;
   }
+  const dups=dupPairs();
+  if(dups.length){
+    html += `<div class="aibar" style="background:var(--soon-bg)"><div class="txt" style="color:var(--soon)">${bi("有 "+dups.length+" 對嘢可能重複咗", dups.length+" possible duplicates")}</div>
+      <button id="dupGo" style="background:var(--soon)">${bi("睇下","Check")}</button></div>`;
+  }
   if(needEye.length && aiReady()){
     html += `<div class="aibar"><div class="txt">${bi("有 "+needEye.length+" 樣嘢影咗相但未有名", needEye.length+" photos have no name yet")}</div>
       <button id="aiGo">${bi("AI 睇相","Read photos")}</button></div>`;
@@ -1493,6 +1579,7 @@ function render(){
     }).join("");
   }
   main.innerHTML=html;
+  const dg=$("#dupGo"); if(dg) dg.onclick=openDup;
   const jg=$("#jobsGo"); if(jg) jg.onclick=()=>{ filterSection="all"; renderChips(); openPlan(); };
   const go=$("#aiGo"); if(go) go.onclick=()=>runAI(needEye);
   const tg=$("#trGo"); if(tg) tg.onclick=()=>runTranslate(needTr);
@@ -1508,8 +1595,9 @@ function jobsHTML(){
   const line=(cls,zh,en,arr)=>arr.length
     ? `<div class="jline ${cls}"><b>${arr.length}</b><span>${bi(zh,en)}</span></div>
        <div style="font-size:12px;color:var(--mute);padding:0 0 4px 29px;line-height:1.45">${esc(arr.slice(0,6).map(nm).join("、"))}${arr.length>6?" …":""}</div>` : "";
-  let h=`<div id="jobs"><div class="hd"><b>${bi("今日要做","TODAY'S JOBS").replace('<span class="e">','<span class="e" style="display:inline;margin-left:6px">')}</b>
-    <span class="dt">${esc(fmtZh(todayISO()))}　${esc(fmtEn(todayISO()))}</span></div>`;
+  let h=`<div id="jobs"><div class="hd">
+    <div class="ttl">${bi("今日要做","TODAY'S JOBS")}</div>
+    <div class="dt">${esc(fmtZh(todayISO()))}<span class="e">${esc(fmtEn(todayISO()))}</span></div></div>`;
   h+=line("bad","掉咗佢","Throw out",toss);
   h+=line("warn","今日要煮","Cook today",today);
   h+=line("","三日內要煮","Cook within 3 days",soon);
@@ -1564,11 +1652,14 @@ const MONTHS=[["一月","Jan"],["二月","Feb"],["三月","Mar"],["四月","Apr"
               ["七月","Jul"],["八月","Aug"],["九月","Sep"],["十月","Oct"],["十一月","Nov"],["十二月","Dec"]];
 const DOW=["日","一","二","三","四","五","六"];
 const pad2=n=>String(n).padStart(2,"0");
-const pkISO=()=>`${pkY}-${pad2(pkM+1)}-${pad2(pkD)}`;
+const pkISO=()=>pkD ? `${pkY}-${pad2(pkM+1)}-${pad2(pkD)}` : "";
+/* 冇預設日期。pkD=0 代表未揀 —— 一定要人親手撳個日子，
+   因為一個錯嘅預設值會靜靜雞產生錯資料，比冇資料更危險。 */
 function setPk(iso){
-  const t=new Date(); let y=t.getFullYear(), m=t.getMonth(), d=t.getDate();
-  if(iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)){ const p=iso.split("-").map(Number); y=p[0]; m=p[1]-1; d=p[2]; }
-  pkY=y; pkM=m; pkD=d; paintPk();
+  const t=new Date();
+  pkY=t.getFullYear(); pkM=t.getMonth(); pkD=0;
+  if(iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)){ const p=iso.split("-").map(Number); pkY=p[0]; pkM=p[1]-1; pkD=p[2]; }
+  paintPk();
 }
 function paintPk(){
   const now=new Date().getFullYear();
@@ -1581,9 +1672,19 @@ function paintPk(){
     clampDay(); paintPk();
   });
   $("#pkMonthBtn").innerHTML=`<span>${MONTHS[pkM][0]}<span class="e">${MONTHS[pkM][1]}</span></span>`;
-  renderCal(); paintFrozen();
+  renderCal(); paintFrozen(); paintOut();
 }
 function clampDay(){ const mx=new Date(pkY,pkM+1,0).getDate(); if(pkD>mx) pkD=mx; }
+function paintOut(){
+  const o=$("#pkOut"), iso=pkISO();
+  const ok=!!iso;
+  $("#fSave").disabled=!ok; $("#fSaveNext").disabled=!ok;
+  o.className = ok?"set":"none";
+  if(!ok){ o.innerHTML=bi("仲未揀到期日 —— 撳上面個日曆","No expiry date picked yet — tap a day above"); return; }
+  const d=daysLeft(iso);
+  o.innerHTML=`<span class="big">${esc(fmtZh(iso))}　${esc(fmtEn(iso))}</span>`
+    + `<span class="sub">${d<0?bi("過咗 "+(-d)+" 日",(-d)+" days ago"):d===0?bi("今日","today"):bi("仲有 "+d+" 日",d+" days from now")}</span>`;
+}
 function renderCal(){
   const first=new Date(pkY,pkM,1).getDay(), n=new Date(pkY,pkM+1,0).getDate();
   const t=new Date(); const tY=t.getFullYear(), tM=t.getMonth(), tD=t.getDate();
@@ -1643,7 +1744,7 @@ function openForm(it, shoot){
   keepThumb = it?(it.thumb||null):null;
   formTouchedDT = !!it;
   $("#formTitle").innerHTML = it?bi("改資料","Edit details"):bi("入貨","Add food");
-  setPk(it?(it.expiry||""):plusDays(7));
+  setPk(it?(it.expiry||""):"");   // 新嘢冇預設日期
   $("#fZh").value = it?nameZh(it):"";
   $("#fEn").value = it?nameEn(it):"";
   $("#fBrand").value = it?brandOf(it):"";
@@ -1680,24 +1781,36 @@ $("#pickLib").onclick=()=>$("#fileLib").click();
 
 async function save(next){
   const expiry=pkISO();
-  if(!expiry){ toast("入返個過期日期","Please set an expiry date"); return; }
+  if(!expiry){
+    $("#pkCal").scrollIntoView({block:"center"});
+    toast("要親手撳返個到期日先儲存得","You must pick the expiry date before saving"); return;
+  }
   if(!formSection){ toast("揀個分區先","Pick an area first"); return; }
   if(!pendingPhoto && !keepThumb && !$("#fZh").value.trim() && !$("#fEn").value.trim()){
     toast("最少要有張相或者一個名","You need at least a photo or a name"); return;
   }
   if(!editingId){
-    const dup=items.filter(i=>i.sectionId===formSection && i.expiry===expiry);
-    if(dup.length){
-      const zh=$("#fZh").value.trim(), en=$("#fEn").value.trim();
-      const names=dup.map(i=>{ const n=nameLines(i); return n?n.top:"未命名"; }).join("、");
-      const same = (zh||en) ? dup.some(i=>(zh&&nameZh(i)===zh)||(en&&nameEn(i)===en)) : true;
-      if(same){
-        const go=await ask({ tz:"係咪重複咗？", te:"Is this a duplicate?",
-          mz:`同一格、同一個到期日，已經有：${names}。你係咪尋日影過，今日唔記得又影多次？如果真係兩件唔同嘅嘢，就照入。`,
-          me:`Same area, same expiry date, already there: ${names}. Did you photograph this yesterday and forget? If they really are two separate items, go ahead.`,
-          yz:"照入，係兩件", ye:"Add anyway" });
-        if(!go) return;
-      }
+    const zh=$("#fZh").value.trim(), en=$("#fEn").value.trim(), br=$("#fBrand").value.trim();
+    const me={zh,en,brand:br,expiry,sectionId:formSection};
+    const hit=items.filter(i=>{
+      const d1=daysLeft(i.expiry), d2=daysLeft(expiry);
+      if(d1===null||d2===null||Math.abs(d1-d2)>3) return false;
+      const b1=norm(brandOf(i)), b2=norm(br);
+      if(b1&&b2&&b1!==b2) return false;
+      if(hasName(me)&&hasName(i))
+        return (zh&&norm(zh)===norm(nameZh(i))) || (en&&norm(en)===norm(nameEn(i)));
+      return i.expiry===expiry && i.sectionId===formSection;
+    });
+    if(hit.length){
+      const lines=hit.map(i=>{
+        const n=nameLines(i), t=fmtDT(ms(i.createdAt));
+        return `・${n?n.top:"未命名"}（${who(i.createdBy||i.updatedBy)} ${t?t.zh:i.addedOn||""} 入嘅，${fmtZh(i.expiry)}到期）`;
+      }).join("\n");
+      const go=await ask({ tz:"係咪重複咗？", te:"Is this a duplicate?",
+        mz:`已經有好似嘅嘢：\n${lines}\n\n係咪已經有人影過？如果真係兩件唔同嘅嘢，就照入。`,
+        me:`Something similar is already logged. Check who added it and when. If these really are two separate items, go ahead.`,
+        yz:"照入，係兩件", ye:"Add anyway" });
+      if(!go) return;
     }
   }
   busy(true,"儲存緊…","Saving…");
@@ -1719,6 +1832,7 @@ async function save(next){
       await F.updateDoc(F.doc(db,"items",editingId),base);
     }else{
       base.createdAt=F.serverTimestamp(); base.libId=""; base.addedOn=todayISO();
+      base.createdBy=(user&&user.email)||"";
       if(pendingPhoto){
         const pid=F.doc(F.collection(db,"photos")).id;
         await F.setDoc(F.doc(db,"photos",pid),{full:pendingPhoto.full});
@@ -1731,7 +1845,7 @@ async function save(next){
     if(next){
       editingId=null; pendingPhoto=null; keepThumb=null;
       $("#fZh").value=""; $("#fEn").value=""; $("#fBrand").value=""; $("#fNote").value="";
-      setPk(plusDays(7)); formOpened=false; formTouchedDT=false; paintDateType(); setPreview(null);
+      setPk(""); formOpened=false; formTouchedDT=false; paintDateType(); setPreview(null);
       setTimeout(()=>$("#fileCam").click(), 150);        // 即刻影下一樣
     }else show("form",false);
   }catch(e){ busy(false); toast("儲存失敗："+(e.code||e.message),"Save failed"); }
@@ -1785,10 +1899,19 @@ async function openDetail(id){
   $("#dWhere").innerHTML = bi(secZh(it.sectionId), secEn(it.sectionId));
   $("#dNote").textContent = it.note||"";
   $("#dDate").value = it.expiry||"";
+  const cT=fmtDT(ms(it.createdAt)), uT=fmtDT(ms(it.updatedAt));
+  const cB=it.createdBy||it.updatedBy||"", uB=it.updatedBy||"";
+  const edited = uT && cT && (Math.abs(ms(it.updatedAt)-ms(it.createdAt))>90000 || (uB&&cB&&uB!==cB));
+  $("#dWho").innerHTML=`<div class="prov">
+    <div class="r"><div class="k">${bi("邊個入貨","Added by")}</div>
+      <div class="v"><span class="t">${esc(cB||"—")}</span>${cT?`<br>${esc(cT.zh)}　${esc(cT.en)}`:(it.addedOn?`<br>${esc(it.addedOn)}`:"")}</div></div>
+    ${edited?`<div class="r"><div class="k">${bi("最後改過","Last edited")}</div>
+      <div class="v"><span class="t">${esc(uB||"—")}</span><br>${esc(uT.zh)}　${esc(uT.en)}</div></div>`:""}
+  </div>`;
   const vd=verdict(it);
   $("#dVerdict").innerHTML =
     `<div class="vnote" style="${vd.cls==="bad"?"background:var(--gone-bg);color:var(--gone)":vd.cls==="warn"?"background:var(--soon-bg);color:var(--soon)":""}">
-       <b>${bi(vd.zh,vd.en)}</b><div style="margin-top:6px">${bi(vd.why[0],vd.why[1])}</div>
+       <div class="ttl">${bi(vd.zh,vd.en)}</div><div style="margin-top:6px">${bi(vd.why[0],vd.why[1])}</div>
        ${vd.notes.map(n=>`<div style="margin-top:6px">${bi(n[0],n[1])}</div>`).join("")}
      </div>`;
   $("#dAte").className = vd.rank<=1 ? "btn ghost" : "btn";
@@ -1823,7 +1946,7 @@ async function retire(it, wasted){
   if(wasted){
     const d=daysLeft(it.expiry);
     await F.addDoc(F.collection(db,"waste"),{
-      zh:nameZh(it), en:nameEn(it), brand:brandOf(it),
+      zh:nameZh(it), en:nameEn(it), brand:brandOf(it), thumb:it.thumb||"",
       sectionId:it.sectionId||"", expiry:it.expiry||"",
       daysOver: d===null?null:Math.max(0,-d), dateType:dateTypeOf(it),
       at:F.serverTimestamp(), by:(user&&user.email)||"" });
@@ -1941,7 +2064,7 @@ function openAgain(id){
   const ln=nameLines(l);
   $("#agName").innerHTML = ln ? bi(ln.top, ln.bot||"Add it again") : bi("再入一次","Add it again");
   $("#agImg").src=l.thumb||"";
-  $("#agDate").value=plusDays(7);
+  $("#agDate").value="";   // 再入貨都唔預設日期
   agSection = sections.some(s=>s.id===l.sectionId) ? l.sectionId : (sections[0]||{}).id;
   paintPicker("#agSections","agSection");
   show("again",true);
@@ -1949,13 +2072,14 @@ function openAgain(id){
 $("#agSave").onclick=async()=>{
   const l=library.find(x=>x.id===againId); if(!l) return;
   const expiry=$("#agDate").value;
-  if(!expiry){ toast("入返個過期日期","Please set an expiry date"); return; }
+  if(!expiry){ toast("要親手入返個到期日","You must enter the expiry date"); return; }
   busy(true,"儲存緊…","Saving…");
   try{
     await F.addDoc(F.collection(db,"items"),{
       zh:l.zh||"", en:l.en||"", brand:l.brand||"", note:"",
       expiry, sectionId:agSection||l.sectionId||"",
       thumb:l.thumb||"", photoId:l.photoId||"", libId:l.id, addedOn:todayISO(),
+      createdBy:(user&&user.email)||"",
       createdAt:F.serverTimestamp(), updatedAt:F.serverTimestamp(), updatedBy:(user&&user.email)||""
     });
     busy(false); toast("入咗貨","Added"); show("again",false); show("lib",false);
@@ -2052,6 +2176,174 @@ async function runTranslate(list){
         `${ok} translated` + (fail?`, ${fail} failed`:""));
 }
 
+/* ═══ 可能重複咗 ═══════════════════════════════════════
+   配對用寫死嘅規則（名 + 到期日相近 + 牌子唔衝突）。
+   AI 唔係用嚟答「係咪同一件」—— 兩個一模一樣嘅包裝佢一樣答唔到。
+   AI 係用嚟搵證據：價錢貼紙嘅數字、批號、摺痕、背景。
+   ═══════════════════════════════════════════════════ */
+const norm = t => String(t||"").toLowerCase().replace(/[\s,，、.。]/g,"");
+function dupPairs(){
+  const out=[];
+  for(let i=0;i<items.length;i++) for(let j=i+1;j<items.length;j++){
+    const a=items[i], b=items[j];
+    if((a.dupOk||[]).indexOf(b.id)>-1 || (b.dupOk||[]).indexOf(a.id)>-1) continue;
+    const da=daysLeft(a.expiry), db=daysLeft(b.expiry);
+    if(da===null||db===null||Math.abs(da-db)>3) continue;
+    const ba=norm(brandOf(a)), bb=norm(brandOf(b));
+    if(ba&&bb&&ba!==bb) continue;                      // 牌子唔同就唔係同一件
+    let ok;
+    if(hasName(a)&&hasName(b)){
+      ok = (nameZh(a)&&norm(nameZh(a))===norm(nameZh(b))) || (nameEn(a)&&norm(nameEn(a))===norm(nameEn(b)));
+    }else{
+      ok = a.expiry===b.expiry && a.sectionId===b.sectionId;   // 未命名就要完全同格同日
+    }
+    if(ok) out.push([a,b]);
+  }
+  return out;
+}
+let dupAI={};
+function openDup(){ renderDup(); show("dup",true); }
+function dupCard(x){
+  const nl=nameLines(x), t=fmtDT(ms(x.createdAt));
+  return `<div class="card">
+    ${x.thumb?`<img src="${x.thumb}" alt="">`:`<div style="aspect-ratio:1;display:grid;place-items:center;font-size:26px;background:var(--card);border-radius:8px;margin-bottom:7px">🍽</div>`}
+    <div class="nm">${nl?bi(nl.top,nl.bot):bi("未命名","Unnamed")}</div>
+    <div class="meta"><b>${esc(who(x.createdBy||x.updatedBy))}</b><br>${t?esc(t.zh):esc(x.addedOn||"—")}<br>${esc(secZh(x.sectionId))}　${esc(fmtZh(x.expiry))}</div>
+  </div>`;
+}
+function renderDup(){
+  const b=$("#dupBody"); if(!b) return;
+  const ps=dupPairs();
+  if(!ps.length){
+    b.innerHTML=`<div class="empty" style="padding:36px 10px"><div class="big">👍</div>
+      <p>冇發現重複。<span class="e">No duplicates found.</span></p></div>`;
+    return;
+  }
+  b.innerHTML=ps.map(([a,c])=>{
+    const k=a.id+"|"+c.id, r=dupAI[k];
+    return `<div class="pair" data-k="${esc(k)}">
+      <div class="two">${dupCard(a)}${dupCard(c)}</div>
+      ${r?`<div class="aiout ${r.same==="no"?"no":""}">
+        <span class="v">${esc(r.same==="yes"?"AI 覺得：好可能係同一件":r.same==="no"?"AI 覺得：好可能係兩件":"AI 分唔到")}</span>
+        ${bi(r.zh||"",r.en||"")}</div>`:""}
+      <div class="acts">
+        ${(a.thumb&&c.thumb&&aiReady())?`<button class="btn plain" data-cmp="${esc(k)}">${bi("AI 比較","Compare")}</button>`:""}
+        <button class="btn ghost" data-notdup="${esc(k)}">${bi("唔係重複","Two items")}</button>
+      </div>
+      <div class="acts">
+        <button class="btn danger" data-del="${esc(a.id)}">${bi("刪左邊嗰件","Delete left")}</button>
+        <button class="btn danger" data-del="${esc(c.id)}">${bi("刪右邊嗰件","Delete right")}</button>
+      </div>
+    </div>`;
+  }).join("");
+  b.querySelectorAll("[data-cmp]").forEach(x=>x.onclick=()=>cmpPair(x.dataset.cmp));
+  b.querySelectorAll("[data-notdup]").forEach(x=>x.onclick=()=>markNotDup(x.dataset.notdup));
+  b.querySelectorAll("[data-del]").forEach(x=>x.onclick=()=>delDup(x.dataset.del));
+}
+async function markNotDup(k){
+  const [x,y]=k.split("|");
+  const a=items.find(i=>i.id===x); if(!a) return;
+  const arr=(a.dupOk||[]).slice();
+  if(arr.indexOf(y)<0) arr.push(y);
+  try{
+    await F.updateDoc(F.doc(db,"items",x),{dupOk:arr});
+    toast("記低咗，唔會再問","Noted — it will not ask again");
+  }catch(e){ toast("記唔到："+(e.code||e.message),"Could not save"); }
+}
+async function delDup(id){
+  const it=items.find(x=>x.id===id); if(!it) return;
+  const nl=nameLines(it);
+  const ok=await ask({ tz:"刪咗呢件？", te:"Delete this one?",
+    mz:`${nl?nl.top:"未命名"} —— 重複入咗先用呢個。唔會記入浪費統計。`,
+    me:"Use this when it was logged twice. It will not be counted as waste.",
+    yz:"刪咗", ye:"Delete", danger:true });
+  if(!ok) return;
+  try{
+    await F.deleteDoc(F.doc(db,"items",id));
+    if(it.photoId && !it.libId){ try{ await F.deleteDoc(F.doc(db,"photos",it.photoId)); }catch(_){} }
+    toast("刪咗","Deleted");
+  }catch(e){ toast("刪唔到："+(e.code||e.message),"Could not delete"); }
+}
+const CMP_PROMPT =
+ "Two photos of food from a household fridge. Decide whether they show the SAME physical package photographed twice, or TWO separate packages that happen to look alike.\n" +
+ "Look for concrete evidence: the numbers on price and weight stickers, batch or date codes, creases, tears, how the wrapping is folded, what is behind and around the item, the lighting and angle.\n" +
+ "Two identical products from the shop look the same — that alone proves nothing. Only specific matching or differing details count.\n" +
+ 'Reply with ONE JSON object and nothing else: {"same":"yes"|"no"|"unsure","zh":"...","en":"..."}\n' +
+ "- zh: one short sentence in Traditional Chinese, Hong Kong usage, naming the evidence you actually saw.\n" +
+ "- en: the same in simple English.\n" +
+ '- Use "unsure" whenever the photos do not show enough detail. Do not guess.\n' +
+ "- You are advising. The people decide.";
+async function cmpPair(k){
+  const [ai,bi2]=k.split("|");
+  const A=items.find(x=>x.id===ai), B=items.find(x=>x.id===bi2);
+  if(!A||!B) return;
+  busy(true,"比緊…","Comparing…");
+  try{
+    const [pa,pb]=await Promise.all([bigPhoto(A),bigPhoto(B)]);
+    const o=await callAI({ model:aiCfg().model, max_tokens:400, temperature:0.1,
+      messages:[{role:"user",content:[
+        {type:"image_url",image_url:{url:pa.url}},
+        {type:"image_url",image_url:{url:pb.url}},
+        {type:"text",text:CMP_PROMPT}
+      ]}]});
+    dupAI[k]={ same:(["yes","no","unsure"].indexOf(o.same)>-1?o.same:"unsure"), zh:String(o.zh||""), en:String(o.en||"") };
+    busy(false); renderDup();
+  }catch(e){
+    busy(false);
+    toast(e.message==="NET"?"接駁唔到 AI。多數係瀏覽器 CORS 擋咗。":"失敗："+e.message,
+          e.message==="NET"?"Could not reach the AI.":"Failed");
+  }
+}
+
+/* ═══ 掉咗嘅嘢 ═══════════════════════════════════════
+   刻意唔顯示邊個掉、邊個買。呢度係睇規律，唔係翻舊賬。
+   ═══════════════════════════════════════════════════ */
+function openWaste(){ renderWaste(); show("waste",true); }
+function renderWaste(){
+  const b=$("#wasteBody"); if(!b) return;
+  if(!waste.length){
+    b.innerHTML=`<div class="empty" style="padding:36px 10px"><div class="big">🗑</div>
+      <p>一件都未掉過。<span class="e">Nothing binned yet.</span></p>
+      <p>撳入去食物度撳「掉咗佢（過咗期）」就會記低。<span class="e">Tap an item, then Thrown out — expired.</span></p></div>`;
+    return;
+  }
+  const ls=waste.slice().sort((a,b2)=>ms(b2.at)-ms(a.at));
+  const cut=Date.now()-30*864e5;
+  const recent=ls.filter(x=>ms(x.at)>=cut);
+  const overs=ls.filter(x=>typeof x.daysOver==="number");
+  const avg=overs.length?Math.round(overs.reduce((a,x)=>a+x.daysOver,0)/overs.length):null;
+  let h=`<div class="wsum">
+    <div><b>${ls.length}</b><span>${esc("總共 Total")}</span></div>
+    <div><b>${recent.length}</b><span>${esc("30 日內 Last 30d")}</span></div>
+    <div><b>${avg===null?"—":avg}</b><span>${esc("平均過咗幾多日 Avg days over")}</span></div>
+  </div>`;
+  let curM=null;
+  for(const w of ls){
+    const t=ms(w.at)?new Date(ms(w.at)):null;
+    const mk=t?`${t.getFullYear()} 年 ${t.getMonth()+1} 月`:"—";
+    if(mk!==curM){ curM=mk; h+=`<div class="lghead">${esc(mk)}</div>`; }
+    const nl=nameLines(w);
+    h+=`<div class="wrow">
+      ${w.thumb?`<img src="${w.thumb}" alt="">`:`<div class="ph">🍽</div>`}
+      <div class="mid">
+        <div class="nm">${nl?bi(nl.top,nl.bot):bi("未命名","Unnamed")}</div>
+        <div class="sub">${esc(secZh(w.sectionId))}　${t?esc(t.getMonth()+1+"月"+t.getDate()+"日掉"):""}${w.dateType==="best"?"　"+esc("此日期前最佳"):""}</div>
+      </div>
+      <div class="over">${typeof w.daysOver==="number"?bi("過咗 "+w.daysOver+" 日",w.daysOver+" days over"):"—"}
+        <button class="mini del" data-rmw="${esc(w.id)}" aria-label="刪走呢條記錄 Remove" style="margin-top:2px">✕</button></div>
+    </div>`;
+  }
+  b.innerHTML=h;
+  b.querySelectorAll("[data-rmw]").forEach(x=>x.onclick=async()=>{
+    const ok=await ask({ tz:"刪走呢條記錄？", te:"Remove this record?",
+      mz:"撳錯咗先用。啲統計會變返。", me:"Only if it was logged by mistake. The stats will change.",
+      yz:"刪走", ye:"Remove", danger:true });
+    if(!ok) return;
+    try{ await F.deleteDoc(F.doc(db,"waste",x.dataset.rmw)); toast("刪咗","Removed"); }
+    catch(e){ toast("刪唔到："+(e.code||e.message),"Could not remove"); }
+  });
+}
+
 /* ═══ 煮嘢食計劃 ═══════════════════════════════════════
    分組同判斷全部由 verdict() 決定。AI 只會收到「未過期」嗰批，
    過咗期嗰啲根本唔會傳出去，佢想開綠燈都冇機會。
@@ -2118,11 +2410,13 @@ function renderPlan(){
 
   const wk=wasteStats();
   if(wk.n) h+=`<div class="vnote" style="margin-top:18px;background:var(--soon-bg);color:var(--soon)">
-    <b>${bi("最近 30 日掉咗 "+wk.n+" 樣", wk.n+" items thrown out in the last 30 days")}</b>
-    <div style="margin-top:6px">${bi(wk.zh,wk.en)}</div></div>`;
+    <div class="ttl">${bi("最近 30 日掉咗 "+wk.n+" 樣", wk.n+" items thrown out in the last 30 days")}</div>
+    <div style="margin-top:6px">${bi(wk.zh,wk.en)}</div>
+    <button id="planWaste" style="margin-top:9px;font-size:12.5px;text-decoration:underline;color:inherit">${bi("睇晒掉咗啲乜","See everything that was binned")}</button></div>`;
 
   $("#planBody").innerHTML=h;
   const b=$("#planAI"); if(b) b.onclick=()=>askDishes(safe);
+  const pw=$("#planWaste"); if(pw) pw.onclick=()=>{ show("plan",false); openWaste(); };
 }
 function planHTML(p){
   return `<div style="margin-top:18px">${(p.plan||[]).map(x=>`<div class="dish">
@@ -2245,7 +2539,9 @@ function buildExport(){
       count:items.filter(i=>i.sectionId===x.id).length})),
     items: items.map(i=>({ zh:nameZh(i), en:nameEn(i), brand:brandOf(i),
       section:secOf(i.sectionId), expiry:i.expiry||"", daysLeft:daysLeft(i.expiry),
-      dateType:dateTypeOf(i), opened:!!i.opened, note:i.note||"", verdict:verdict(i).key })),
+      dateType:dateTypeOf(i), opened:!!i.opened, note:i.note||"", verdict:verdict(i).key,
+      addedBy:i.createdBy||i.updatedBy||"", addedOn:i.addedOn||"",
+      addedAt: ms(i.createdAt)?new Date(ms(i.createdAt)).toISOString():"" })),
     buyAgain: library.map(l=>({ zh:nameZh(l), en:nameEn(l), brand:brandOf(l),
       timesBought:l.times||1, lastUsed:ms(l.lastUsed)?new Date(ms(l.lastUsed)).toISOString().slice(0,10):"" })),
     thrownOut: waste.map(w=>({ zh:nameZh(w), en:nameEn(w), section:secOf(w.sectionId),
@@ -2341,7 +2637,7 @@ $("#signout").onclick=async()=>{
 };
 
 /* ═══ sheet 開關 ═════════════════════════════════════ */
-const SHEETS=["form","det","lib","again","set","plan"];
+const SHEETS=["form","det","lib","again","set","plan","waste","dup"];
 function show(k,on){
   if(k==="form") $("#formBar").classList.toggle("hide", !on);
   $("#"+k+"Scrim").classList.toggle("hide",!on);
