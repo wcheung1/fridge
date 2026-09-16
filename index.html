@@ -108,6 +108,82 @@ main{padding:8px 16px calc(112px + var(--safe-b))}
 .kids{background:var(--soon-bg);border-radius:10px;padding:11px 13px;font-size:12.5px;color:var(--soon);line-height:1.5;margin-bottom:16px;font-weight:600}
 .kids .e{font-size:11.5px;font-weight:500}
 
+/* ── 入貨版面：唔使 scroll，重要嘢喺右下角 ── */
+#formSheet{padding-bottom:calc(96px + var(--safe-b))}
+.ftop{display:flex;gap:12px;margin-bottom:14px}
+.shotpad{
+  width:92px;height:92px;flex:none;border-radius:12px;border:1.5px dashed var(--rule);
+  background:var(--chill);display:grid;place-items:center;overflow:hidden;position:relative
+}
+.shotpad img{width:100%;height:100%;object-fit:contain;display:block}
+.shotpad .ic{font-size:26px;color:var(--brand)}
+.shotpad .re{position:absolute;right:3px;bottom:3px;background:rgba(10,20,26,.7);color:#fff;font-size:9.5px;padding:2px 6px;border-radius:6px}
+.ftop .right{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+#pickLib{align-self:flex-start;font-size:12px;color:var(--brand);text-decoration:underline;padding:2px 0}
+.ftop .picker{gap:6px}
+.ftop .pk{padding:6px 11px;font-size:13px}
+.ftop .pk .e{font-size:9px}
+
+.monthbtn{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px;border-radius:11px;border:1px solid var(--rule);background:var(--card);
+  font-size:16px;font-weight:700;margin:9px 0
+}
+.monthbtn .e{font-size:11px;font-weight:500;opacity:.6;display:inline;margin-left:5px}
+.monthbtn::after{content:"▾";font-size:12px;opacity:.5}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal .dow{text-align:center;font-size:10.5px;color:var(--mute);padding:2px 0}
+.cal button{
+  aspect-ratio:1;border-radius:9px;font-size:14.5px;font-variant-numeric:tabular-nums;
+  display:grid;place-items:center;background:var(--chill);color:var(--ink)
+}
+.cal button.pastday{opacity:.4}
+.cal button.today{box-shadow:inset 0 0 0 1.5px var(--brand);font-weight:700}
+.cal button[aria-pressed="true"]{background:var(--brand);color:#fff;font-weight:700;box-shadow:none}
+.cal .pad{visibility:hidden}
+
+.actbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:45;display:flex;gap:9px;
+  padding:10px 14px calc(10px + var(--safe-b));background:var(--card);
+  border-top:1px solid var(--rule)
+}
+@media (min-width:640px){
+  .actbar{left:50%;right:auto;transform:translateX(-50%);width:540px;border-radius:0 0 18px 18px}
+}
+.actbar .btn{padding:13px 8px}
+.actbar .left{flex:0 0 36%}
+.actbar .right{flex:1}
+.actbar .right .z{font-size:15px}
+
+#monthPick{position:fixed;inset:0;z-index:55;background:var(--card);display:flex;flex-direction:column;padding:calc(var(--safe-t) + 14px) 14px calc(14px + var(--safe-b))}
+#monthPick .hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+#monthPick .hd b{flex:1;font-size:17px}
+.mgrid{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.mgrid button{
+  border-radius:12px;background:var(--chill);font-size:17px;font-weight:700;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;line-height:1.2
+}
+.mgrid button .e{font-size:10.5px;font-weight:500;opacity:.6}
+.mgrid button[aria-pressed="true"]{background:var(--brand);color:#fff}
+.mgrid button[aria-pressed="true"] .e{opacity:.85}
+
+/* 今日要做 — 全家都見到嘅板 */
+#jobs{background:var(--card);border:2px solid var(--brand);border-radius:var(--r);padding:14px;margin-bottom:12px}
+#jobs .hd{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
+#jobs .hd b{font-size:15px;font-weight:700;letter-spacing:-.01em}
+#jobs .hd .e{font-size:10px;letter-spacing:.06em;opacity:.6}
+#jobs .hd .dt{margin-left:auto;font-size:11px;color:var(--mute)}
+.jline{display:flex;align-items:center;gap:9px;font-size:13.5px;padding:5px 0;line-height:1.3}
+.jline b{font-variant-numeric:tabular-nums;font-size:16px;min-width:20px;text-align:right}
+.jline.bad{color:var(--gone)} .jline.warn{color:var(--soon)}
+.jline .e{font-size:11px;opacity:.7}
+#jobs .memo{background:var(--soon-bg);border-radius:9px;padding:9px 11px;margin-top:10px;font-size:13px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+#jobs .memo .who{display:block;font-size:10.5px;color:var(--mute);margin-top:5px}
+#jobs .dishes{margin-top:10px;font-size:13px;line-height:1.5}
+#jobs .dishes b{display:block;font-size:11px;color:var(--brand);letter-spacing:.05em;margin-bottom:4px;min-width:0;text-align:left}
+#jobs .go{width:100%;margin-top:12px;padding:11px;border-radius:10px;background:var(--brand);color:#fff;font-size:14px;font-weight:600;line-height:1.2}
+#jobs .go .e{font-size:9.5px;opacity:.85}
+
 /* 保安警告條 */
 #ruleWarn{background:var(--gone-bg);border:1px solid var(--gone);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;font-size:13.5px;color:var(--gone);font-weight:600}
 #ruleWarn .e{font-weight:500}
@@ -371,38 +447,39 @@ details.more .inner{padding-top:14px}
     <button class="x" data-close="form" aria-label="閂 Close">✕</button>
   </div>
 
-  <div class="shot">
-    <img id="fPreview" alt="" class="hide">
-    <div class="shotbtns">
-      <button class="big-b" id="btnCam"><span class="z">📷 影相</span><span class="e">Take photo</span></button>
-      <button class="big-b" id="btnLib"><span class="z">🖼 揀相</span><span class="e">Choose photo</span></button>
+  <div class="ftop">
+    <button type="button" id="shotBtn" class="shotpad" aria-label="影相 Take photo">
+      <img id="fPreview" alt="" class="hide"><span class="ic" id="shotIcon">📷</span><span class="re hide" id="shotRe">重影</span>
+    </button>
+    <div class="right">
+      <div class="flab" style="margin-bottom:2px"><span class="z">放喺邊</span><span class="e">Where it is kept</span></div>
+      <div class="picker" id="fSections"></div>
+      <button type="button" id="pickLib">🖼 揀相簿嘅相　Choose from photos</button>
     </div>
   </div>
 
-  <div class="fld" style="margin-bottom:8px">
-    <div class="flab"><span class="z">過期日期</span><span class="e">Expiry date</span></div>
-    <input id="fDate" type="date">
-  </div>
-  <div class="quick" id="quickDates"></div>
-
-  <div class="fld" style="margin-top:16px">
-    <div class="flab"><span class="z">包裝上面點寫？（分得清安全同品質）</span><span class="e">What does the pack say? This decides the safety advice</span></div>
-    <div class="picker" id="fDateType"></div>
-  </div>
-  <div class="fld">
-    <button type="button" id="fOpened" class="pk" aria-pressed="false" style="width:100%">
-      <span class="z">已經開咗封</span><span class="e">Already opened — the printed date no longer applies</span>
-    </button>
-  </div>
-
-  <div class="fld" style="margin-top:18px">
-    <div class="flab"><span class="z">放喺邊</span><span class="e">Where it is kept</span></div>
-    <div class="picker" id="fSections"></div>
-  </div>
+  <div class="flab"><span class="z">到期日</span><span class="e">Expiry date</span></div>
+  <div class="quick" id="pkYears"></div>
+  <button type="button" id="pkMonthBtn" class="monthbtn"></button>
+  <div class="cal" id="pkCal"></div>
+  <p class="hintline" id="dtHint" style="margin:9px 0 0"></p>
 
   <details class="more" id="moreBox">
-    <summary><span><span class="z">名同備註（可以唔填，AI 會幫你填）</span><span class="e">Name &amp; notes — optional, AI can fill these in</span></span></summary>
+    <summary><span><span class="z">名、牌子、其他（可以唔掂，AI 會填）</span><span class="e">Name, brand, other — optional, the AI fills these in</span></span></summary>
     <div class="inner">
+      <div class="fld">
+        <div class="flab"><span class="z">包裝上面點寫？</span><span class="e">What the pack says — this decides the safety advice</span></div>
+        <div class="picker" id="fDateType"></div>
+      </div>
+      <div class="fld">
+        <button type="button" id="fOpened" class="pk" aria-pressed="false" style="width:100%">
+          <span class="z">已經開咗封</span><span class="e">Already opened — the printed date no longer applies</span>
+        </button>
+      </div>
+      <div class="fld hide" id="frozenBox">
+        <div class="flab"><span class="z">真正入急凍嘅日期</span><span class="e">Actual freeze date — leave blank and the logging date is used</span></div>
+        <input id="fFrozen" type="date">
+      </div>
       <div class="fld">
         <div class="flab"><span class="z">中文名</span><span class="e">Chinese name</span></div>
         <input id="fZh" type="text" list="zhHints" placeholder="西蘭花" autocomplete="off">
@@ -421,16 +498,23 @@ details.more .inner{padding-top:14px}
         <input id="fBrand" type="text" placeholder="Kirkland" autocomplete="off">
       </div>
       <div class="fld">
-        <div class="flab"><span class="z">備註（數量等等）</span><span class="e">Notes — quantity etc.</span></div>
+        <div class="flab"><span class="z">備註</span><span class="e">Notes</span></div>
         <textarea id="fNote" rows="1" placeholder="2 盒　2 boxes"></textarea>
       </div>
+      <button type="button" id="fDelete" class="btn danger hide"><span class="z">刪除（入錯咗）</span><span class="e">Delete — entered by mistake</span></button>
     </div>
   </details>
-
-  <button id="fSave" class="btn"><span class="z">儲存</span><span class="e">Save</span></button>
-  <div class="brow" id="nextRow"><button id="fSaveNext" class="btn ghost"><span class="z">儲存，跟住入下一樣</span><span class="e">Save and add the next one</span></button></div>
-  <div class="brow hide" id="delRow"><button id="fDelete" class="btn danger"><span class="z">刪除（入錯咗）</span><span class="e">Delete — entered by mistake</span></button></div>
 </section>
+<div id="formBar" class="actbar hide">
+  <button id="fSave" class="btn plain left"><span class="z">儲存</span><span class="e">Save</span></button>
+  <button id="fSaveNext" class="btn right"><span class="z">儲存，再影下一樣</span><span class="e">Save, shoot the next one</span></button>
+</div>
+
+<div id="monthPick" class="hide">
+  <div class="hd"><b id="mpTitle">—</b><button class="x" id="mpClose" aria-label="閂 Close">✕</button></div>
+  <div class="mgrid" id="mpGrid"></div>
+</div>
+
 
 <!-- 詳情 -->
 <div id="detScrim" class="scrim hide"></div>
@@ -511,6 +595,15 @@ details.more .inner{padding-top:14px}
     <button class="x" data-close="plan" aria-label="閂 Close">✕</button>
   </div>
   <div id="planBody"></div>
+  <div class="ghead" style="margin-top:24px"><span class="z">俾全家睇</span><span class="e">Share with the household</span></div>
+  <p class="hintline">留言同 AI 諗嘅餸會即時出現喺每一部電話嘅主畫面頂部 —— 姐姐同婆婆開個 app 就見到，唔使你逐個講。<span class="e">The note and the dish plan appear at the top of everyone's screen instantly.</span></p>
+  <div class="fld">
+    <div class="flab"><span class="z">留言（例如：今晚解凍梅頭）</span><span class="e">Note for everyone — e.g. defrost the pork collar tonight</span></div>
+    <textarea id="boardNote" rows="2" placeholder="今晚解凍梅頭　Defrost the pork collar tonight"></textarea>
+  </div>
+  <button id="boardSave" class="btn ghost"><span class="z">出街，全家即刻見到</span><span class="e">Post it — everyone sees it now</span></button>
+  <div class="brow"><button id="boardCopy" class="btn plain"><span class="z">抄做文字（WhatsApp 用）</span><span class="e">Copy as text for WhatsApp</span></button></div>
+  <div class="brow"><button id="boardClear" class="btn danger"><span class="z">清走個板</span><span class="e">Clear the board</span></button></div>
 </section>
 
 <!-- 設定 -->
@@ -609,7 +702,7 @@ details.more .inner{padding-top:14px}
 /* 版本號用日期：yyyy-mm-dd 再加一個大楷字母。
    同一日出多過一次，就 A → B → C 咁行落去。
    格式排得好，所以直接字串比大細就已經係啱嘅時序。 */
-const APP_VERSION = "2026-09-16D";
+const APP_VERSION = "2026-09-17B";
 
 /* ═══════════════════════════════════════════════════════
    FIRESTORE SECURITY RULES —— 呢度係一份副本，方便日後查閱
@@ -911,7 +1004,8 @@ const AI_PROMPT =
  "6. \"brand\": the brand printed on the package, only when clearly legible. Otherwise an empty string.\n" +
  "7. If several foods are visible, name the most prominent one.\n" +
  "8. If you cannot tell what it is, use zh \"未知\" and en \"Unknown\".\n" +
- "9. Also add a \"dateType\" field. Look at the date label printed on the pack: if it says 此日期或之前食用 / Use by, answer \"use\". If it says 此日期前最佳 / Best before, answer \"best\". If you cannot read which one it is, answer \"\" (empty). Do not guess from the kind of food — only report what is actually printed.";
+ "9. Also add a \"cat\" field, one of: cured (ham, bacon, sausage, lunch meat), mince, poultry, shell (prawn, crab, shellfish), fish_fat (salmon, tuna, mackerel, whitebait), fish_lean, chop (chops, ribs, steaks), roast (large cuts), packed (commercially frozen dumplings, udon, ready meals), bread, veg, cooked, other.\n" +
+ "10. Also add a \"dateType\" field. Look at the date label printed on the pack: if it says 此日期或之前食用 / Use by, answer \"use\". If it says 此日期前最佳 / Best before, answer \"best\". If you cannot read which one it is, answer \"\" (empty). Do not guess from the kind of food — only report what is actually printed.";
 
 /* 已經用過嘅名 — 餵返俾模型，等佢重用而唔係每次創作新講法 */
 function knownNames(){
@@ -973,7 +1067,8 @@ async function askVision(dataUrl, known){
     ]}]
   });
   const dt = (o.dateType==="use"||o.dateType==="best") ? o.dateType : "";
-  return { zh:clean(o.zh), en:clean(o.en), brand:clean(o.brand), dateType:dt };
+  const ct = (typeof o.cat==="string" && FREEZE_Q[o.cat]) ? o.cat : "";
+  return { zh:clean(o.zh), en:clean(o.en), brand:clean(o.brand), dateType:dt, cat:ct };
 }
 
 /* 純翻譯，唔會再睇幅相 */
@@ -1006,7 +1101,7 @@ $("#aiTest").onclick=async()=>{
 /* ═══ Firebase ═══════════════════════════════════════ */
 const V="10.12.5";
 let db,auth,user=null,F=null,A=null;
-let items=[],sections=[],library=[],waste=[],unsub=[];
+let items=[],sections=[],library=[],waste=[],unsub=[],board={};
 let filterSection="all", filterSignal="all", term="", seeded=false;
 
 if(!firebaseConfig.apiKey || firebaseConfig.apiKey.indexOf("PASTE")===0){
@@ -1042,7 +1137,7 @@ async function boot(){
     $("#app").classList.toggle("hide",!u);
     unsub.forEach(f=>f()); unsub=[];
     if(u){ $("#whoBox").innerHTML=bi(u.email||"—","Signed in on this device"); listen(); checkRules(); }
-    else { items=[]; sections=[]; library=[]; waste=[]; }
+    else { items=[]; sections=[]; library=[]; waste=[]; board={}; }
   });
 }
 function listen(){
@@ -1056,6 +1151,11 @@ function listen(){
     items=s.docs.map(d=>({id:d.id,...d.data()}));
     renderHints(); renderSecList(); render();
   },e=>toast("讀唔到食物："+e.code,"Could not load food")));
+
+  unsub.push(F.onSnapshot(F.doc(db,"meta","board"),snap=>{
+    board = snap.exists() ? snap.data() : {};
+    render(); if(!$("#planSheet").classList.contains("hide")) renderPlan();
+  },()=>{}));
 
   unsub.push(F.onSnapshot(F.collection(db,"waste"),s=>{
     waste=s.docs.map(d=>({id:d.id,...d.data()}));
@@ -1121,12 +1221,83 @@ const STORAGE_NOTE={
     "Dry goods usually carry a Best Before date and are often fine past it — but check for mould, a rancid smell, insects, or a swollen can."]
 };
 
+/* 急凍品質窗 —— 數字嚟自 USDA FSIS / FoodSafety.gov 冷藏冷凍儲存表。
+   官方立場：−18°C 之下食物幾乎無限期保持安全，呢啲月數「只關乎品質」。
+   所以呢度冇一個叫「過期」嘅位，只有「品質開始走下坡」。
+   https://www.foodsafety.gov/food-safety-charts/cold-food-storage-charts */
+const FREEZE_Q={
+  cured:   {mo:2,  zh:"火腿、煙肉、腸仔、午餐肉",  en:"Ham, bacon, sausage, lunch meat"},
+  mince:   {mo:4,  zh:"免治肉",                 en:"Minced or ground meat"},
+  fish_fat:{mo:3,  zh:"油脂多嘅魚（三文魚、吞拿、銀魚）", en:"Fatty fish (salmon, tuna, whitebait)"},
+  cooked:  {mo:3,  zh:"已經煮熟嘅嘢",            en:"Cooked dishes and leftovers"},
+  bread:   {mo:3,  zh:"包、饅頭、餅底",           en:"Bread and buns"},
+  chop:    {mo:6,  zh:"豬扒、排骨、牛扒",         en:"Chops, ribs, steaks"},
+  fish_lean:{mo:6, zh:"瘦身魚（魚柳）",           en:"Lean fish fillets"},
+  roast:   {mo:8,  zh:"大件肉（腱肉、梅頭、豬𦟌）", en:"Roasting cuts"},
+  poultry: {mo:9,  zh:"雞、鴨（切件）",           en:"Chicken and duck pieces"},
+  veg:     {mo:10, zh:"急凍菜、粟米、豆",         en:"Frozen vegetables"},
+  shell:   {mo:12, zh:"蝦、蟹、貝類",            en:"Prawns, crab, shellfish"},
+  packed:  {mo:0,  zh:"廠家急凍製品（餃子、烏冬）", en:"Commercially frozen items"},
+  other:   {mo:6,  zh:"其他",                   en:"Other"}
+};
+/* AI 會俾個 cat，冇嘅話用關鍵字估。次序有意思：先認加工肉同家禽，
+   否則「雞脾」會俾「脾/大件肉」搶咗去。 */
+function catOf(o){
+  if(o.cat && FREEZE_Q[o.cat]) return o.cat;
+  const n=(nameZh(o)+" "+nameEn(o)+" "+brandOf(o)).toLowerCase();
+  if(/火腿|煙肉|培根|腸仔|香腸|午餐肉|臘|ham|bacon|sausage|salami|luncheon/.test(n)) return "cured";
+  if(/免治|肉碎|絞|mince|ground/.test(n)) return "mince";
+  if(/雞|鴨|鵝|火雞|chicken|duck|goose|turkey|poultry/.test(n)) return "poultry";
+  if(/蝦|蟹|貝|蜆|帶子|鮑|prawn|shrimp|crab|scallop|clam|shellfish/.test(n)) return "shell";
+  if(/三文魚|吞拿|鯖|沙甸|銀魚|鰻|salmon|tuna|mackerel|sardine|whitebait|eel/.test(n)) return "fish_fat";
+  if(/魚|fish|fillet/.test(n)) return "fish_lean";
+  if(/餃|雲吞|燒賣|包點|烏冬|拉麵|意粉|薯條|dumpling|wonton|udon|noodle|pasta|fries|pizza/.test(n)) return "packed";
+  if(/饅頭|花卷|麵包|多士|bun|bread|mantou|toast|roll/.test(n)) return "bread";
+  if(/扒|排骨|肋|扒|steak|chop|rib|cutlet/.test(n)) return "chop";
+  if(/腱|梅頭|𦟌|脢|腩|roast|shank|collar|shoulder|belly|loin/.test(n)) return "roast";
+  if(/菜|粟米|玉米|豆|薯|蘿蔔|veg|corn|pea|bean|potato|carrot|broccoli/.test(n)) return "veg";
+  if(/湯|餸|飯|燉|滷|soup|stew|cooked|curry/.test(n)) return "cooked";
+  return "other";
+}
+/* 入貨嗰日就係「我知道佢喺雪櫃出現嗰日」。冇人答得到真正入櫃時間。 */
+const loggedOn = it => it.frozenOn || it.addedOn ||
+  (ms(it.createdAt) ? new Date(ms(it.createdAt)-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10) : "");
+
+const monthsSince = iso => {
+  if(!iso) return 0;
+  const [y,m,dd]=iso.split("-").map(Number);
+  const t=new Date(y,m-1,dd), n=new Date();
+  return Math.max(0, Math.round((n-t)/86400000/30.44));
+};
 function verdict(it){
   const d=daysLeft(it.expiry);
   const opened=!!it.opened, type=dateTypeOf(it);
   const notes=[];
-  if(opened) notes.push(["已開封，包裝上嘅日期唔再作準。要跟生產商嘅開封後指示，例如「開封後冷藏，7 日內食完」。",
-    "Opened, so the printed date no longer applies. Follow the after-opening instructions on the pack."]);
+  const st=storageOf(sec(it.sectionId));
+  /* 急凍嘅關鍵：喺未過期之前入咗櫃，印上去嗰個就係「雪櫃日期」，
+     凍咗之後唔再作準。−18°C 細菌唔生長，安全上冇死線 —— 前提係
+     中間一次都冇解凍過。冇記低入櫃日期，個 app 就唔知，只好當最壞。 */
+  const got=loggedOn(it);
+  if(st==="freeze" && !opened && got && it.expiry && got<=it.expiry){
+    const mo=monthsSince(got), c=catOf(it), Q=FREEZE_Q[c];
+    if(c==="packed"){
+      return {...(d!==null&&d<0?V_JUDGE:d===null?V_NONE:d<=T_SOON?V_SOON:d<=T_WATCH?V_WATCH:V_OK), d, frozen:true, notes, why:[
+        `廠家急凍製品，包裝上面 ${it.expiry} 本身就係急凍狀態嘅日期，照跟。`,
+        `Commercially frozen — the printed ${it.expiry} already assumes freezer storage, so follow it.`]};
+    }
+    const over = Q.mo && mo>Q.mo;
+    return {...(over?V_SOON:mo>=Q.mo*0.75?V_WATCH:V_OK), d, frozen:true, notes, why:[
+      `${got} 入咗雪櫃，嗰陣仲未過期，所以印住 ${it.expiry} 嗰個係雪櫃日期，凍咗之後就唔再作準。USDA 講明：−18°C 之下食物幾乎無限期保持安全，剩低淨係品質問題。呢類（${Q.zh}）建議 ${Q.mo} 個月內食完，而家凍咗 ${mo} 個月${over?"，已經過咗品質期，唔會食壞人但會乾同淡味，快啲食":""}。`,
+      `Logged ${got}, before its date, so the printed ${it.expiry} is a chilled date and no longer applies. USDA: food kept at −18°C stays safe almost indefinitely — only quality declines. For ${Q.en.toLowerCase()} the quality window is about ${Q.mo} months; this has been frozen ${mo}${over?", past that window — still safe, but drier and blander":""}.`]};
+  }
+  if(st==="freeze" && d!==null && d<0 && got && got>it.expiry){
+    notes.push([`入貨嗰日（${got}）已經過咗期，所以凍極都救唔返 —— 細菌同毒素早就生咗，低溫只係將佢哋凍住。除非你肯定佢係過期之前已經喺急凍格（例如婆婆買咗返嚟你遲咗影相），咁就去「改資料 → 其他」填返真正入櫃日期。`,
+      `It was already past its date when it was logged (${got}), so freezing cannot rescue it — the bacteria and toxins were already there. If you are sure it was in the freezer before the date, set the real freeze date under Edit.`]);
+  }
+  if(st==="freeze" && d!==null && d<0 && !got){
+    notes.push([`呢件嘢喺急凍格，但個 app 唔知佢幾時入櫃（舊資料冇記錄）。如果係未過期就已經喺急凍格、而且一直冇解凍，安全上多數冇事 —— 個 app 唔知道，所以當咗最壞打算。去「改資料 → 其他」填返入櫃日期就會重新計。`,
+      `This is in the freezer but the app has no record of when it went in. If it was frozen before its date and never thawed it is most likely fine — the app cannot know, so it assumes the worst. Set the freeze date under Edit and it will be recalculated.`]);
+  }
   if(d===null) return {...V_NONE, d, notes, why:["冇入到期日。","No expiry date recorded."]};
   if(d<0){
     if(opened) return {...V_TOSS, d, notes, why:["已經開咗封，而且過咗期。唔好賭。","Opened and past its date. Do not risk it."]};
@@ -1287,7 +1458,7 @@ function render(){
                    ...library.filter(halfNamed).map(o=>({o,col:"library"}))];
   const rows=visible(), main=$("#list");
 
-  let html="";
+  let html=jobsHTML();
   if(rulesState==="open"){
     html += `<div id="ruleWarn">${bi("⚠ 保安警告：你個 Firestore rules 太鬆，任何人都可能讀到你啲嘢。去 Firebase → Firestore → Rules 改返。",
       "Security warning: your Firestore rules are too open. Anyone could read your data. Fix them in Firebase → Firestore → Rules.")}</div>`;
@@ -1322,10 +1493,36 @@ function render(){
     }).join("");
   }
   main.innerHTML=html;
+  const jg=$("#jobsGo"); if(jg) jg.onclick=()=>{ filterSection="all"; renderChips(); openPlan(); };
   const go=$("#aiGo"); if(go) go.onclick=()=>runAI(needEye);
   const tg=$("#trGo"); if(tg) tg.onclick=()=>runTranslate(needTr);
   main.querySelectorAll(".row").forEach(r=>r.onclick=()=>openDetail(r.dataset.id));
 }
+/* ═══ 今日要做 —— 主畫面頂部，全家同一份 ═══════════════ */
+function jobsHTML(){
+  const all=items.map(o=>({o,v:verdict(o)}));
+  const toss=all.filter(e=>e.v.rank<=1), today=all.filter(e=>e.v.key==="today"), soon=all.filter(e=>e.v.key==="soon");
+  const note=(board.note||"").trim(), plan=board.plan;
+  if(!toss.length && !today.length && !soon.length && !note && !plan) return "";
+  const nm=e=>{ const n=nameLines(e.o); return n?n.top:"未命名"; };
+  const line=(cls,zh,en,arr)=>arr.length
+    ? `<div class="jline ${cls}"><b>${arr.length}</b><span>${bi(zh,en)}</span></div>
+       <div style="font-size:12px;color:var(--mute);padding:0 0 4px 29px;line-height:1.45">${esc(arr.slice(0,6).map(nm).join("、"))}${arr.length>6?" …":""}</div>` : "";
+  let h=`<div id="jobs"><div class="hd"><b>${bi("今日要做","TODAY'S JOBS").replace('<span class="e">','<span class="e" style="display:inline;margin-left:6px">')}</b>
+    <span class="dt">${esc(fmtZh(todayISO()))}　${esc(fmtEn(todayISO()))}</span></div>`;
+  h+=line("bad","掉咗佢","Throw out",toss);
+  h+=line("warn","今日要煮","Cook today",today);
+  h+=line("","三日內要煮","Cook within 3 days",soon);
+  if(plan && plan.plan && plan.plan.length){
+    h+=`<div class="dishes"><b>${esc("今餐煮咩　WHAT TO COOK")}</b>`
+      + plan.plan.map((x,i)=>`<div>${i+1}. ${esc(x.zh||"")}<span class="e" style="display:block;font-size:11.5px;opacity:.7">${esc(x.en||"")}</span></div>`).join("")
+      + `</div>`;
+  }
+  if(note) h+=`<div class="memo">${esc(note)}<span class="who">${esc((board.noteBy||"")+(ms(board.noteAt)?"　"+new Date(ms(board.noteAt)).toLocaleDateString():""))}</span></div>`;
+  h+=`<button class="go" id="jobsGo">${bi("睇晒成張單同煮嘢食計劃","See the full list and cooking plan")}</button></div>`;
+  return h;
+}
+
 function renderHints(){
   const n=[...new Set(items.map(nameZh).filter(Boolean))].slice(0,60);
   $("#zhHints").innerHTML=n.map(v=>`<option value="${esc(v)}">`).join("");
@@ -1339,7 +1536,7 @@ function fillQuick(hostSel,targetSel){
   h.innerHTML=QUICK.map(([z,e,n])=>`<button type="button" class="qb" data-d="${n}">${bi(z,e)}</button>`).join("");
   h.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{ $(targetSel).value=plusDays(+b.dataset.d); });
 }
-fillQuick("#quickDates","#fDate"); fillQuick("#dQuick","#dDate"); fillQuick("#agQuick","#agDate");
+fillQuick("#dQuick","#dDate"); fillQuick("#agQuick","#agDate");
 
 /* ═══ 分區揀掣 section pickers ═══════════════════════ */
 let formSection=null, agSection=null;
@@ -1348,56 +1545,133 @@ function renderPickers(){
   paintPicker("#agSections","agSection");
 }
 function paintPicker(sel,which){
+  if(sel==="#fSections" && typeof paintFrozen==="function") setTimeout(paintFrozen,0);
   const p=$(sel); if(!p) return;
   if(!sections.length){ p.innerHTML=`<span style="color:var(--mute);font-size:13.5px">${bi("仲未有分區，撳 ⚙ 加一個。","No areas yet — tap the gear to add one.")}</span>`; return; }
   let cur = which==="formSection"?formSection:agSection;
   if(!sections.some(s=>s.id===cur)){ cur=sections[0].id; if(which==="formSection") formSection=cur; else agSection=cur; }
   p.innerHTML=sections.map(s=>`<button type="button" class="pk" data-s="${esc(s.id)}" aria-pressed="${cur===s.id}">${bi(s.zh||s.name||"",s.en||"")}</button>`).join("");
   p.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{
-    if(which==="formSection") formSection=b.dataset.s; else agSection=b.dataset.s;
+    if(which==="formSection"){ formSection=b.dataset.s; paintFrozen(); } else agSection=b.dataset.s;
     paintPicker(sel,which);
   });
 }
 
 /* ═══ 入貨 / 改資料 add & edit ═══════════════════════ */
 let editingId=null, pendingPhoto=null, keepThumb=null, formDateType="use", formOpened=false;
+let pkY=0, pkM=0, pkD=0;                       // 揀緊嘅年 / 月 / 日
+const MONTHS=[["一月","Jan"],["二月","Feb"],["三月","Mar"],["四月","Apr"],["五月","May"],["六月","Jun"],
+              ["七月","Jul"],["八月","Aug"],["九月","Sep"],["十月","Oct"],["十一月","Nov"],["十二月","Dec"]];
+const DOW=["日","一","二","三","四","五","六"];
+const pad2=n=>String(n).padStart(2,"0");
+const pkISO=()=>`${pkY}-${pad2(pkM+1)}-${pad2(pkD)}`;
+function setPk(iso){
+  const t=new Date(); let y=t.getFullYear(), m=t.getMonth(), d=t.getDate();
+  if(iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)){ const p=iso.split("-").map(Number); y=p[0]; m=p[1]-1; d=p[2]; }
+  pkY=y; pkM=m; pkD=d; paintPk();
+}
+function paintPk(){
+  const now=new Date().getFullYear();
+  const years=[now,now+1,now+2];
+  if(!years.includes(pkY)) years.unshift(pkY);          // 舊嘢或者好遠嘅日期照出
+  $("#pkYears").innerHTML=years.map(y=>`<button type="button" class="qb ${y===pkY?"on":""}" data-y="${y}">${y}</button>`).join("")
+    + `<button type="button" class="qb" data-y="more">${bi("其他","Other")}</button>`;
+  $("#pkYears").querySelectorAll("[data-y]").forEach(b=>b.onclick=()=>{
+    if(b.dataset.y==="more"){ pkY=pkY+3; } else pkY=+b.dataset.y;
+    clampDay(); paintPk();
+  });
+  $("#pkMonthBtn").innerHTML=`<span>${MONTHS[pkM][0]}<span class="e">${MONTHS[pkM][1]}</span></span>`;
+  renderCal(); paintFrozen();
+}
+function clampDay(){ const mx=new Date(pkY,pkM+1,0).getDate(); if(pkD>mx) pkD=mx; }
+function renderCal(){
+  const first=new Date(pkY,pkM,1).getDay(), n=new Date(pkY,pkM+1,0).getDate();
+  const t=new Date(); const tY=t.getFullYear(), tM=t.getMonth(), tD=t.getDate();
+  let h=DOW.map(x=>`<div class="dow">${x}</div>`).join("");
+  for(let i=0;i<first;i++) h+=`<div class="pad"></div>`;
+  for(let d=1;d<=n;d++){
+    const isT = pkY===tY&&pkM===tM&&d===tD;
+    const past = new Date(pkY,pkM,d) < new Date(tY,tM,tD);
+    h+=`<button type="button" data-d="${d}" aria-pressed="${d===pkD}" class="${isT?"today":""}${past?" pastday":""}">${d}</button>`;
+  }
+  $("#pkCal").innerHTML=h;
+  $("#pkCal").querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{ pkD=+b.dataset.d; paintPk(); });
+}
+$("#pkMonthBtn").onclick=()=>{
+  $("#mpTitle").textContent=pkY+" 年　Pick a month";
+  $("#mpGrid").innerHTML=MONTHS.map((m,i)=>`<button type="button" data-m="${i}" aria-pressed="${i===pkM}"><span>${m[0]}</span><span class="e">${m[1]}</span></button>`).join("");
+  $("#mpGrid").querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{
+    pkM=+b.dataset.m; clampDay(); $("#monthPick").classList.add("hide"); paintPk();
+  });
+  $("#monthPick").classList.remove("hide");
+};
+$("#mpClose").onclick=()=>$("#monthPick").classList.add("hide");
+
 const DT=[["此日期或之前食用","Use by — a SAFETY date","use"],["此日期前最佳","Best before — a QUALITY date","best"]];
 function paintDateType(){
   $("#fDateType").innerHTML=DT.map(([z,e,k])=>
     `<button type="button" class="pk" data-dt="${k}" aria-pressed="${formDateType===k}">${bi(z,e)}</button>`).join("");
-  $("#fDateType").querySelectorAll("[data-dt]").forEach(b=>b.onclick=()=>{ formDateType=b.dataset.dt; paintDateType(); });
+  $("#fDateType").querySelectorAll("[data-dt]").forEach(b=>b.onclick=()=>{ formDateType=b.dataset.dt; paintDateType(); paintFrozen(); });
   $("#fOpened").setAttribute("aria-pressed", String(formOpened));
 }
 $("#fOpened").onclick=()=>{ formOpened=!formOpened; paintDateType(); };
-paintDateType();   // 開機畫一次，唔使等開表單
-function openForm(it){
+paintDateType();
+
+/* 保質期長到唔似安全日期就自動當品質日期，但照樣話你知 */
+function paintFrozen(){
+  const isFz = storageOf(sections.find(x=>x.id===formSection))==="freeze";
+  $("#frozenBox").classList.toggle("hide", !isFz);
+  const d=daysLeft(pkISO());
+  if(!formTouchedDT && d!==null) formDateType = d>60 ? "best" : "use";
+  paintDateTypeQuiet();
+  $("#dtHint").innerHTML = d===null ? "" : bi(
+    (formDateType==="best"
+      ? `當咗「此日期前最佳」（品質日期）—— 保質期 ${d} 日咁長，安全日期通常得幾日到幾個星期。`
+      : `當咗「此日期或之前食用」（安全日期）—— 過咗就唔食得。`) + "撳「名、牌子、其他」入面可以改。",
+    (formDateType==="best" ? `Treated as Best before (quality) — ${d} days of shelf life is too long for a safety date.`
+                           : `Treated as Use by (safety) — do not eat it past this date.`) + " Change it under Name, brand, other.");
+}
+let formTouchedDT=false;
+function paintDateTypeQuiet(){
+  const p=$("#fDateType"); if(!p) return;
+  p.querySelectorAll("[data-dt]").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.dt===formDateType)));
+}
+
+function openForm(it, shoot){
   editingId = it?it.id:null;
   pendingPhoto=null;
   keepThumb = it?(it.thumb||null):null;
+  formTouchedDT = !!it;
   $("#formTitle").innerHTML = it?bi("改資料","Edit details"):bi("入貨","Add food");
-  $("#fDate").value = it?(it.expiry||""):plusDays(7);
+  setPk(it?(it.expiry||""):plusDays(7));
   $("#fZh").value = it?nameZh(it):"";
   $("#fEn").value = it?nameEn(it):"";
-  $("#fBrand").value = it?(it.brand||""):"";
+  $("#fBrand").value = it?brandOf(it):"";
   $("#fNote").value = it?(it.note||""):"";
+  $("#fFrozen").value = it?(it.frozenOn||""):"";
   formDateType = it ? dateTypeOf(it) : "use";
   formOpened   = it ? !!it.opened : false;
   paintDateType();
-  $("#moreBox").open = !!(it && (hasName(it)||it.brand||it.note));
+  $("#moreBox").open = false;
   formSection = it?it.sectionId:(filterSection!=="all"?filterSection:(sections[0]||{}).id);
   setPreview(keepThumb);
   paintPicker("#fSections","formSection");
-  $("#delRow").classList.toggle("hide",!it);
-  $("#nextRow").classList.toggle("hide",!!it);
+  paintPk();
+  $("#fDelete").classList.toggle("hide",!it);
+  $("#fSaveNext").classList.toggle("hide",!!it);
+  $("#fSave").className = it ? "btn right" : "btn plain left";
+  $("#formBar").classList.remove("hide");
   show("form",true);
+  if(shoot) setTimeout(()=>$("#fileCam").click(), 120);   // 入貨即刻開相機
 }
 function setPreview(src){
-  const g=$("#fPreview");
-  if(src){ g.src=src; g.classList.remove("hide"); } else { g.removeAttribute("src"); g.classList.add("hide"); }
+  const g=$("#fPreview"), ic=$("#shotIcon"), re=$("#shotRe");
+  if(src){ g.src=src; g.classList.remove("hide"); ic.classList.add("hide"); re.classList.remove("hide"); }
+  else { g.removeAttribute("src"); g.classList.add("hide"); ic.classList.remove("hide"); re.classList.add("hide"); }
 }
-$("#btnCam").onclick=()=>$("#fileCam").click();
-$("#btnLib").onclick=()=>$("#fileLib").click();
-["#fileCam","#fileLib"].forEach(s=>$(s).onchange=async e=>{
+$("#shotBtn").onclick=()=>$("#fileCam").click();
+$("#pickLib").onclick=()=>$("#fileLib").click();
+["#fileCam","#fileLib"].forEach(x=>$(x).onchange=async e=>{
   const f=e.target.files&&e.target.files[0]; e.target.value="";
   if(!f) return;
   const out=await openCropper(f);
@@ -1405,11 +1679,26 @@ $("#btnLib").onclick=()=>$("#fileLib").click();
 });
 
 async function save(next){
-  const expiry=$("#fDate").value;
+  const expiry=pkISO();
   if(!expiry){ toast("入返個過期日期","Please set an expiry date"); return; }
   if(!formSection){ toast("揀個分區先","Pick an area first"); return; }
   if(!pendingPhoto && !keepThumb && !$("#fZh").value.trim() && !$("#fEn").value.trim()){
     toast("最少要有張相或者一個名","You need at least a photo or a name"); return;
+  }
+  if(!editingId){
+    const dup=items.filter(i=>i.sectionId===formSection && i.expiry===expiry);
+    if(dup.length){
+      const zh=$("#fZh").value.trim(), en=$("#fEn").value.trim();
+      const names=dup.map(i=>{ const n=nameLines(i); return n?n.top:"未命名"; }).join("、");
+      const same = (zh||en) ? dup.some(i=>(zh&&nameZh(i)===zh)||(en&&nameEn(i)===en)) : true;
+      if(same){
+        const go=await ask({ tz:"係咪重複咗？", te:"Is this a duplicate?",
+          mz:`同一格、同一個到期日，已經有：${names}。你係咪尋日影過，今日唔記得又影多次？如果真係兩件唔同嘅嘢，就照入。`,
+          me:`Same area, same expiry date, already there: ${names}. Did you photograph this yesterday and forget? If they really are two separate items, go ahead.`,
+          yz:"照入，係兩件", ye:"Add anyway" });
+        if(!go) return;
+      }
+    }
   }
   busy(true,"儲存緊…","Saving…");
   try{
@@ -1417,7 +1706,8 @@ async function save(next){
       expiry, sectionId:formSection,
       zh:$("#fZh").value.trim(), en:$("#fEn").value.trim(),
       brand:$("#fBrand").value.trim(), note:$("#fNote").value.trim(),
-      dateType:formDateType, opened:formOpened,
+      dateType:formDateType, opened:formOpened, frozenOn:$("#fFrozen").value||"",
+      cat: catOf({zh:$("#fZh").value,en:$("#fEn").value,brand:$("#fBrand").value}),
       updatedAt:F.serverTimestamp(), updatedBy:(user&&user.email)||""
     };
     if(editingId){
@@ -1428,7 +1718,7 @@ async function save(next){
       }
       await F.updateDoc(F.doc(db,"items",editingId),base);
     }else{
-      base.createdAt=F.serverTimestamp(); base.libId="";
+      base.createdAt=F.serverTimestamp(); base.libId=""; base.addedOn=todayISO();
       if(pendingPhoto){
         const pid=F.doc(F.collection(db,"photos")).id;
         await F.setDoc(F.doc(db,"photos",pid),{full:pendingPhoto.full});
@@ -1441,7 +1731,8 @@ async function save(next){
     if(next){
       editingId=null; pendingPhoto=null; keepThumb=null;
       $("#fZh").value=""; $("#fEn").value=""; $("#fBrand").value=""; $("#fNote").value="";
-      $("#fDate").value=plusDays(7); formOpened=false; paintDateType(); setPreview(null);
+      setPk(plusDays(7)); formOpened=false; formTouchedDT=false; paintDateType(); setPreview(null);
+      setTimeout(()=>$("#fileCam").click(), 150);        // 即刻影下一樣
     }else show("form",false);
   }catch(e){ busy(false); toast("儲存失敗："+(e.code||e.message),"Save failed"); }
 }
@@ -1465,7 +1756,7 @@ $("#fTranslate").onclick=async()=>{
 };
 $("#fSave").onclick=()=>save(false);
 $("#fSaveNext").onclick=()=>save(true);
-$("#fab").onclick=()=>openForm(null);
+$("#fab").onclick=()=>openForm(null, true);   // 撳入貨即刻開相機
 
 $("#fDelete").onclick=async()=>{
   const it=items.find(i=>i.id===editingId); if(!it) return;
@@ -1664,7 +1955,7 @@ $("#agSave").onclick=async()=>{
     await F.addDoc(F.collection(db,"items"),{
       zh:l.zh||"", en:l.en||"", brand:l.brand||"", note:"",
       expiry, sectionId:agSection||l.sectionId||"",
-      thumb:l.thumb||"", photoId:l.photoId||"", libId:l.id,
+      thumb:l.thumb||"", photoId:l.photoId||"", libId:l.id, addedOn:todayISO(),
       createdAt:F.serverTimestamp(), updatedAt:F.serverTimestamp(), updatedBy:(user&&user.email)||""
     });
     busy(false); toast("入咗貨","Added"); show("again",false); show("lib",false);
@@ -1715,6 +2006,7 @@ async function runAI(list){
       if(r.zh||r.en){
         const patch={ zh:r.zh, en:r.en, brand:r.brand||"", updatedAt:F.serverTimestamp() };
         if(r.dateType && !e.o.dateType) patch.dateType=r.dateType;   // 唔覆蓋人手揀過嘅
+        if(r.cat) patch.cat=r.cat;
         await F.updateDoc(colRef(e), patch);
         ok++;
       } else fail++;
@@ -1765,7 +2057,11 @@ async function runTranslate(list){
    過咗期嗰啲根本唔會傳出去，佢想開綠燈都冇機會。
    ═══════════════════════════════════════════════════════ */
 let planPlan=null;
-function openPlan(){ planPlan=null; renderPlan(); show("plan",true); }
+function openPlan(){
+  planPlan = board.plan || null;
+  $("#boardNote").value = board.note || "";
+  renderPlan(); show("plan",true);
+}
 $("#planBtn").onclick=openPlan;
 
 function planItems(){
@@ -1843,6 +2139,7 @@ async function askDishes(safe){
     const o=await callAI({ model:aiCfg().model, max_tokens:900, temperature:0.5,
       messages:[{role:"user",content:DISH_PROMPT+"\n\nStill-safe items, soonest first:\n"+list}] });
     planPlan=o; busy(false); renderPlan();
+    toast("諗好喇。撳下面「出街」就全家見到。","Done — tap Post it so everyone sees it.");
   }catch(e){
     busy(false);
     toast(e.message==="NET"?"接駁唔到 AI。多數係瀏覽器 CORS 擋咗。":"失敗："+e.message,
@@ -1988,6 +2285,54 @@ $("#expFile").onclick=()=>{
   }catch(_){ toast("下載唔到，試下「抄落剪貼簿」","Could not download — try Copy instead"); }
 };
 
+/* ═══ 共享板 ═══════════════════════════════════════════ */
+function boardText(){
+  const all=items.map(o=>({o,v:verdict(o)}));
+  const nm=e=>{ const n=nameLines(e.o); return n?(n.bot?n.top+" / "+n.bot:n.top):"未命名 Unnamed"; };
+  const grp=(t,arr,extra)=>arr.length ? t+"\n"+arr.map(e=>"• "+nm(e)+(extra?extra(e):"")).join("\n")+"\n\n" : "";
+  let t="🍳 今日要做  TODAY'S JOBS — "+fmtZh(todayISO())+" / "+fmtEn(todayISO())+"\n\n";
+  t+=grp("❌ 掉咗佢  THROW OUT", all.filter(e=>e.v.rank<=1), e=>e.v.d!==null&&e.v.d<0?`（過咗 ${-e.v.d} 日 / ${-e.v.d} days over）`:"");
+  t+=grp("🔥 今日要煮  COOK TODAY", all.filter(e=>e.v.key==="today"));
+  t+=grp("⏳ 三日內  WITHIN 3 DAYS", all.filter(e=>e.v.key==="soon"), e=>`（${e.v.d} 日 / ${e.v.d}d）`);
+  const p=board.plan||planPlan;
+  if(p&&p.plan&&p.plan.length){
+    t+="🍲 今餐煮咩  WHAT TO COOK\n"+p.plan.map((x,i)=>`${i+1}. ${x.zh||""}\n   ${x.en||""}`+((x.uses&&x.uses.length)?`\n   → ${x.uses.join(", ")}`:"")).join("\n")+"\n\n";
+  }
+  const n=(board.note||$("#boardNote").value||"").trim();
+  if(n) t+="📋 留言  NOTE\n"+n+"\n\n";
+  t+="⚠️ 過咗期嘅嘢，兩個女（2 歲半、6 歲）一律唔好食。\nNo expired food for the children, ever.";
+  return t;
+}
+$("#boardSave").onclick=async()=>{
+  busy(true,"出緊街…","Posting…");
+  try{
+    const patch={ note:$("#boardNote").value.trim(), noteAt:F.serverTimestamp(), noteBy:(user&&user.email||"").split("@")[0] };
+    if(planPlan){ patch.plan=planPlan; patch.planAt=F.serverTimestamp(); patch.planBy=(user&&user.email||"").split("@")[0]; }
+    await F.setDoc(F.doc(db,"meta","board"), patch, {merge:true});
+    busy(false); toast("出咗街，全家即刻見到","Posted — everyone sees it now");
+  }catch(e){ busy(false); toast("出唔到："+(e.code||e.message),"Could not post"); }
+};
+$("#boardCopy").onclick=async()=>{
+  const t=boardText();
+  try{ await navigator.clipboard.writeText(t); toast("抄咗，貼落 WhatsApp 就得","Copied — paste it into WhatsApp"); }
+  catch(_){
+    const ta=document.createElement("textarea");
+    ta.value=t; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); toast("抄咗","Copied"); }catch(__){ toast("抄唔到","Could not copy"); }
+    ta.remove();
+  }
+};
+$("#boardClear").onclick=async()=>{
+  const ok=await ask({ tz:"清走個板？", te:"Clear the board?",
+    mz:"留言同 AI 諗嘅餸會喺全家部電話度消失。", me:"The note and dish plan disappear from everyone's screen.",
+    yz:"清走", ye:"Clear", danger:true });
+  if(!ok) return;
+  planPlan=null;
+  try{ await F.setDoc(F.doc(db,"meta","board"),{note:"",plan:null},{merge:true}); $("#boardNote").value=""; toast("清咗","Cleared"); }
+  catch(e){ toast("清唔到："+(e.code||e.message),"Could not clear"); }
+};
+
 $("#signout").onclick=async()=>{
   const ok=await ask({ tz:"真係要登出？", te:"Sign out?",
     mz:"登出之後要再用 Google 登入一次先睇得返啲食物。", me:"You will need to sign in with Google again to see the food list.",
@@ -1998,6 +2343,7 @@ $("#signout").onclick=async()=>{
 /* ═══ sheet 開關 ═════════════════════════════════════ */
 const SHEETS=["form","det","lib","again","set","plan"];
 function show(k,on){
+  if(k==="form") $("#formBar").classList.toggle("hide", !on);
   $("#"+k+"Scrim").classList.toggle("hide",!on);
   $("#"+k+"Sheet").classList.toggle("hide",!on);
   document.body.style.overflow = SHEETS.some(s=>!$("#"+s+"Sheet").classList.contains("hide")) ? "hidden" : "";
