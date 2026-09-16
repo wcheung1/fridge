@@ -5,46 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <meta name="theme-color" content="#0E6B7A">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Food">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>雪櫃盤點</title>
+<title>食物管理 Food Management</title>
 <style>
-/* ── tokens ───────────────────────────────────────────── */
 :root{
-  --chill:#EAEEF1;      /* page */
-  --card:#FFFFFF;
-  --ink:#16232B;
-  --mute:#657781;
-  --rule:#DDE4E8;
-  --brand:#0E6B7A;
-  --brand-dk:#0A5561;
-  --brand-tint:#E2EFF1;
-  --gone:#AE3628;       /* 已過期 */
-  --gone-bg:#FBEBE8;
-  --soon:#9C6510;       /* 快到期 */
-  --soon-bg:#FBF1DF;
-  --fresh:#1D6F49;      /* 仲新鮮 */
-  --r:14px;
-  --sh:0 1px 2px rgba(22,35,43,.06);
-  --safe-b:env(safe-area-inset-bottom,0px);
-  --safe-t:env(safe-area-inset-top,0px);
+  --chill:#EAEEF1; --card:#FFFFFF; --ink:#16232B; --mute:#657781; --rule:#DDE4E8;
+  --brand:#0E6B7A; --brand-dk:#0A5561; --brand-tint:#E2EFF1;
+  --gone:#AE3628; --gone-bg:#FBEBE8;
+  --soon:#9C6510; --soon-bg:#FBF1DF;
+  --fresh:#1D6F49;
+  --r:14px; --sh:0 1px 2px rgba(22,35,43,.06);
+  --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --chill:#111A1F; --card:#18242B; --ink:#E7EDF0; --mute:#93A5AE;
-    --rule:#26343C; --brand:#3FA5B4; --brand-dk:#2E8391; --brand-tint:#1B3239;
+    --chill:#111A1F; --card:#18242B; --ink:#E7EDF0; --mute:#93A5AE; --rule:#26343C;
+    --brand:#3FA5B4; --brand-dk:#2E8391; --brand-tint:#1B3239;
     --gone:#F08A7B; --gone-bg:#3A201C;
-    --soon:#E5B15C; --soon-bg:#33290F; --fresh:#63C295;
-    --sh:0 1px 2px rgba(0,0,0,.3);
+    --soon:#E5B15C; --soon-bg:#33290F;
+    --fresh:#63C295; --sh:0 1px 2px rgba(0,0,0,.3);
   }
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;height:100%}
 body{
-  background:var(--chill); color:var(--ink);
+  background:var(--chill);color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang HK","PingFang TC","Hiragino Sans TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
-  font-size:16px; line-height:1.45;
-  -webkit-font-smoothing:antialiased;
-  overscroll-behavior-y:none;
+  font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none
 }
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer;border:0;background:none}
@@ -52,194 +40,210 @@ button{cursor:pointer;border:0;background:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .hide{display:none!important}
 
-/* ── header ───────────────────────────────────────────── */
-header{
-  position:sticky;top:0;z-index:30;
-  background:var(--chill);
-  padding:calc(var(--safe-t) + 12px) 16px 0;
-  border-bottom:1px solid var(--rule);
-}
-.htop{display:flex;align-items:baseline;gap:10px}
-h1{font-size:21px;font-weight:700;letter-spacing:-.01em;margin:0;flex:1}
-.hsub{font-size:13px;color:var(--mute)}
-.iconbtn{
-  width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
-  color:var(--mute);font-size:19px;flex:none
-}
-.iconbtn:hover{background:var(--brand-tint);color:var(--brand)}
-#search{
-  width:100%;margin:10px 0 0;padding:10px 14px;border-radius:10px;
-  border:1px solid var(--rule);background:var(--card);
-}
-#search::placeholder{color:var(--mute)}
+/* 中英對照：中文喺上，英文喺下（港式指示牌排法） */
+.e{display:block;font-size:.72em;line-height:1.25;opacity:.62;font-weight:500;letter-spacing:.015em;margin-top:1px}
+.z{display:block;line-height:1.2}
 
-/* signal strip — tappable filters */
-.signals{display:flex;gap:8px;margin:12px 0 0;overflow-x:auto;scrollbar-width:none}
-.signals::-webkit-scrollbar{display:none}
-.sig{
-  flex:none;display:flex;align-items:baseline;gap:6px;
-  padding:6px 12px;border-radius:999px;border:1px solid var(--rule);
-  background:var(--card);font-size:13px;color:var(--mute)
+header{
+  position:sticky;top:0;z-index:30;background:var(--chill);
+  padding:calc(var(--safe-t) + 12px) 16px 0;border-bottom:1px solid var(--rule)
 }
-.sig b{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
+.htop{display:flex;align-items:center;gap:10px}
+h1{margin:0;flex:1;font-size:20px;font-weight:700;letter-spacing:-.015em}
+h1 .e{font-size:11.5px;opacity:.55;letter-spacing:.06em}
+.gear{
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+  padding:5px 9px;border-radius:10px;color:var(--mute);flex:none
+}
+.gear i{font-style:normal;font-size:19px;line-height:1}
+.gear em{font-style:normal;font-size:9.5px;letter-spacing:.04em}
+.gear:hover{background:var(--brand-tint);color:var(--brand)}
+#search{width:100%;margin-top:10px;padding:10px 14px;border-radius:10px;border:1px solid var(--rule);background:var(--card)}
+
+.signals{display:flex;gap:8px;margin-top:12px;overflow-x:auto;scrollbar-width:none}
+.chips{display:flex;gap:8px;margin-top:11px;padding-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.signals::-webkit-scrollbar,.chips::-webkit-scrollbar{display:none}
+.sig{
+  flex:none;display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:999px;
+  border:1px solid var(--rule);background:var(--card);color:var(--mute);font-size:12.5px;text-align:left
+}
+.sig b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);line-height:1}
+.sig .e{font-size:10px}
 .sig[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-tint);color:var(--brand)}
 .sig[aria-pressed="true"] b{color:var(--brand)}
 .sig.g b{color:var(--gone)} .sig.s b{color:var(--soon)}
-
-/* section chips */
-.chips{display:flex;gap:8px;margin:12px 0 0;padding-bottom:12px;overflow-x:auto;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
 .chip{
-  flex:none;padding:7px 14px;border-radius:999px;font-size:14px;
+  flex:none;padding:6px 14px;border-radius:999px;font-size:14px;text-align:left;
   border:1px solid var(--rule);background:var(--card);color:var(--mute);white-space:nowrap
 }
+.chip .e{font-size:10px}
 .chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
-.chip.ghost{border-style:dashed}
+.chip[aria-pressed="true"] .e{opacity:.8}
+.chip.lib{border-style:dashed;color:var(--brand)}
 
-/* ── list ─────────────────────────────────────────────── */
 main{padding:8px 16px calc(112px + var(--safe-b))}
+
+/* AI 提示橫額 */
+#aiBanner{
+  display:flex;align-items:center;gap:12px;background:var(--brand-tint);
+  border-radius:var(--r);padding:12px 14px;margin-bottom:10px
+}
+#aiBanner .txt{flex:1;font-size:14px;color:var(--brand);font-weight:600;min-width:0}
+#aiBanner .e{font-weight:500;opacity:.75}
+#aiGo{padding:9px 14px;border-radius:9px;background:var(--brand);color:#fff;font-size:13.5px;font-weight:600;flex:none;text-align:center}
+
 .row{
   display:flex;gap:13px;align-items:center;width:100%;text-align:left;
-  background:var(--card);border-radius:var(--r);box-shadow:var(--sh);
-  padding:10px;margin-bottom:8px
+  background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:10px;margin-bottom:8px
 }
 .row.expired{background:var(--gone-bg)}
-.row:active{transform:scale(.995)}
-.thumb{
-  width:74px;height:74px;border-radius:10px;object-fit:cover;flex:none;
-  background:var(--brand-tint);display:block
-}
+.thumb{width:74px;height:74px;border-radius:10px;object-fit:cover;flex:none;background:var(--brand-tint);display:block}
 .thumb.ph{display:grid;place-items:center;font-size:24px;color:var(--brand)}
 .rmid{flex:1;min-width:0}
-.rname{font-size:17px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rmeta{font-size:13px;color:var(--mute);margin-top:3px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.tag{
-  font-size:12px;padding:1px 8px;border-radius:5px;
-  background:var(--brand-tint);color:var(--brand);font-weight:600
-}
-.rnote{font-size:13px;color:var(--mute);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-/* the hero: countdown */
-.count{flex:none;text-align:right;min-width:60px;padding-right:2px}
-.cnum{
-  display:block;font-size:34px;font-weight:700;line-height:1;
-  letter-spacing:-.045em;font-variant-numeric:tabular-nums;color:var(--fresh)
-}
-.cunit{display:block;font-size:12px;color:var(--mute);margin-top:3px}
-.count.gone .cnum,.count.gone .cunit{color:var(--gone)}
-.count.soon .cnum,.count.soon .cunit{color:var(--soon)}
-.cword{display:block;font-size:17px;font-weight:700;line-height:1.15;letter-spacing:-.01em}
+.rname{font-size:16.5px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
+.rname .e{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rname.none{color:var(--mute);font-weight:500;font-style:italic}
+.rmeta{font-size:12.5px;color:var(--mute);margin-top:4px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tag{font-size:11px;padding:2px 8px;border-radius:5px;background:var(--brand-tint);color:var(--brand);font-weight:600;white-space:nowrap}
+.count{flex:none;text-align:right;min-width:58px}
+.cnum{display:block;font-size:33px;font-weight:700;line-height:1;letter-spacing:-.045em;font-variant-numeric:tabular-nums;color:var(--fresh)}
+.cword{display:block;font-size:16px;font-weight:700;line-height:1.15;color:var(--fresh)}
+.cunit{display:block;font-size:10.5px;color:var(--mute);margin-top:3px;line-height:1.2}
+.count.gone .cnum,.count.gone .cword{color:var(--gone)}
+.count.soon .cnum,.count.soon .cword{color:var(--soon)}
+.count.na .cword{color:var(--mute);font-size:13px;font-weight:600}
 
-.empty{text-align:center;padding:64px 24px;color:var(--mute)}
+.empty{text-align:center;padding:60px 24px;color:var(--mute)}
 .empty .big{font-size:40px;margin-bottom:12px}
 .empty p{margin:0 0 4px;font-size:15px}
+.empty .e{display:block;font-size:13px;margin-top:2px}
 
 #fab{
   position:fixed;right:18px;bottom:calc(20px + var(--safe-b));z-index:35;
-  height:56px;padding:0 22px 0 18px;border-radius:28px;
-  background:var(--brand);color:#fff;font-size:16px;font-weight:600;
-  display:flex;align-items:center;gap:8px;box-shadow:0 6px 18px rgba(14,107,122,.35)
+  height:58px;padding:0 20px 0 16px;border-radius:29px;background:var(--brand);color:#fff;
+  display:flex;align-items:center;gap:9px;box-shadow:0 6px 18px rgba(14,107,122,.35);text-align:left
 }
-#fab:active{background:var(--brand-dk)}
-#fab span{font-size:23px;line-height:1}
+#fab .plus{font-size:24px;line-height:1}
+#fab .z{font-size:15.5px;font-weight:700} #fab .e{font-size:10px;opacity:.85}
 
-/* ── sheets / modals ──────────────────────────────────── */
 .scrim{position:fixed;inset:0;background:rgba(14,26,32,.55);z-index:40;backdrop-filter:blur(2px)}
 .sheet{
   position:fixed;left:0;right:0;bottom:0;z-index:41;max-height:92vh;overflow-y:auto;
-  background:var(--card);border-radius:20px 20px 0 0;
-  padding:0 18px calc(20px + var(--safe-b));
+  background:var(--card);border-radius:20px 20px 0 0;padding:0 18px calc(20px + var(--safe-b));
   animation:up .22s cubic-bezier(.2,.8,.3,1)
 }
 @keyframes up{from{transform:translateY(100%)}}
 @media (min-width:640px){
-  .sheet{left:50%;right:auto;bottom:auto;top:50%;transform:translate(-50%,-50%);
-    width:520px;border-radius:18px;animation:none;max-height:88vh}
+  .sheet{left:50%;right:auto;bottom:auto;top:50%;transform:translate(-50%,-50%);width:540px;border-radius:18px;animation:none;max-height:88vh}
 }
 .shead{
-  position:sticky;top:0;background:var(--card);z-index:2;
-  display:flex;align-items:center;gap:10px;padding:16px 0 12px;
-  border-bottom:1px solid var(--rule);margin-bottom:16px
+  position:sticky;top:0;background:var(--card);z-index:2;display:flex;align-items:center;gap:10px;
+  padding:16px 0 12px;border-bottom:1px solid var(--rule);margin-bottom:16px
 }
-.shead h2{flex:1;font-size:18px;font-weight:700;margin:0;letter-spacing:-.01em}
+.shead h2{flex:1;margin:0;font-size:17.5px;font-weight:700;letter-spacing:-.01em}
+.shead h2 .e{font-size:11px}
+.x{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--mute);font-size:18px;flex:none}
+.x:hover{background:var(--chill)}
 .grab{width:38px;height:4px;border-radius:2px;background:var(--rule);margin:8px auto -2px}
 @media (min-width:640px){.grab{display:none}}
 
-label.f{display:block;margin-bottom:16px}
-label.f>span{display:block;font-size:13px;color:var(--mute);margin-bottom:6px}
-input[type=text],input[type=date],textarea{
-  width:100%;padding:12px 14px;border-radius:10px;
-  border:1px solid var(--rule);background:var(--chill)
+.fld{margin-bottom:16px}
+.flab{font-size:12.5px;color:var(--mute);margin-bottom:6px}
+.flab .e{font-size:10.5px}
+input[type=text],input[type=date],input[type=password],input[type=url],textarea{
+  width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--rule);background:var(--chill)
 }
-textarea{resize:vertical;min-height:52px}
-.quick{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
-.qb{padding:7px 13px;border-radius:999px;border:1px solid var(--rule);font-size:13px;color:var(--mute);background:var(--card)}
-.qb:active{border-color:var(--brand);color:var(--brand)}
-
+textarea{resize:vertical;min-height:50px}
+.quick{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
+.qb{padding:7px 12px;border-radius:999px;border:1px solid var(--rule);font-size:13px;color:var(--mute);background:var(--card);text-align:center;line-height:1.15}
+.qb .e{font-size:9.5px}
+.qb:active,.qb.on{border-color:var(--brand);color:var(--brand);background:var(--brand-tint)}
 .picker{display:flex;flex-wrap:wrap;gap:8px}
-.pk{padding:9px 15px;border-radius:999px;border:1px solid var(--rule);font-size:14px;color:var(--mute);background:var(--card)}
+.pk{padding:8px 14px;border-radius:999px;border:1px solid var(--rule);font-size:14px;color:var(--mute);background:var(--card);text-align:left;line-height:1.2}
+.pk .e{font-size:10px}
 .pk[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+.pk[aria-pressed="true"] .e{opacity:.8}
 
-/* photo slot */
-.shot{
-  display:flex;gap:12px;align-items:stretch;margin-bottom:18px
-}
+.shot{display:flex;gap:12px;margin-bottom:18px}
 .shot img{width:112px;height:112px;object-fit:cover;border-radius:12px;flex:none;background:var(--chill)}
 .shotbtns{flex:1;display:flex;flex-direction:column;gap:8px}
 .big-b{
-  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
-  border:1.5px dashed var(--rule);border-radius:12px;color:var(--brand);
-  font-size:15px;font-weight:600;min-height:52px;background:var(--card)
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:1.5px dashed var(--rule);border-radius:12px;color:var(--brand);font-weight:600;
+  font-size:14.5px;min-height:52px;background:var(--card);line-height:1.2
 }
+.big-b .e{font-size:10px}
 .big-b:active{background:var(--brand-tint)}
 
-.btn{
-  width:100%;padding:15px;border-radius:12px;font-size:16px;font-weight:600;
-  background:var(--brand);color:#fff;display:block
+details.more{margin-bottom:18px;border-top:1px solid var(--rule);padding-top:14px}
+details.more>summary{
+  list-style:none;cursor:pointer;font-size:14px;color:var(--brand);font-weight:600;
+  display:flex;align-items:center;gap:7px;line-height:1.2
 }
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary .e{font-size:10.5px;font-weight:500}
+details.more>summary::before{content:"▸";font-size:12px}
+details.more[open]>summary::before{content:"▾"}
+details.more .inner{padding-top:14px}
+
+.btn{width:100%;padding:14px;border-radius:12px;font-size:15.5px;font-weight:600;background:var(--brand);color:#fff;display:block;text-align:center;line-height:1.2}
+.btn .e{font-size:10.5px;opacity:.85;font-weight:500}
 .btn:active{background:var(--brand-dk)}
 .btn.ghost{background:var(--brand-tint);color:var(--brand)}
-.btn.danger{background:transparent;color:var(--gone);font-weight:500}
+.btn.ghost:active{background:var(--rule)}
+.btn.danger{background:transparent;color:var(--gone);border:1px solid var(--gone)}
+.btn.plain{background:var(--chill);color:var(--ink)}
 .btn[disabled]{opacity:.5;pointer-events:none}
-.brow{display:flex;gap:10px;margin-top:4px}
+.brow{margin-top:9px}
 
-/* detail */
 #dImg{width:100%;border-radius:14px;display:block;background:var(--chill);margin-bottom:16px}
-.dfacts{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.dfacts{display:flex;align-items:center;gap:16px;margin-bottom:16px}
 .dfacts .count{text-align:left;min-width:0}
-.dline{font-size:14px;color:var(--mute);margin-top:2px}
+.dline{font-size:13px;color:var(--mute);margin-top:3px}
 
-/* sections manager */
-.srow{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--rule)}
-.srow input{flex:1;background:transparent;border:0;padding:6px 0;font-weight:600}
-.srow .mini{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:var(--mute);font-size:15px;flex:none}
-.srow .mini:hover{background:var(--chill)}
-.srow .mini.del{color:var(--gone)}
+.srow{display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--rule)}
+.srow .ins{flex:1;min-width:0}
+.srow input{width:100%;background:transparent;border:0;padding:3px 0}
+.srow input.a{font-weight:600;font-size:15px}
+.srow input.b{font-size:12px;color:var(--mute)}
+.srow .n{font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums;padding:0 2px}
+.mini{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--mute);font-size:14px;flex:none}
+.mini:hover{background:var(--chill)}
+.mini.del{color:var(--gone)}
+.mini[disabled]{opacity:.25}
 
-/* ── cropper ──────────────────────────────────────────── */
-#cropper{
-  position:fixed;inset:0;z-index:60;background:#0C1519;color:#fff;
-  display:flex;flex-direction:column;touch-action:none
-}
-.cropbar{
-  display:flex;align-items:center;gap:6px;
-  padding:calc(var(--safe-t) + 10px) 12px 10px;flex:none
-}
-.tbtn{padding:9px 14px;border-radius:9px;color:#fff;font-size:15px}
+.ghead{font-size:12px;color:var(--mute);font-weight:700;letter-spacing:.06em;margin:26px 0 10px;padding-top:18px;border-top:1px solid var(--rule)}
+.ghead:first-of-type{margin-top:0;padding-top:0;border-top:0}
+.ghead .e{font-size:10.5px;font-weight:500;letter-spacing:.03em}
+.who{background:var(--chill);border-radius:10px;padding:11px 14px;font-size:13.5px;margin-bottom:10px;word-break:break-all}
+.who .e{font-size:11px}
+.hintline{font-size:11.5px;color:var(--mute);margin:-9px 0 16px;line-height:1.45}
+
+/* 買開嘅嘢 grid */
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+.lcard{background:var(--chill);border-radius:12px;overflow:hidden;text-align:left;position:relative}
+.lcard img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:var(--brand-tint)}
+.lcard .cap{padding:7px 9px 9px}
+.lcard .cap .z{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lcard .cap .e{font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lcard .rm{position:absolute;top:5px;right:5px;width:26px;height:26px;border-radius:50%;background:rgba(10,20,26,.6);color:#fff;font-size:13px;display:grid;place-items:center}
+
+#cropper{position:fixed;inset:0;z-index:60;background:#0C1519;color:#fff;display:flex;flex-direction:column;touch-action:none}
+.cropbar{display:flex;align-items:center;gap:6px;padding:calc(var(--safe-t) + 10px) 12px 10px;flex:none}
+.tbtn{padding:9px 13px;border-radius:9px;color:#fff;font-size:14.5px;text-align:center;line-height:1.15}
+.tbtn .e{font-size:9.5px;opacity:.75}
 .tbtn.primary{background:var(--brand);font-weight:700}
-.tbtn.icon{font-size:20px;padding:8px 11px;color:#C7D6DC}
+.tbtn.icon{font-size:20px;padding:8px 10px;color:#C7D6DC}
 .cropbar-mid{flex:1;display:flex;justify-content:center;gap:2px}
 #cropStage{flex:1;position:relative;display:grid;place-items:center;overflow:hidden;min-height:0}
 #cropWrap{position:relative;line-height:0}
 #cropCanvas{display:block;max-width:100%}
-#cropBox{
-  position:absolute;box-shadow:0 0 0 9999px rgba(10,20,26,.68);
-  outline:1px solid rgba(255,255,255,.85);cursor:move;touch-action:none
-}
+#cropBox{position:absolute;box-shadow:0 0 0 9999px rgba(10,20,26,.68);outline:1px solid rgba(255,255,255,.85);cursor:move;touch-action:none}
 #cropBox::before{
   content:"";position:absolute;inset:0;pointer-events:none;
   background:
-    linear-gradient(to right,transparent 33.33%,rgba(255,255,255,.28) 33.33%,rgba(255,255,255,.28) calc(33.33% + 1px),transparent calc(33.33% + 1px),transparent 66.66%,rgba(255,255,255,.28) 66.66%,rgba(255,255,255,.28) calc(66.66% + 1px),transparent calc(66.66% + 1px)),
-    linear-gradient(to bottom,transparent 33.33%,rgba(255,255,255,.28) 33.33%,rgba(255,255,255,.28) calc(33.33% + 1px),transparent calc(33.33% + 1px),transparent 66.66%,rgba(255,255,255,.28) 66.66%,rgba(255,255,255,.28) calc(66.66% + 1px),transparent calc(66.66% + 1px))
+   linear-gradient(to right,transparent 33.33%,rgba(255,255,255,.26) 33.33%,rgba(255,255,255,.26) calc(33.33% + 1px),transparent calc(33.33% + 1px),transparent 66.66%,rgba(255,255,255,.26) 66.66%,rgba(255,255,255,.26) calc(66.66% + 1px),transparent calc(66.66% + 1px)),
+   linear-gradient(to bottom,transparent 33.33%,rgba(255,255,255,.26) 33.33%,rgba(255,255,255,.26) calc(33.33% + 1px),transparent calc(33.33% + 1px),transparent 66.66%,rgba(255,255,255,.26) 66.66%,rgba(255,255,255,.26) calc(66.66% + 1px),transparent calc(66.66% + 1px))
 }
 .hd{position:absolute;display:block}
 .hd::after{content:"";position:absolute;background:#fff;border-radius:2px}
@@ -256,158 +260,230 @@ textarea{resize:vertical;min-height:52px}
 .hd[data-h=se]{bottom:-16px;right:-16px;cursor:nwse-resize}
 .hd.cn::after,.hd.cn::before{content:"";position:absolute;background:#fff}
 .hd.cn::after{width:22px;height:4px} .hd.cn::before{width:4px;height:22px}
-.hd[data-h=nw]::after{top:14px;left:14px} .hd[data-h=nw]::before{top:14px;left:14px}
-.hd[data-h=ne]::after{top:14px;right:14px} .hd[data-h=ne]::before{top:14px;right:14px}
-.hd[data-h=sw]::after{bottom:14px;left:14px} .hd[data-h=sw]::before{bottom:14px;left:14px}
-.hd[data-h=se]::after{bottom:14px;right:14px} .hd[data-h=se]::before{bottom:14px;right:14px}
-#cropHint{
-  flex:none;text-align:center;font-size:13px;color:#9FB4BC;
-  margin:0;padding:12px 16px calc(14px + var(--safe-b))
-}
+.hd[data-h=nw]::after,.hd[data-h=nw]::before{top:14px;left:14px}
+.hd[data-h=ne]::after,.hd[data-h=ne]::before{top:14px;right:14px}
+.hd[data-h=sw]::after,.hd[data-h=sw]::before{bottom:14px;left:14px}
+.hd[data-h=se]::after,.hd[data-h=se]::before{bottom:14px;right:14px}
+#cropHint{flex:none;text-align:center;font-size:12.5px;color:#9FB4BC;margin:0;padding:12px 16px calc(14px + var(--safe-b));line-height:1.4}
 
-/* ── gate / toast ─────────────────────────────────────── */
-#gate{
-  position:fixed;inset:0;z-index:70;background:var(--chill);
-  display:grid;place-items:center;padding:28px;text-align:center
-}
-#gate .box{max-width:400px}
-#gate .mark{font-size:52px;margin-bottom:8px}
-#gate h2{font-size:24px;margin:0 0 6px;letter-spacing:-.02em}
-#gate p{color:var(--mute);font-size:15px;margin:0 0 24px}
-#gate pre{
-  text-align:left;background:var(--card);border:1px solid var(--rule);border-radius:10px;
-  padding:12px;font-size:12px;overflow-x:auto;line-height:1.5;color:var(--mute)
-}
-#toast{
-  position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + var(--safe-b));
-  z-index:80;background:var(--ink);color:var(--chill);padding:11px 18px;border-radius:999px;
-  font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none
-}
-#busy{
-  position:fixed;inset:0;z-index:90;background:rgba(14,26,32,.5);
-  display:grid;place-items:center;color:#fff;font-size:15px
-}
-.spin{width:30px;height:30px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;
-  border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 12px}
+#gate{position:fixed;inset:0;z-index:70;background:var(--chill);display:grid;place-items:center;padding:28px;text-align:center}
+#gate .box{max-width:400px;width:100%}
+#gate .mark{font-size:50px;margin-bottom:10px}
+#gate h2{font-size:23px;margin:0 0 4px;letter-spacing:-.02em}
+#gate h2 .e{font-size:12px;letter-spacing:.06em}
+#gate p{color:var(--mute);font-size:14.5px;margin:12px 0 24px}
+#gate pre{text-align:left;background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:12px;font-size:11.5px;overflow-x:auto;line-height:1.5;color:var(--mute);white-space:pre-wrap}
+
+/* 確認彈窗 */
+#askScrim{position:fixed;inset:0;background:rgba(14,26,32,.6);z-index:85;display:grid;place-items:center;padding:26px}
+#askBox{background:var(--card);border-radius:16px;padding:22px;max-width:340px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+#askBox .t{font-size:17px;font-weight:700;margin-bottom:4px}
+#askBox .t .e{font-size:12px}
+#askBox .m{font-size:13.5px;color:var(--mute);margin-bottom:20px;line-height:1.45}
+#askBox .m .e{font-size:12px;margin-top:3px}
+#askBox .acts{display:flex;gap:10px}
+#askBox .acts .btn{flex:1;padding:12px 8px;font-size:14.5px}
+
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(94px + var(--safe-b));z-index:88;background:var(--ink);color:var(--chill);padding:10px 18px;border-radius:999px;font-size:13.5px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none;max-width:88vw;text-align:center;line-height:1.35}
+#busy{position:fixed;inset:0;z-index:90;background:rgba(14,26,32,.55);display:grid;place-items:center;color:#fff;font-size:14.5px;text-align:center;padding:24px}
+.spin{width:30px;height:30px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 12px}
 @keyframes sp{to{transform:rotate(360deg)}}
+#busyStop{margin-top:16px;padding:9px 18px;border-radius:9px;background:rgba(255,255,255,.18);color:#fff;font-size:13.5px}
 </style>
 </head>
 <body>
 
-<!-- ══ gate (sign-in / setup) ══ -->
 <div id="gate">
   <div class="box">
-    <div class="mark">🧊</div>
-    <h2>雪櫃盤點</h2>
-    <p id="gateMsg">影低、寫個日期，到期之前提你食。</p>
-    <button id="signin" class="btn">用 Google 登入</button>
+    <div class="mark">🍎</div>
+    <h2><span class="z">食物管理</span><span class="e">FOOD MANAGEMENT</span></h2>
+    <p id="gateMsg"><span class="z">影低、寫個到期日，過期之前提你食。</span><span class="e">Snap it, set the date, get reminded before it spoils.</span></p>
+    <button id="signin" class="btn"><span class="z">用 Google 登入</span><span class="e">Sign in with Google</span></button>
     <pre id="gateCfg" class="hide"></pre>
   </div>
 </div>
 
-<!-- ══ app ══ -->
 <div id="app" class="hide">
   <header>
     <div class="htop">
-      <h1>雪櫃盤點</h1>
-      <button id="openSections" class="iconbtn" title="管理分區" aria-label="管理分區">⚙</button>
-      <button id="signout" class="iconbtn" title="登出" aria-label="登出">⏻</button>
+      <h1><span class="z">食物管理</span><span class="e">FOOD MANAGEMENT</span></h1>
+      <button id="openSet" class="gear" aria-label="設定 Settings"><i>⚙</i><em>設定 Settings</em></button>
     </div>
-    <input id="search" type="text" placeholder="搵食物…" autocomplete="off">
+    <input id="search" type="text" placeholder="搵嘢食　Search food" autocomplete="off">
     <div class="signals" id="signals"></div>
     <div class="chips" id="chips"></div>
   </header>
   <main id="list"></main>
-  <button id="fab"><span>＋</span>入貨</button>
+  <button id="fab"><span class="plus">＋</span><span><span class="z">入貨</span><span class="e">Add food</span></span></button>
 </div>
 
-<!-- ══ add / edit sheet ══ -->
+<!-- 入貨 / 改資料 -->
 <div id="formScrim" class="scrim hide"></div>
-<section id="formSheet" class="sheet hide" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+<section id="formSheet" class="sheet hide" role="dialog" aria-modal="true">
   <div class="grab"></div>
   <div class="shead">
-    <h2 id="formTitle">入貨</h2>
-    <button class="iconbtn" data-close="form" aria-label="閂">✕</button>
+    <h2 id="formTitle"><span class="z">入貨</span><span class="e">Add food</span></h2>
+    <button class="x" data-close="form" aria-label="閂 Close">✕</button>
   </div>
 
   <div class="shot">
     <img id="fPreview" alt="" class="hide">
     <div class="shotbtns">
-      <button class="big-b" id="btnCam">📷 影相</button>
-      <button class="big-b" id="btnLib">🖼 揀相</button>
+      <button class="big-b" id="btnCam"><span class="z">📷 影相</span><span class="e">Take photo</span></button>
+      <button class="big-b" id="btnLib"><span class="z">🖼 揀相</span><span class="e">Choose photo</span></button>
     </div>
   </div>
 
-  <label class="f">
-    <span>食物名</span>
-    <input id="fName" type="text" list="nameHints" placeholder="例如：西蘭花" autocomplete="off">
-  </label>
-  <datalist id="nameHints"></datalist>
-
-  <label class="f" style="margin-bottom:8px">
-    <span>過期日期</span>
+  <div class="fld" style="margin-bottom:8px">
+    <div class="flab"><span class="z">過期日期</span><span class="e">Expiry date</span></div>
     <input id="fDate" type="date">
-  </label>
+  </div>
   <div class="quick" id="quickDates"></div>
 
-  <div class="f" style="margin-top:18px">
-    <span style="display:block;font-size:13px;color:var(--mute);margin-bottom:6px">放喺邊格</span>
+  <div class="fld" style="margin-top:18px">
+    <div class="flab"><span class="z">放喺邊</span><span class="e">Where it is kept</span></div>
     <div class="picker" id="fSections"></div>
   </div>
 
-  <label class="f">
-    <span>備註（數量、幾時買、隨意）</span>
-    <textarea id="fNote" rows="1" placeholder="2 盒"></textarea>
-  </label>
+  <details class="more" id="moreBox">
+    <summary><span><span class="z">名同備註（可以唔填，AI 會幫你填）</span><span class="e">Name &amp; notes — optional, AI can fill these in</span></span></summary>
+    <div class="inner">
+      <div class="fld">
+        <div class="flab"><span class="z">中文名</span><span class="e">Chinese name</span></div>
+        <input id="fZh" type="text" list="zhHints" placeholder="西蘭花" autocomplete="off">
+      </div>
+      <datalist id="zhHints"></datalist>
+      <div class="fld">
+        <div class="flab"><span class="z">英文名</span><span class="e">English name</span></div>
+        <input id="fEn" type="text" placeholder="Broccoli" autocomplete="off">
+      </div>
+      <div class="fld">
+        <div class="flab"><span class="z">牌子</span><span class="e">Brand</span></div>
+        <input id="fBrand" type="text" placeholder="Kirkland" autocomplete="off">
+      </div>
+      <div class="fld">
+        <div class="flab"><span class="z">備註（數量等等）</span><span class="e">Notes — quantity etc.</span></div>
+        <textarea id="fNote" rows="1" placeholder="2 盒　2 boxes"></textarea>
+      </div>
+    </div>
+  </details>
 
-  <button id="fSave" class="btn">儲存</button>
-  <div class="brow"><button id="fSaveNext" class="btn ghost">儲存，跟住入下一樣</button></div>
-  <button id="fDelete" class="btn danger hide" style="margin-top:6px">刪除呢樣嘢</button>
+  <button id="fSave" class="btn"><span class="z">儲存</span><span class="e">Save</span></button>
+  <div class="brow" id="nextRow"><button id="fSaveNext" class="btn ghost"><span class="z">儲存，跟住入下一樣</span><span class="e">Save and add the next one</span></button></div>
+  <div class="brow hide" id="delRow"><button id="fDelete" class="btn danger"><span class="z">刪除（入錯咗）</span><span class="e">Delete — entered by mistake</span></button></div>
 </section>
 
-<!-- ══ detail sheet ══ -->
+<!-- 詳情 -->
 <div id="detScrim" class="scrim hide"></div>
-<section id="detSheet" class="sheet hide" role="dialog" aria-modal="true" aria-labelledby="dName">
+<section id="detSheet" class="sheet hide" role="dialog" aria-modal="true">
   <div class="grab"></div>
   <div class="shead">
     <h2 id="dName">—</h2>
-    <button class="iconbtn" data-close="det" aria-label="閂">✕</button>
+    <button class="x" data-close="det" aria-label="閂 Close">✕</button>
   </div>
   <img id="dImg" alt="">
   <div class="dfacts">
     <div class="count" id="dCount"></div>
-    <div>
-      <div id="dWhen" style="font-weight:600"></div>
+    <div style="min-width:0">
+      <div id="dWhen" style="font-weight:600;font-size:14.5px"></div>
       <div class="dline" id="dWhere"></div>
       <div class="dline" id="dNote"></div>
     </div>
   </div>
-  <button id="dAte" class="btn">食咗 / 用完</button>
-  <div class="brow"><button id="dEdit" class="btn ghost">改資料</button></div>
+
+  <details class="more" id="dateBox">
+    <summary><span><span class="z">仲有一件？改返個到期日</span><span class="e">Still have one? Change the expiry date</span></span></summary>
+    <div class="inner">
+      <input id="dDate" type="date">
+      <div class="quick" id="dQuick"></div>
+      <button id="dDateSave" class="btn ghost" style="margin-top:12px"><span class="z">儲存新日期</span><span class="e">Save new date</span></button>
+    </div>
+  </details>
+
+  <button id="dAte" class="btn"><span class="z">食咗 / 用完</span><span class="e">Eaten or used up</span></button>
+  <div class="brow"><button id="dEdit" class="btn ghost"><span class="z">改資料</span><span class="e">Edit details</span></button></div>
 </section>
 
-<!-- ══ sections manager ══ -->
-<div id="secScrim" class="scrim hide"></div>
-<section id="secSheet" class="sheet hide" role="dialog" aria-modal="true" aria-labelledby="secTitle">
+<!-- 買開嘅嘢 -->
+<div id="libScrim" class="scrim hide"></div>
+<section id="libSheet" class="sheet hide" role="dialog" aria-modal="true">
   <div class="grab"></div>
   <div class="shead">
-    <h2 id="secTitle">分區</h2>
-    <button class="iconbtn" data-close="sec" aria-label="閂">✕</button>
+    <h2><span class="z">買開嘅嘢</span><span class="e">Things you buy again</span></h2>
+    <button class="x" data-close="lib" aria-label="閂 Close">✕</button>
   </div>
-  <div id="secList"></div>
-  <button id="secAdd" class="btn ghost" style="margin-top:18px">加一個分區</button>
+  <p class="hintline" style="margin:-6px 0 16px">撳一下就可以唔使再影相，直接入返同一樣嘢。<span class="e">Tap one to add it again — no need to take a new photo.</span></p>
+  <div id="libGrid"></div>
 </section>
 
-<!-- ══ cropper ══ -->
+<!-- 由買開嘅嘢再入貨 -->
+<div id="againScrim" class="scrim hide"></div>
+<section id="againSheet" class="sheet hide" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+  <div class="shead">
+    <h2 id="agName">—</h2>
+    <button class="x" data-close="again" aria-label="閂 Close">✕</button>
+  </div>
+  <div style="display:flex;gap:14px;margin-bottom:18px">
+    <img id="agImg" alt="" style="width:96px;height:96px;object-fit:cover;border-radius:12px;background:var(--chill);flex:none">
+    <div style="flex:1;min-width:0">
+      <div class="flab"><span class="z">過期日期</span><span class="e">Expiry date</span></div>
+      <input id="agDate" type="date">
+    </div>
+  </div>
+  <div class="quick" id="agQuick"></div>
+  <div class="fld" style="margin-top:18px">
+    <div class="flab"><span class="z">放喺邊</span><span class="e">Where it is kept</span></div>
+    <div class="picker" id="agSections"></div>
+  </div>
+  <button id="agSave" class="btn"><span class="z">入返落去</span><span class="e">Add it back</span></button>
+</section>
+
+<!-- 設定 -->
+<div id="setScrim" class="scrim hide"></div>
+<section id="setSheet" class="sheet hide" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+  <div class="shead">
+    <h2><span class="z">設定</span><span class="e">Settings</span></h2>
+    <button class="x" data-close="set" aria-label="閂 Close">✕</button>
+  </div>
+
+  <div class="ghead"><span class="z">分區</span><span class="e">Storage areas</span></div>
+  <div id="secList"></div>
+  <button id="secAdd" class="btn ghost" style="margin-top:14px"><span class="z">加一個分區</span><span class="e">Add an area</span></button>
+
+  <div class="ghead"><span class="z">睇圖 AI</span><span class="e">Photo-reading AI</span></div>
+  <p class="hintline">填好之後，主畫面有相但未有名嘅嘢就會出現一個掣，撳一下幫你一次過填晒中英文名同牌子。<span class="e">Once set up, a button appears on the main screen to name every photo at once.</span></p>
+  <div class="fld">
+    <div class="flab"><span class="z">Base URL</span><span class="e">API endpoint</span></div>
+    <input id="aiUrl" type="url" placeholder="https://open.bigmodel.cn/api/paas/v4" autocomplete="off" spellcheck="false">
+  </div>
+  <div class="fld">
+    <div class="flab"><span class="z">Model Name</span><span class="e">Model</span></div>
+    <input id="aiModel" type="text" placeholder="glm-5v-turbo" autocomplete="off" spellcheck="false">
+  </div>
+  <div class="fld">
+    <div class="flab"><span class="z">API Key</span><span class="e">Kept on this phone only</span></div>
+    <input id="aiKey" type="password" placeholder="••••••••" autocomplete="off" spellcheck="false">
+  </div>
+  <button id="aiSave" class="btn ghost"><span class="z">儲存 AI 設定</span><span class="e">Save AI settings</span></button>
+  <div class="brow"><button id="aiTest" class="btn plain"><span class="z">試一次</span><span class="e">Test the connection</span></button></div>
+
+  <div class="ghead"><span class="z">帳戶</span><span class="e">Account</span></div>
+  <div class="who" id="whoBox"></div>
+  <button id="signout" class="btn danger"><span class="z">登出</span><span class="e">Sign out</span></button>
+</section>
+
+<!-- 裁相 -->
 <div id="cropper" class="hide">
   <div class="cropbar">
-    <button id="cropCancel" class="tbtn">取消</button>
+    <button id="cropCancel" class="tbtn"><span class="z">取消</span><span class="e">Cancel</span></button>
     <div class="cropbar-mid">
-      <button id="rotL" class="tbtn icon" aria-label="向左轉">↺</button>
-      <button id="rotR" class="tbtn icon" aria-label="向右轉">↻</button>
-      <button id="cropAll" class="tbtn icon" aria-label="要成幅相">⛶</button>
+      <button id="rotL" class="tbtn icon" aria-label="向左轉 Rotate left">↺</button>
+      <button id="rotR" class="tbtn icon" aria-label="向右轉 Rotate right">↻</button>
+      <button id="cropAll" class="tbtn icon" aria-label="要成幅相 Whole photo">⛶</button>
     </div>
-    <button id="cropOk" class="tbtn primary">用呢個範圍</button>
+    <button id="cropOk" class="tbtn primary"><span class="z">用呢個範圍</span><span class="e">Use this area</span></button>
   </div>
   <div id="cropStage">
     <div id="cropWrap">
@@ -420,16 +496,26 @@ textarea{resize:vertical;min-height:52px}
       </div>
     </div>
   </div>
-  <p id="cropHint">拉四條邊或者四個角，剪走唔要嘅位</p>
+  <p id="cropHint">拉四條邊或者四個角，剪走唔要嘅位<span class="e">Drag the edges or corners to cut away what you don't need</span></p>
 </div>
 
-<div id="busy" class="hide"><div><div class="spin"></div><div id="busyMsg">處理緊…</div></div></div>
+<div id="askScrim" class="hide"><div id="askBox" role="alertdialog" aria-modal="true">
+  <div class="t" id="askT"></div>
+  <div class="m" id="askM"></div>
+  <div class="acts">
+    <button id="askNo" class="btn plain"><span class="z">取消</span><span class="e">Cancel</span></button>
+    <button id="askYes" class="btn"></button>
+  </div>
+</div></div>
+
+<div id="busy" class="hide"><div><div class="spin"></div><div id="busyMsg"></div><button id="busyStop" class="hide"><span class="z">停止</span><span class="e">Stop</span></button></div></div>
 <input id="fileCam" type="file" accept="image/*" capture="environment" class="hide">
 <input id="fileLib" type="file" accept="image/*" class="hide">
 
 <script type="module">
 /* ═══════════════════════════════════════════════════════
-   1. Firebase 設定 —— 換咗下面 6 行就用得
+   1. Firebase 設定 — 換咗下面 6 行就用得
+      Firebase config — replace the 6 lines below
    ═══════════════════════════════════════════════════════ */
 const firebaseConfig = {
   apiKey:            "AIzaSyDEkS_E9qSdkvaIa7A4oA98Gqh8IbbSY6s",
@@ -440,606 +526,808 @@ const firebaseConfig = {
   appId:             "1:776220761130:web:329c34b63c42393e25f753"
 };
 
-/* 壓縮設定 */
-const MAX_EDGE   = 1000;   // 最長嗰邊壓到幾多 px
-const THUMB_EDGE = 360;    // 清單細相
-const FULL_CAP   = 880000; // 大相上限（Firestore 一份文件最多 1MB）
+/* 2. 可以改嘅設定 Tunables */
+const MAX_EDGE   = 1000;    // 最長邊壓到幾多 px
+const THUMB_EDGE = 360;
+const FULL_CAP   = 880000;
 const THUMB_CAP  = 110000;
-
-/* 到期分界（日） */
 const T_SOON = 3, T_WATCH = 7;
+const AI_DEFAULT_URL   = "https://open.bigmodel.cn/api/paas/v4";
+const AI_DEFAULT_MODEL = "glm-5v-turbo";
+const DEFAULT_SECTIONS = [
+  ["雪櫃上格",  "Fridge — top"],
+  ["雪櫃中格",  "Fridge — middle"],
+  ["雪櫃下格",  "Fridge — bottom"],
+  ["廚櫃上格",  "Cabinet — top"],
+  ["廚櫃下格",  "Cabinet — bottom"]
+];
 
-const DEFAULT_SECTIONS = ["雪櫃上格","雪櫃下格","急凍格","Cabinet"];
-
-/* ═══════════════════════════════════════════════════════ */
+/* ═══ 細工具 helpers ═══════════════════════════════════ */
 const $ = s => document.querySelector(s);
-const esc = s => String(s??"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const todayISO = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const bi = (z,e) => `<span class="z">${esc(z)}</span><span class="e">${esc(e)}</span>`;
 
+const todayISO = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+function plusDays(n){ const d=new Date(); d.setDate(d.getDate()+n); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
 function daysLeft(iso){
   if(!iso) return null;
-  const [y,m,d] = iso.split("-").map(Number);
-  const t = new Date(y, m-1, d); t.setHours(0,0,0,0);
-  const now = new Date(); now.setHours(0,0,0,0);
-  return Math.round((t - now) / 86400000);
+  const [y,m,d]=iso.split("-").map(Number);
+  const t=new Date(y,m-1,d); t.setHours(0,0,0,0);
+  const n=new Date(); n.setHours(0,0,0,0);
+  return Math.round((t-n)/86400000);
 }
-function plusDays(n){
-  const d = new Date(); d.setDate(d.getDate()+n);
-  d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
-  return d.toISOString().slice(0,10);
+function fmtZh(iso){ if(!iso) return "冇日期"; const [y,m,d]=iso.split("-").map(Number); return (y===new Date().getFullYear()?"":y+"年")+m+"月"+d+"日"; }
+function fmtEn(iso){
+  if(!iso) return "No date";
+  const [y,m,d]=iso.split("-").map(Number);
+  const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${d} ${M[m-1]}` + (y===new Date().getFullYear()?"":" "+y);
 }
-function fmtDate(iso){
-  if(!iso) return "冇日期";
-  const [y,m,d] = iso.split("-").map(Number);
-  const now = new Date();
-  return (y === now.getFullYear() ? "" : y+"年") + m + "月" + d + "日";
-}
-function tier(n){ return n===null ? "" : n < 0 ? "gone" : n <= T_SOON ? "soon" : ""; }
 
 let toastT;
-function toast(msg){
+function toast(z,e){
   clearTimeout(toastT);
-  let t = $("#toast");
-  if(!t){ t = document.createElement("div"); t.id = "toast"; document.body.appendChild(t); }
-  t.textContent = msg;
-  toastT = setTimeout(() => t.remove(), 2200);
+  let t=$("#toast");
+  if(!t){ t=document.createElement("div"); t.id="toast"; document.body.appendChild(t); }
+  t.innerHTML = e ? bi(z,e) : esc(z);
+  toastT=setTimeout(()=>t.remove(), e?3000:2200);
 }
-const busy = (on, msg) => { $("#busyMsg").textContent = msg || "處理緊…"; $("#busy").classList.toggle("hide", !on); };
+function busy(on,z,e,onStop){
+  $("#busyMsg").innerHTML = on ? (e?bi(z,e):esc(z||"處理緊…")) : "";
+  const s=$("#busyStop");
+  s.classList.toggle("hide", !onStop);
+  s.onclick = onStop || null;
+  $("#busy").classList.toggle("hide", !on);
+}
+/* 中英對照確認窗 */
+function ask(o){
+  return new Promise(res=>{
+    $("#askT").innerHTML = bi(o.tz, o.te);
+    $("#askM").innerHTML = bi(o.mz, o.me);
+    const yes=$("#askYes");
+    yes.innerHTML = bi(o.yz||"確定", o.ye||"Confirm");
+    yes.className = "btn" + (o.danger?" danger":"");
+    $("#askScrim").classList.remove("hide");
+    const done=v=>{ $("#askScrim").classList.add("hide"); yes.onclick=null; $("#askNo").onclick=null; res(v); };
+    yes.onclick=()=>done(true);
+    $("#askNo").onclick=()=>done(false);
+  });
+}
 
-/* ═══ 裁相 + 壓縮 ═════════════════════════════════════ */
-let srcCv = null, DW = 0, DH = 0, B = {x:0,y:0,w:0,h:0}, cropResolve = null, drag = null;
+/* ═══ 裁相 + 壓縮 crop & compress ═════════════════════ */
+let srcCv=null, DW=0, DH=0, B={x:0,y:0,w:0,h:0}, cropResolve=null, drag=null;
 
 async function decode(file){
   try{
-    const bm = await createImageBitmap(file, { imageOrientation:"from-image" });
-    const c = document.createElement("canvas");
-    c.width = bm.width; c.height = bm.height;
-    c.getContext("2d").drawImage(bm, 0, 0);
-    bm.close();
-    return c;
+    const bm=await createImageBitmap(file,{imageOrientation:"from-image"});
+    const c=document.createElement("canvas"); c.width=bm.width; c.height=bm.height;
+    c.getContext("2d").drawImage(bm,0,0); bm.close(); return c;
   }catch(_){
-    const url = URL.createObjectURL(file);
+    const url=URL.createObjectURL(file);
     try{
-      const img = await new Promise((res, rej) => {
-        const i = new Image();
-        i.onload = () => res(i); i.onerror = () => rej(new Error("讀唔到呢張相"));
-        i.src = url;
-      });
-      const c = document.createElement("canvas");
-      c.width = img.naturalWidth; c.height = img.naturalHeight;
-      c.getContext("2d").drawImage(img, 0, 0);
-      return c;
+      const img=await new Promise((r,j)=>{ const i=new Image(); i.onload=()=>r(i); i.onerror=()=>j(new Error("讀唔到呢張相")); i.src=url; });
+      const c=document.createElement("canvas"); c.width=img.naturalWidth; c.height=img.naturalHeight;
+      c.getContext("2d").drawImage(img,0,0); return c;
     } finally { URL.revokeObjectURL(url); }
   }
 }
-
 function openCropper(file){
-  return new Promise(async (resolve) => {
-    busy(true, "開緊張相…");
-    try{
-      srcCv = await decode(file);
-    }catch(e){ busy(false); toast(e.message); resolve(null); return; }
+  return new Promise(async resolve=>{
+    busy(true,"開緊張相…","Opening photo…");
+    try{ srcCv=await decode(file); }
+    catch(e){ busy(false); toast("讀唔到呢張相","Could not read that photo"); resolve(null); return; }
     busy(false);
-    cropResolve = resolve;
+    cropResolve=resolve;
     $("#cropper").classList.remove("hide");
-    document.body.style.overflow = "hidden";
-    requestAnimationFrame(() => layoutCrop(true));
+    document.body.style.overflow="hidden";
+    requestAnimationFrame(()=>layoutCrop(true));
   });
 }
-function closeCropper(result){
+function closeCropper(r){
   $("#cropper").classList.add("hide");
-  document.body.style.overflow = "";
-  srcCv = null; drag = null;
-  const r = cropResolve; cropResolve = null;
-  if(r) r(result);
+  document.body.style.overflow="";
+  srcCv=null; drag=null;
+  const f=cropResolve; cropResolve=null; if(f) f(r);
 }
-
 function layoutCrop(reset){
   if(!srcCv) return;
-  const stage = $("#cropStage");
-  const aw = stage.clientWidth - 40, ah = stage.clientHeight - 40;
-  const W = srcCv.width, H = srcCv.height;
-  const scale = Math.min(aw / W, ah / H, 1);
-  const dw = Math.max(1, Math.round(W * scale)), dh = Math.max(1, Math.round(H * scale));
-  const ratio = (DW && !reset) ? dw / DW : 0;
-  const c = $("#cropCanvas");
-  c.width = dw; c.height = dh;
-  const g = c.getContext("2d");
-  g.imageSmoothingQuality = "high";
-  g.drawImage(srcCv, 0, 0, dw, dh);
-  const wrap = $("#cropWrap");
-  wrap.style.width = dw + "px"; wrap.style.height = dh + "px";
-  B = (reset || !ratio)
-    ? { x:0, y:0, w:dw, h:dh }
-    : { x:B.x*ratio, y:B.y*ratio, w:B.w*ratio, h:B.h*ratio };
-  DW = dw; DH = dh;
-  paintBox();
+  const st=$("#cropStage");
+  const aw=st.clientWidth-40, ah=st.clientHeight-40;
+  const W=srcCv.width, H=srcCv.height;
+  const k=Math.min(aw/W, ah/H, 1);
+  const dw=Math.max(1,Math.round(W*k)), dh=Math.max(1,Math.round(H*k));
+  const ratio=(DW&&!reset)?dw/DW:0;
+  const c=$("#cropCanvas"); c.width=dw; c.height=dh;
+  const g=c.getContext("2d"); g.imageSmoothingQuality="high"; g.drawImage(srcCv,0,0,dw,dh);
+  const wp=$("#cropWrap"); wp.style.width=dw+"px"; wp.style.height=dh+"px";
+  B=(reset||!ratio)?{x:0,y:0,w:dw,h:dh}:{x:B.x*ratio,y:B.y*ratio,w:B.w*ratio,h:B.h*ratio};
+  DW=dw; DH=dh; paintBox();
 }
-function paintBox(){
-  const s = $("#cropBox").style;
-  s.left = B.x + "px"; s.top = B.y + "px";
-  s.width = B.w + "px"; s.height = B.h + "px";
-}
+function paintBox(){ const s=$("#cropBox").style; s.left=B.x+"px"; s.top=B.y+"px"; s.width=B.w+"px"; s.height=B.h+"px"; }
 
-const MIN = 48;
-const box = $("#cropBox");
-box.addEventListener("pointerdown", e => {
-  const hd = e.target.closest(".hd");
-  drag = { mode: hd ? hd.dataset.h : "move", sx:e.clientX, sy:e.clientY, b:{...B} };
-  box.setPointerCapture(e.pointerId);
-  e.preventDefault(); e.stopPropagation();
+const MIN=48, cbox=$("#cropBox");
+cbox.addEventListener("pointerdown",e=>{
+  const hd=e.target.closest(".hd");
+  drag={mode:hd?hd.dataset.h:"move", sx:e.clientX, sy:e.clientY, b:{...B}};
+  cbox.setPointerCapture(e.pointerId); e.preventDefault(); e.stopPropagation();
 });
-box.addEventListener("pointermove", e => {
+cbox.addEventListener("pointermove",e=>{
   if(!drag) return;
-  const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
-  let { x, y, w, h } = drag.b;
-  if(drag.mode === "move"){
-    x = clamp(x + dx, 0, DW - w);
-    y = clamp(y + dy, 0, DH - h);
-  }else{
-    const m = drag.mode;
-    if(m.indexOf("n") > -1){ const ny = clamp(y + dy, 0, y + h - MIN); h = y + h - ny; y = ny; }
-    if(m.indexOf("s") > -1){ const nb = clamp(y + h + dy, y + MIN, DH); h = nb - y; }
-    if(m.indexOf("w") > -1){ const nx = clamp(x + dx, 0, x + w - MIN); w = x + w - nx; x = nx; }
-    if(m.indexOf("e") > -1){ const nr = clamp(x + w + dx, x + MIN, DW); w = nr - x; }
+  const dx=e.clientX-drag.sx, dy=e.clientY-drag.sy;
+  let {x,y,w,h}=drag.b;
+  if(drag.mode==="move"){ x=clamp(x+dx,0,DW-w); y=clamp(y+dy,0,DH-h); }
+  else{
+    const m=drag.mode;
+    if(m.indexOf("n")>-1){ const ny=clamp(y+dy,0,y+h-MIN); h=y+h-ny; y=ny; }
+    if(m.indexOf("s")>-1){ const nb=clamp(y+h+dy,y+MIN,DH); h=nb-y; }
+    if(m.indexOf("w")>-1){ const nx=clamp(x+dx,0,x+w-MIN); w=x+w-nx; x=nx; }
+    if(m.indexOf("e")>-1){ const nr=clamp(x+w+dx,x+MIN,DW); w=nr-x; }
   }
-  B = { x, y, w, h };
-  paintBox();
+  B={x,y,w,h}; paintBox();
 });
-const endDrag = () => { drag = null; };
-box.addEventListener("pointerup", endDrag);
-box.addEventListener("pointercancel", endDrag);
-addEventListener("resize", () => { if(srcCv) layoutCrop(false); });
-
-$("#cropAll").onclick = () => layoutCrop(true);
-$("#cropCancel").onclick = () => closeCropper(null);
-$("#rotL").onclick = () => rotate(-90);
-$("#rotR").onclick = () => rotate(90);
+const endDrag=()=>{drag=null;};
+cbox.addEventListener("pointerup",endDrag);
+cbox.addEventListener("pointercancel",endDrag);
+addEventListener("resize",()=>{ if(srcCv) layoutCrop(false); });
+$("#cropAll").onclick=()=>layoutCrop(true);
+$("#cropCancel").onclick=()=>closeCropper(null);
+$("#rotL").onclick=()=>rotate(-90);
+$("#rotR").onclick=()=>rotate(90);
 function rotate(deg){
   if(!srcCv) return;
-  const c = document.createElement("canvas");
-  c.width = srcCv.height; c.height = srcCv.width;
-  const g = c.getContext("2d");
-  g.translate(c.width / 2, c.height / 2);
-  g.rotate(deg * Math.PI / 180);
-  g.drawImage(srcCv, -srcCv.width / 2, -srcCv.height / 2);
-  srcCv = c;
-  layoutCrop(true);
+  const c=document.createElement("canvas"); c.width=srcCv.height; c.height=srcCv.width;
+  const g=c.getContext("2d");
+  g.translate(c.width/2,c.height/2); g.rotate(deg*Math.PI/180);
+  g.drawImage(srcCv,-srcCv.width/2,-srcCv.height/2);
+  srcCv=c; layoutCrop(true);
 }
-
-/* 分段縮圖，保住畫質 */
-function resample(src, sx, sy, sw, sh, tw, th){
-  let cur = document.createElement("canvas");
-  cur.width = Math.max(1, Math.round(sw)); cur.height = Math.max(1, Math.round(sh));
-  const c0 = cur.getContext("2d"); c0.imageSmoothingQuality = "high";
-  c0.drawImage(src, sx, sy, sw, sh, 0, 0, cur.width, cur.height);
-  while(cur.width > tw * 2 && cur.height > th * 2){
-    const n = document.createElement("canvas");
-    n.width = Math.max(tw, Math.round(cur.width / 2));
-    n.height = Math.max(th, Math.round(cur.height / 2));
-    const g = n.getContext("2d"); g.imageSmoothingQuality = "high";
-    g.drawImage(cur, 0, 0, n.width, n.height);
-    cur = n;
+function resample(src,sx,sy,sw,sh,tw,th){
+  let cur=document.createElement("canvas");
+  cur.width=Math.max(1,Math.round(sw)); cur.height=Math.max(1,Math.round(sh));
+  const c0=cur.getContext("2d"); c0.imageSmoothingQuality="high";
+  c0.drawImage(src,sx,sy,sw,sh,0,0,cur.width,cur.height);
+  while(cur.width>tw*2 && cur.height>th*2){
+    const n=document.createElement("canvas");
+    n.width=Math.max(tw,Math.round(cur.width/2));
+    n.height=Math.max(th,Math.round(cur.height/2));
+    const g=n.getContext("2d"); g.imageSmoothingQuality="high";
+    g.drawImage(cur,0,0,n.width,n.height); cur=n;
   }
-  const out = document.createElement("canvas");
-  out.width = tw; out.height = th;
-  const g = out.getContext("2d"); g.imageSmoothingQuality = "high";
-  g.drawImage(cur, 0, 0, tw, th);
-  return out;
+  const out=document.createElement("canvas"); out.width=tw; out.height=th;
+  const g=out.getContext("2d"); g.imageSmoothingQuality="high";
+  g.drawImage(cur,0,0,tw,th); return out;
 }
-function toJpeg(cv, cap){
-  let q = 0.85, url = cv.toDataURL("image/jpeg", q);
-  while(url.length > cap && q > 0.32){ q -= 0.09; url = cv.toDataURL("image/jpeg", q); }
-  return url;
-}
-function fit(sw, sh, edge){
-  const m = Math.max(sw, sh);
-  const k = m > edge ? edge / m : 1;
-  return [Math.max(1, Math.round(sw * k)), Math.max(1, Math.round(sh * k))];
-}
+function toJpeg(cv,cap){ let q=.85,u=cv.toDataURL("image/jpeg",q); while(u.length>cap&&q>.32){ q-=.09; u=cv.toDataURL("image/jpeg",q);} return u; }
+function fit(sw,sh,edge){ const m=Math.max(sw,sh), k=m>edge?edge/m:1; return [Math.max(1,Math.round(sw*k)),Math.max(1,Math.round(sh*k))]; }
 
-$("#cropOk").onclick = () => {
+$("#cropOk").onclick=()=>{
   if(!srcCv) return;
-  busy(true, "壓縮緊…");
-  setTimeout(() => {
+  busy(true,"壓縮緊…","Compressing…");
+  setTimeout(()=>{
     try{
-      const W = srcCv.width, H = srcCv.height;
-      const sx = B.x / DW * W, sy = B.y / DH * H;
-      const sw = B.w / DW * W, sh = B.h / DH * H;
-      const [fw, fh] = fit(sw, sh, MAX_EDGE);
-      const [tw, th] = fit(sw, sh, THUMB_EDGE);
-      const full  = toJpeg(resample(srcCv, sx, sy, sw, sh, fw, fh), FULL_CAP);
-      const thumb = toJpeg(resample(srcCv, sx, sy, sw, sh, tw, th), THUMB_CAP);
-      busy(false);
-      closeCropper({ full, thumb, w:fw, h:fh });
-    }catch(e){ busy(false); toast("壓縮失敗，試多次"); closeCropper(null); }
-  }, 30);
+      const W=srcCv.width,H=srcCv.height;
+      const sx=B.x/DW*W, sy=B.y/DH*H, sw=B.w/DW*W, sh=B.h/DH*H;
+      const [fw,fh]=fit(sw,sh,MAX_EDGE), [tw,th]=fit(sw,sh,THUMB_EDGE);
+      const full=toJpeg(resample(srcCv,sx,sy,sw,sh,fw,fh),FULL_CAP);
+      const thumb=toJpeg(resample(srcCv,sx,sy,sw,sh,tw,th),THUMB_CAP);
+      busy(false); closeCropper({full,thumb});
+    }catch(_){ busy(false); toast("壓縮失敗，試多次","Compression failed, please try again"); closeCropper(null); }
+  },30);
+};
+
+/* ═══ AI 設定（存喺本機）AI settings, stored on this device ═══ */
+const AI_KEY="fm.ai.v1";
+function aiCfg(){
+  try{ return JSON.parse(localStorage.getItem(AI_KEY)||"{}"); }catch(_){ return {}; }
+}
+function aiReady(){ const c=aiCfg(); return !!(c.url&&c.model&&c.key); }
+function loadAiForm(){
+  const c=aiCfg();
+  $("#aiUrl").value=c.url||AI_DEFAULT_URL;
+  $("#aiModel").value=c.model||AI_DEFAULT_MODEL;
+  $("#aiKey").value=c.key||"";
+}
+$("#aiSave").onclick=()=>{
+  const c={ url:$("#aiUrl").value.trim().replace(/\/+$/,""), model:$("#aiModel").value.trim(), key:$("#aiKey").value.trim() };
+  if(!c.url||!c.model||!c.key){ toast("三格都要填","All three fields are required"); return; }
+  try{ localStorage.setItem(AI_KEY, JSON.stringify(c)); }catch(_){ toast("存唔到設定","Could not save settings"); return; }
+  toast("儲存咗","Saved"); render();
+};
+function endpoint(url){ return /\/chat\/completions\/?$/.test(url) ? url : url.replace(/\/+$/,"")+"/chat/completions"; }
+
+const AI_PROMPT =
+ "You label food photos for a household food inventory in Hong Kong.\n" +
+ "Reply with ONE JSON object and nothing else. No markdown fences, no explanation.\n" +
+ '{"zh":"...","en":"...","brand":"..."}\n' +
+ "Rules:\n" +
+ "- zh: the food name in Traditional Chinese, Hong Kong usage.\n" +
+ "- en: the food name in simple English that a non-native reader understands.\n" +
+ "- Keep both names short, 1 to 4 words. No adjectives like fresh or delicious, no packaging description.\n" +
+ "- brand: the brand name printed on the package, only if it is clearly legible. Otherwise an empty string.\n" +
+ "- If several foods are visible, name the most prominent one.\n" +
+ "- If you cannot tell what the food is, use zh \"未知\" and en \"Unknown\".";
+
+async function askVision(dataUrl){
+  const c=aiCfg();
+  const body={
+    model:c.model, max_tokens:300, temperature:0.2,
+    messages:[{ role:"user", content:[
+      { type:"image_url", image_url:{ url:dataUrl } },
+      { type:"text", text:AI_PROMPT }
+    ]}]
+  };
+  if(/glm/i.test(c.model)) body.thinking={type:"disabled"};
+  let res;
+  try{
+    res=await fetch(endpoint(c.url),{ method:"POST",
+      headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+c.key },
+      body:JSON.stringify(body) });
+  }catch(err){
+    throw new Error("NET");   // CORS 或者上唔到網
+  }
+  if(res.status===400 && body.thinking){
+    delete body.thinking;
+    res=await fetch(endpoint(c.url),{ method:"POST",
+      headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+c.key },
+      body:JSON.stringify(body) });
+  }
+  if(!res.ok){ throw new Error("HTTP "+res.status+" "+(await res.text()).slice(0,140)); }
+  const data=await res.json();
+  const msg=(data.choices&&data.choices[0]&&data.choices[0].message)||{};
+  let txt=msg.content;
+  if(Array.isArray(txt)) txt=txt.map(p=>typeof p==="string"?p:(p.text||"")).join("");
+  txt=String(txt||"");
+  const a=txt.indexOf("{"), b=txt.lastIndexOf("}");
+  if(a<0||b<a) throw new Error("模型冇俾到 JSON");
+  const o=JSON.parse(txt.slice(a,b+1));
+  return { zh:String(o.zh||"").trim(), en:String(o.en||"").trim(), brand:String(o.brand||"").trim() };
+}
+$("#aiTest").onclick=async()=>{
+  if(!aiReady()){ toast("三格都要填先","Fill in all three fields first"); return; }
+  const cv=document.createElement("canvas"); cv.width=cv.height=64;
+  const g=cv.getContext("2d"); g.fillStyle="#d33"; g.fillRect(0,0,64,64);
+  busy(true,"試緊…","Testing…");
+  try{
+    const r=await askVision(cv.toDataURL("image/jpeg",.8));
+    busy(false); toast("通到！模型答："+(r.en||r.zh||"—"),"Connected. The model replied.");
+  }catch(e){
+    busy(false);
+    if(e.message==="NET") toast("接駁唔到。多數係瀏覽器 CORS 擋咗，或者 Base URL 打錯。","Could not connect — usually the browser's CORS block, or a wrong Base URL.");
+    else toast("失敗："+e.message,"Failed");
+  }
 };
 
 /* ═══ Firebase ═══════════════════════════════════════ */
-const V = "10.12.5";
-let db, auth, user = null;
-let items = [], sections = [], unsub = [];
-let filterSection = "all", filterSignal = "all", term = "";
-let editingId = null, pendingPhoto = null, existingThumb = null, seeded = false;
+const V="10.12.5";
+let db,auth,user=null,F=null,A=null;
+let items=[],sections=[],library=[],unsub=[];
+let filterSection="all", filterSignal="all", term="", seeded=false;
 
-if(firebaseConfig.apiKey.indexOf("PASTE") === 0){
-  $("#gateMsg").textContent = "仲未駁到 Firebase。喺 index.html 入面搵 firebaseConfig，貼返你自己個 project 嘅資料入去。";
+if(firebaseConfig.apiKey.indexOf("PASTE")===0){
+  $("#gateMsg").innerHTML=bi("仲未駁到 Firebase。喺 index.html 搵 firebaseConfig，貼返你自己個 project 嘅資料入去。","Firebase is not connected yet. Find firebaseConfig in index.html and paste your own project details in.");
   $("#signin").classList.add("hide");
   $("#gateCfg").classList.remove("hide");
-  $("#gateCfg").textContent = "Firebase Console → 專案設定 → 你的應用程式\n→ 揀 Config → 抄成段 firebaseConfig 貼入 index.html";
-}else{
-  boot();
-}
+  $("#gateCfg").textContent="Firebase Console → Project settings → Your apps\n→ Config → 抄成段 firebaseConfig 貼入 index.html";
+}else boot();
 
 async function boot(){
-  const [{ initializeApp }, A, F] = await Promise.all([
+  const [{initializeApp},a,f]=await Promise.all([
     import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`),
     import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`),
     import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`)
   ]);
-  window.__F = F; window.__A = A;
-  const app = initializeApp(firebaseConfig);
-  auth = A.getAuth(app);
-  try{
-    db = F.initializeFirestore(app, {
-      localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() })
-    });
-  }catch(_){ db = F.getFirestore(app); }
-
-  try{ await A.setPersistence(auth, A.browserLocalPersistence); }catch(_){}
+  A=a; F=f;
+  const app=initializeApp(firebaseConfig);
+  auth=A.getAuth(app);
+  try{ db=F.initializeFirestore(app,{localCache:F.persistentLocalCache({tabManager:F.persistentMultipleTabManager()})}); }
+  catch(_){ db=F.getFirestore(app); }
+  try{ await A.setPersistence(auth,A.browserLocalPersistence); }catch(_){}
   try{ await A.getRedirectResult(auth); }catch(_){}
 
-  $("#signin").onclick = async () => {
-    const p = new A.GoogleAuthProvider();
-    try{ await A.signInWithPopup(auth, p); }
-    catch(e){
-      if(String(e.code||"").indexOf("popup") > -1){ A.signInWithRedirect(auth, p); }
-      else toast("登入失敗：" + (e.code || e.message));
-    }
+  $("#signin").onclick=async()=>{
+    const p=new A.GoogleAuthProvider();
+    try{ await A.signInWithPopup(auth,p); }
+    catch(e){ if(String(e.code||"").indexOf("popup")>-1) A.signInWithRedirect(auth,p); else toast("登入失敗："+(e.code||e.message),"Sign-in failed"); }
   };
-  $("#signout").onclick = () => A.signOut(auth);
 
-  A.onAuthStateChanged(auth, u => {
-    user = u;
-    $("#gate").classList.toggle("hide", !!u);
-    $("#app").classList.toggle("hide", !u);
-    unsub.forEach(f => f()); unsub = [];
-    if(u) listen();
-    else { items = []; sections = []; }
+  A.onAuthStateChanged(auth,u=>{
+    user=u;
+    $("#gate").classList.toggle("hide",!!u);
+    $("#app").classList.toggle("hide",!u);
+    unsub.forEach(f=>f()); unsub=[];
+    if(u){ $("#whoBox").innerHTML=bi(u.email||"—","Signed in on this device"); listen(); }
+    else { items=[]; sections=[]; library=[]; }
   });
 }
-
 function listen(){
-  const F = window.__F;
-  unsub.push(F.onSnapshot(F.query(F.collection(db, "sections"), F.orderBy("order")), snap => {
-    sections = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-    if(!sections.length && !seeded){ seeded = true; seedSections(); }
-    renderChips(); renderSectionPicker(); renderSecList(); render();
-  }, err => toast("讀唔到分區：" + err.code)));
+  unsub.push(F.onSnapshot(F.query(F.collection(db,"sections"),F.orderBy("order")),s=>{
+    sections=s.docs.map(d=>({id:d.id,...d.data()}));
+    if(!sections.length && !seeded){ seeded=true; seedSections(); }
+    renderChips(); renderPickers(); renderSecList(); render();
+  },e=>toast("讀唔到分區："+e.code,"Could not load areas")));
 
-  unsub.push(F.onSnapshot(F.collection(db, "items"), snap => {
-    items = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-    renderHints(); render();
-  }, err => toast("讀唔到食物：" + err.code)));
+  unsub.push(F.onSnapshot(F.collection(db,"items"),s=>{
+    items=s.docs.map(d=>({id:d.id,...d.data()}));
+    renderHints(); renderSecList(); render();
+  },e=>toast("讀唔到食物："+e.code,"Could not load food")));
+
+  unsub.push(F.onSnapshot(F.collection(db,"library"),s=>{
+    library=s.docs.map(d=>({id:d.id,...d.data()}));
+    renderChips(); renderLib();
+  },e=>toast("讀唔到記錄："+e.code,"Could not load saved items")));
 }
 async function seedSections(){
-  const F = window.__F;
-  const batch = F.writeBatch(db);
-  DEFAULT_SECTIONS.forEach((name, i) => batch.set(F.doc(F.collection(db, "sections")), { name, order:i }));
-  try{ await batch.commit(); }catch(e){ toast("建立唔到預設分區：" + e.code); }
+  const b=F.writeBatch(db);
+  DEFAULT_SECTIONS.forEach(([z,e],i)=>b.set(F.doc(F.collection(db,"sections")),{zh:z,en:e,order:i}));
+  try{ await b.commit(); }catch(e){ toast("建立唔到預設分區："+e.code,"Could not create default areas"); }
 }
 
-/* ═══ 畫面 ═══════════════════════════════════════════ */
-const secName = id => (sections.find(s => s.id === id) || {}).name || "未分區";
+/* ═══ 讀資料嘅小工具 ══════════════════════════════════ */
+const sec = id => sections.find(s=>s.id===id) || null;
+const secZh = id => { const s=sec(id); return s ? (s.zh||s.name||"未分區") : "未分區"; };
+const secEn = id => { const s=sec(id); return s ? (s.en||"Unsorted") : "Unsorted"; };
+const nameZh = o => (o.zh||o.name||"").trim();
+const nameEn = o => (o.en||"").trim();
+const hasName = o => !!(nameZh(o)||nameEn(o));
+const withBrand = (n,b) => n ? (b? n+" ("+b+")" : n) : "";
+/* 拆成上下兩行：有中有英就對照，得一種就只出一行 */
+function nameLines(o){
+  const z=withBrand(nameZh(o), o.brand), e=withBrand(nameEn(o), o.brand);
+  if(z&&e) return {top:z, bot:nameEn(o)};
+  if(z) return {top:z, bot:""};
+  if(e) return {top:e, bot:""};
+  return null;
+}
 
+/* ═══ 畫面 render ════════════════════════════════════ */
 function renderChips(){
-  const c = $("#chips");
-  const list = [{ id:"all", name:"全部" }, ...sections];
-  c.innerHTML = list.map(s =>
-    `<button class="chip" data-sec="${esc(s.id)}" aria-pressed="${filterSection === s.id}">${esc(s.name)}</button>`
-  ).join("") + `<button class="chip ghost" id="chipManage">＋ 分區</button>`;
-  c.querySelectorAll("[data-sec]").forEach(b => b.onclick = () => {
-    filterSection = b.dataset.sec; renderChips(); render();
-  });
-  $("#chipManage").onclick = openSections;
+  const c=$("#chips");
+  const list=[{id:"all",zh:"全部",en:"All"},...sections];
+  c.innerHTML = list.map(s=>
+    `<button class="chip" data-sec="${esc(s.id)}" aria-pressed="${filterSection===s.id}">${bi(s.zh||s.name||"",s.en||"")}</button>`
+  ).join("") + `<button class="chip lib" id="chipLib">${bi("🗂 買開嘅嘢"+(library.length?" ("+library.length+")":""),"Buy again")}</button>`;
+  c.querySelectorAll("[data-sec]").forEach(b=>b.onclick=()=>{ filterSection=b.dataset.sec; renderChips(); render(); });
+  $("#chipLib").onclick=openLib;
 }
-
 function renderSignals(){
-  const live = items;
-  const n = k => live.filter(k).length;
-  const gone  = n(i => { const d = daysLeft(i.expiry); return d !== null && d < 0; });
-  const soon  = n(i => { const d = daysLeft(i.expiry); return d !== null && d >= 0 && d <= T_SOON; });
-  const watch = n(i => { const d = daysLeft(i.expiry); return d !== null && d > T_SOON && d <= T_WATCH; });
-  const defs = [
-    { k:"all",   label:"全部",   v:live.length, cls:"" },
-    { k:"gone",  label:"過咗期", v:gone,  cls:"g" },
-    { k:"soon",  label:"3日內",  v:soon,  cls:"s" },
-    { k:"watch", label:"一星期內", v:watch, cls:"" }
+  const n=k=>items.filter(k).length;
+  const defs=[
+    {k:"all",  z:"全部",   e:"All",       v:items.length, c:""},
+    {k:"gone", z:"過咗期", e:"Expired",   v:n(i=>{const d=daysLeft(i.expiry);return d!==null&&d<0;}), c:"g"},
+    {k:"soon", z:"3日內",  e:"In 3 days", v:n(i=>{const d=daysLeft(i.expiry);return d!==null&&d>=0&&d<=T_SOON;}), c:"s"},
+    {k:"watch",z:"一星期", e:"In a week", v:n(i=>{const d=daysLeft(i.expiry);return d!==null&&d>T_SOON&&d<=T_WATCH;}), c:""}
   ];
-  $("#signals").innerHTML = defs.map(d =>
-    `<button class="sig ${d.cls}" data-sig="${d.k}" aria-pressed="${filterSignal === d.k}"><b>${d.v}</b>${esc(d.label)}</button>`
+  $("#signals").innerHTML=defs.map(d=>
+    `<button class="sig ${d.c}" data-sig="${d.k}" aria-pressed="${filterSignal===d.k}"><b>${d.v}</b><span>${bi(d.z,d.e)}</span></button>`
   ).join("");
-  $("#signals").querySelectorAll("[data-sig]").forEach(b => b.onclick = () => {
-    filterSignal = filterSignal === b.dataset.sig ? "all" : b.dataset.sig;
+  $("#signals").querySelectorAll("[data-sig]").forEach(b=>b.onclick=()=>{
+    filterSignal = filterSignal===b.dataset.sig ? "all" : b.dataset.sig;
     renderSignals(); render();
   });
 }
-
 function visible(){
-  let r = items.slice();
-  if(filterSection !== "all") r = r.filter(i => i.sectionId === filterSection);
-  if(term) r = r.filter(i => ((i.name || "") + " " + (i.note || "")).toLowerCase().includes(term));
-  if(filterSignal !== "all") r = r.filter(i => {
-    const d = daysLeft(i.expiry);
-    if(d === null) return false;
-    if(filterSignal === "gone")  return d < 0;
-    if(filterSignal === "soon")  return d >= 0 && d <= T_SOON;
-    if(filterSignal === "watch") return d > T_SOON && d <= T_WATCH;
+  let r=items.slice();
+  if(filterSection!=="all") r=r.filter(i=>i.sectionId===filterSection);
+  if(term) r=r.filter(i=>(nameZh(i)+" "+nameEn(i)+" "+(i.brand||"")+" "+(i.note||"")).toLowerCase().includes(term));
+  if(filterSignal!=="all") r=r.filter(i=>{
+    const d=daysLeft(i.expiry); if(d===null) return false;
+    if(filterSignal==="gone") return d<0;
+    if(filterSignal==="soon") return d>=0&&d<=T_SOON;
+    if(filterSignal==="watch") return d>T_SOON&&d<=T_WATCH;
     return true;
   });
-  // 最快到期嘅頂上；冇日期嘅排最後
-  r.sort((a, b) => {
-    const da = daysLeft(a.expiry), dbv = daysLeft(b.expiry);
-    if(da === null && dbv === null) return (a.name||"").localeCompare(b.name||"");
-    if(da === null) return 1;
-    if(dbv === null) return -1;
-    return da - dbv || (a.name||"").localeCompare(b.name||"");
+  r.sort((a,b)=>{
+    const x=daysLeft(a.expiry), y=daysLeft(b.expiry);
+    if(x===null&&y===null) return 0;
+    if(x===null) return 1; if(y===null) return -1;
+    return x-y;
   });
   return r;
 }
-
-function countHTML(d){
-  if(d === null) return `<div class="count"><span class="cword" style="color:var(--mute)">冇日期</span></div>`;
-  const t = tier(d);
-  if(d < 0)  return `<div class="count gone"><span class="cnum">${-d}</span><span class="cunit">日前過咗</span></div>`;
-  if(d === 0) return `<div class="count soon"><span class="cword">今日</span><span class="cunit">到期</span></div>`;
-  if(d === 1) return `<div class="count soon"><span class="cword">聽日</span><span class="cunit">到期</span></div>`;
-  return `<div class="count ${t}"><span class="cnum">${d}</span><span class="cunit">日</span></div>`;
+function countHTML(d,id){
+  const i = id ? ` id="${id}"` : "";
+  if(d===null) return `<div${i} class="count na"><span class="cword">冇日期</span><span class="cunit">No date</span></div>`;
+  if(d<0)  return `<div${i} class="count gone"><span class="cnum">${-d}</span><span class="cunit">日前過咗<br>days ago</span></div>`;
+  if(d===0) return `<div${i} class="count soon"><span class="cword">今日</span><span class="cunit">Today</span></div>`;
+  if(d===1) return `<div${i} class="count soon"><span class="cword">聽日</span><span class="cunit">Tomorrow</span></div>`;
+  return `<div${i} class="count ${d<=T_SOON?"soon":""}"><span class="cnum">${d}</span><span class="cunit">日 days</span></div>`;
 }
-
 function render(){
   renderSignals();
-  const rows = visible();
-  const main = $("#list");
-  if(!rows.length){
-    main.innerHTML = `<div class="empty">
-      <div class="big">🧺</div>
-      <p>${items.length ? "呢度冇嘢符合。" : "雪櫃仲係空嘅。"}</p>
-      <p>${items.length ? "試下換個分區或者清走個篩選。" : "撳右下角「入貨」影低第一樣嘢。"}</p>
-    </div>`;
-    return;
+  const unnamed=items.filter(i=>i.thumb&&!hasName(i));
+  const ban=$("#aiBanner");
+  if(ban) ban.remove();
+  const rows=visible(), main=$("#list");
+
+  let html="";
+  if(unnamed.length && aiReady()){
+    html += `<div id="aiBanner"><div class="txt">${bi("有 "+unnamed.length+" 樣嘢影咗相但未有名", unnamed.length+" photos have no name yet")}</div>
+      <button id="aiGo">${bi("AI 幫我填","Name them")}</button></div>`;
   }
-  main.innerHTML = rows.map(i => {
-    const d = daysLeft(i.expiry);
-    return `<button class="row ${d !== null && d < 0 ? "expired" : ""}" data-id="${esc(i.id)}">
-      ${i.thumb ? `<img class="thumb" src="${i.thumb}" alt="">` : `<div class="thumb ph">🍽</div>`}
-      <div class="rmid">
-        <div class="rname">${esc(i.name || "未命名")}</div>
-        <div class="rmeta"><span class="tag">${esc(secName(i.sectionId))}</span><span>${esc(fmtDate(i.expiry))}</span></div>
-        ${i.note ? `<div class="rnote">${esc(i.note)}</div>` : ""}
-      </div>
-      ${countHTML(d)}
-    </button>`;
-  }).join("");
-  main.querySelectorAll(".row").forEach(r => r.onclick = () => openDetail(r.dataset.id));
+  if(!rows.length){
+    html += `<div class="empty"><div class="big">🧺</div>
+      <p>${items.length?"呢度冇嘢符合。":"仲未有嘢。"}<span class="e">${items.length?"Nothing matches here.":"Nothing here yet."}</span></p>
+      <p>${items.length?"換個分區或者清走個篩選。":"撳右下角「入貨」開始。"}<span class="e">${items.length?"Try another area or clear the filter.":"Tap Add food at the bottom right."}</span></p>
+    </div>`;
+  }else{
+    html += rows.map(i=>{
+      const d=daysLeft(i.expiry);
+      const nl=nameLines(i);
+      const nm = nl
+        ? `<div class="rname">${esc(nl.top)}${nl.bot?`<span class="e">${esc(nl.bot)}</span>`:""}</div>`
+        : `<div class="rname none">${bi("未命名","Unnamed")}</div>`;
+      return `<button class="row ${d!==null&&d<0?"expired":""}" data-id="${esc(i.id)}">
+        ${i.thumb?`<img class="thumb" src="${i.thumb}" alt="">`:`<div class="thumb ph">🍽</div>`}
+        <div class="rmid">${nm}
+          <div class="rmeta"><span class="tag">${esc(secZh(i.sectionId))}</span><span>${esc(fmtZh(i.expiry))}　${esc(fmtEn(i.expiry))}</span></div>
+        </div>
+        ${countHTML(d)}
+      </button>`;
+    }).join("");
+  }
+  main.innerHTML=html;
+  const go=$("#aiGo"); if(go) go.onclick=()=>runAI(unnamed);
+  main.querySelectorAll(".row").forEach(r=>r.onclick=()=>openDetail(r.dataset.id));
 }
-
 function renderHints(){
-  const names = [...new Set(items.map(i => i.name).filter(Boolean))].slice(0, 60);
-  $("#nameHints").innerHTML = names.map(n => `<option value="${esc(n)}">`).join("");
+  const n=[...new Set(items.map(nameZh).filter(Boolean))].slice(0,60);
+  $("#zhHints").innerHTML=n.map(v=>`<option value="${esc(v)}">`).join("");
+}
+$("#search").oninput=e=>{ term=e.target.value.trim().toLowerCase(); render(); };
+
+/* 快揀日期 quick date chips */
+const QUICK=[["今日","Today",0],["3日","3 days",3],["1星期","1 week",7],["2星期","2 weeks",14],["1個月","1 month",30],["3個月","3 months",90]];
+function fillQuick(hostSel,targetSel){
+  const h=$(hostSel);
+  h.innerHTML=QUICK.map(([z,e,n])=>`<button type="button" class="qb" data-d="${n}">${bi(z,e)}</button>`).join("");
+  h.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{ $(targetSel).value=plusDays(+b.dataset.d); });
+}
+fillQuick("#quickDates","#fDate"); fillQuick("#dQuick","#dDate"); fillQuick("#agQuick","#agDate");
+
+/* ═══ 分區揀掣 section pickers ═══════════════════════ */
+let formSection=null, agSection=null;
+function renderPickers(){
+  paintPicker("#fSections","formSection");
+  paintPicker("#agSections","agSection");
+}
+function paintPicker(sel,which){
+  const p=$(sel); if(!p) return;
+  if(!sections.length){ p.innerHTML=`<span style="color:var(--mute);font-size:13.5px">${bi("仲未有分區，撳 ⚙ 加一個。","No areas yet — tap the gear to add one.")}</span>`; return; }
+  let cur = which==="formSection"?formSection:agSection;
+  if(!sections.some(s=>s.id===cur)){ cur=sections[0].id; if(which==="formSection") formSection=cur; else agSection=cur; }
+  p.innerHTML=sections.map(s=>`<button type="button" class="pk" data-s="${esc(s.id)}" aria-pressed="${cur===s.id}">${bi(s.zh||s.name||"",s.en||"")}</button>`).join("");
+  p.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{
+    if(which==="formSection") formSection=b.dataset.s; else agSection=b.dataset.s;
+    paintPicker(sel,which);
+  });
 }
 
-$("#search").oninput = e => { term = e.target.value.trim().toLowerCase(); render(); };
-
-/* ═══ 入貨 / 改資料 ═══════════════════════════════════ */
-function openForm(item){
-  editingId = item ? item.id : null;
-  pendingPhoto = null;
-  existingThumb = item ? (item.thumb || null) : null;
-  $("#formTitle").textContent = item ? "改資料" : "入貨";
-  $("#fName").value = item ? (item.name || "") : "";
-  $("#fDate").value = item ? (item.expiry || "") : plusDays(7);
-  $("#fNote").value = item ? (item.note || "") : "";
-  formSection = item ? item.sectionId : (filterSection !== "all" ? filterSection : (sections[0] || {}).id);
-  setPreview(existingThumb);
-  renderSectionPicker();
-  $("#fDelete").classList.toggle("hide", !item);
-  $("#fSaveNext").parentElement.classList.toggle("hide", !!item);
-  show("form", true);
+/* ═══ 入貨 / 改資料 add & edit ═══════════════════════ */
+let editingId=null, pendingPhoto=null, keepThumb=null;
+function openForm(it){
+  editingId = it?it.id:null;
+  pendingPhoto=null;
+  keepThumb = it?(it.thumb||null):null;
+  $("#formTitle").innerHTML = it?bi("改資料","Edit details"):bi("入貨","Add food");
+  $("#fDate").value = it?(it.expiry||""):plusDays(7);
+  $("#fZh").value = it?nameZh(it):"";
+  $("#fEn").value = it?nameEn(it):"";
+  $("#fBrand").value = it?(it.brand||""):"";
+  $("#fNote").value = it?(it.note||""):"";
+  $("#moreBox").open = !!(it && (hasName(it)||it.brand||it.note));
+  formSection = it?it.sectionId:(filterSection!=="all"?filterSection:(sections[0]||{}).id);
+  setPreview(keepThumb);
+  paintPicker("#fSections","formSection");
+  $("#delRow").classList.toggle("hide",!it);
+  $("#nextRow").classList.toggle("hide",!!it);
+  show("form",true);
 }
 function setPreview(src){
-  const img = $("#fPreview");
-  if(src){ img.src = src; img.classList.remove("hide"); }
-  else { img.removeAttribute("src"); img.classList.add("hide"); }
+  const g=$("#fPreview");
+  if(src){ g.src=src; g.classList.remove("hide"); } else { g.removeAttribute("src"); g.classList.add("hide"); }
 }
-let formSection = null;
-function renderSectionPicker(){
-  const p = $("#fSections");
-  if(!p) return;
-  if(!sections.length){ p.innerHTML = `<span style="color:var(--mute);font-size:14px">仲未有分區，撳上面 ⚙ 加一個。</span>`; return; }
-  if(!sections.some(s => s.id === formSection)) formSection = sections[0].id;
-  p.innerHTML = sections.map(s =>
-    `<button type="button" class="pk" data-s="${esc(s.id)}" aria-pressed="${formSection === s.id}">${esc(s.name)}</button>`
-  ).join("");
-  p.querySelectorAll("[data-s]").forEach(b => b.onclick = () => { formSection = b.dataset.s; renderSectionPicker(); });
-}
-
-$("#quickDates").innerHTML = [["今日",0],["3日",3],["1星期",7],["2星期",14],["1個月",30],["3個月",90]]
-  .map(([l,n]) => `<button type="button" class="qb" data-d="${n}">${l}</button>`).join("");
-$("#quickDates").querySelectorAll("[data-d]").forEach(b =>
-  b.onclick = () => { $("#fDate").value = plusDays(+b.dataset.d); });
-
-$("#btnCam").onclick = () => $("#fileCam").click();
-$("#btnLib").onclick = () => $("#fileLib").click();
-["#fileCam","#fileLib"].forEach(sel => $(sel).onchange = async e => {
-  const f = e.target.files && e.target.files[0];
-  e.target.value = "";
+$("#btnCam").onclick=()=>$("#fileCam").click();
+$("#btnLib").onclick=()=>$("#fileLib").click();
+["#fileCam","#fileLib"].forEach(s=>$(s).onchange=async e=>{
+  const f=e.target.files&&e.target.files[0]; e.target.value="";
   if(!f) return;
-  const out = await openCropper(f);
-  if(out){ pendingPhoto = out; setPreview(out.thumb); }
+  const out=await openCropper(f);
+  if(out){ pendingPhoto=out; setPreview(out.thumb); }
 });
 
-async function save(andNext){
-  const F = window.__F;
-  const name = $("#fName").value.trim();
-  const expiry = $("#fDate").value;
-  if(!name && !pendingPhoto && !existingThumb){ toast("最少要有個名或者一張相"); return; }
-  if(!expiry){ toast("入返個過期日期"); return; }
-  if(!formSection){ toast("揀個分區先"); return; }
-  busy(true, "儲存緊…");
+async function save(next){
+  const expiry=$("#fDate").value;
+  if(!expiry){ toast("入返個過期日期","Please set an expiry date"); return; }
+  if(!formSection){ toast("揀個分區先","Pick an area first"); return; }
+  if(!pendingPhoto && !keepThumb && !$("#fZh").value.trim() && !$("#fEn").value.trim()){
+    toast("最少要有張相或者一個名","You need at least a photo or a name"); return;
+  }
+  busy(true,"儲存緊…","Saving…");
   try{
-    const base = {
-      name: name || "未命名",
-      expiry,
-      sectionId: formSection,
-      note: $("#fNote").value.trim(),
-      updatedAt: F.serverTimestamp(),
-      updatedBy: (user && user.email) || ""
+    const base={
+      expiry, sectionId:formSection,
+      zh:$("#fZh").value.trim(), en:$("#fEn").value.trim(),
+      brand:$("#fBrand").value.trim(), note:$("#fNote").value.trim(),
+      updatedAt:F.serverTimestamp(), updatedBy:(user&&user.email)||""
     };
-    if(pendingPhoto) base.thumb = pendingPhoto.thumb;
-    let id = editingId;
-    if(id){
-      await F.updateDoc(F.doc(db, "items", id), base);
+    if(editingId){
+      if(pendingPhoto){
+        const pid=F.doc(F.collection(db,"photos")).id;
+        await F.setDoc(F.doc(db,"photos",pid),{full:pendingPhoto.full});
+        base.thumb=pendingPhoto.thumb; base.photoId=pid; base.libId="";
+      }
+      await F.updateDoc(F.doc(db,"items",editingId),base);
     }else{
-      base.createdAt = F.serverTimestamp();
-      base.thumb = pendingPhoto ? pendingPhoto.thumb : "";
-      const ref = await F.addDoc(F.collection(db, "items"), base);
-      id = ref.id;
+      base.createdAt=F.serverTimestamp(); base.libId="";
+      if(pendingPhoto){
+        const pid=F.doc(F.collection(db,"photos")).id;
+        await F.setDoc(F.doc(db,"photos",pid),{full:pendingPhoto.full});
+        base.thumb=pendingPhoto.thumb; base.photoId=pid;
+      }else{ base.thumb=""; base.photoId=""; }
+      await F.addDoc(F.collection(db,"items"),base);
     }
-    if(pendingPhoto) await F.setDoc(F.doc(db, "photos", id), { full: pendingPhoto.full });
     busy(false);
-    toast(editingId ? "改好喇" : "入咗貨");
-    if(andNext){
-      editingId = null; pendingPhoto = null; existingThumb = null;
-      $("#fName").value = ""; $("#fNote").value = ""; setPreview(null);
-      $("#fDate").value = plusDays(7);
-      $("#fName").focus();
-    }else show("form", false);
-  }catch(e){ busy(false); toast("儲存失敗：" + (e.code || e.message)); }
+    toast(editingId?"改好咗":"入咗貨", editingId?"Updated":"Added");
+    if(next){
+      editingId=null; pendingPhoto=null; keepThumb=null;
+      $("#fZh").value=""; $("#fEn").value=""; $("#fBrand").value=""; $("#fNote").value="";
+      $("#fDate").value=plusDays(7); setPreview(null);
+    }else show("form",false);
+  }catch(e){ busy(false); toast("儲存失敗："+(e.code||e.message),"Save failed"); }
 }
-$("#fSave").onclick = () => save(false);
-$("#fSaveNext").onclick = () => save(true);
-$("#fab").onclick = () => openForm(null);
+$("#fSave").onclick=()=>save(false);
+$("#fSaveNext").onclick=()=>save(true);
+$("#fab").onclick=()=>openForm(null);
 
-$("#fDelete").onclick = () => removeItem(editingId, () => show("form", false));
-async function removeItem(id, done){
-  if(!id) return;
-  if(!confirm("確定刪除？")) return;
-  const F = window.__F;
-  busy(true, "刪緊…");
+$("#fDelete").onclick=async()=>{
+  const it=items.find(i=>i.id===editingId); if(!it) return;
+  const ok=await ask({ tz:"刪除呢樣嘢？", te:"Delete this item?",
+    mz:"入錯咗先用呢個。咁樣唔會留低任何記錄。", me:"Use this only if it was entered by mistake. Nothing will be kept.",
+    yz:"刪除", ye:"Delete", danger:true });
+  if(!ok) return;
+  busy(true,"刪緊…","Deleting…");
   try{
-    await F.deleteDoc(F.doc(db, "items", id));
-    try{ await F.deleteDoc(F.doc(db, "photos", id)); }catch(_){}
-    busy(false); toast("刪咗"); done && done();
-  }catch(e){ busy(false); toast("刪唔到：" + (e.code || e.message)); }
-}
-
-/* ═══ 詳情 ═══════════════════════════════════════════ */
-let detailId = null;
-async function openDetail(id){
-  const it = items.find(i => i.id === id);
-  if(!it) return;
-  detailId = id;
-  const d = daysLeft(it.expiry);
-  $("#dName").textContent = it.name || "未命名";
-  $("#dCount").outerHTML = countHTML(d).replace('class="count', 'id="dCount" class="count');
-  $("#dWhen").textContent = it.expiry ? fmtDate(it.expiry) + " 到期" : "冇入過期日";
-  $("#dWhere").textContent = secName(it.sectionId);
-  $("#dNote").textContent = it.note || "";
-  const img = $("#dImg");
-  img.src = it.thumb || "";
-  img.style.filter = it.thumb ? "blur(6px)" : "none";
-  show("det", true);
-  try{
-    const F = window.__F;
-    const snap = await F.getDoc(F.doc(db, "photos", id));
-    if(snap.exists() && detailId === id){ img.src = snap.data().full; img.style.filter = "none"; }
-    else img.style.filter = "none";
-  }catch(_){ img.style.filter = "none"; }
-}
-$("#dEdit").onclick = () => {
-  const it = items.find(i => i.id === detailId);
-  show("det", false);
-  if(it) openForm(it);
+    await F.deleteDoc(F.doc(db,"items",it.id));
+    if(it.photoId && !it.libId){ try{ await F.deleteDoc(F.doc(db,"photos",it.photoId)); }catch(_){} }
+    busy(false); toast("刪咗","Deleted"); show("form",false);
+  }catch(e){ busy(false); toast("刪唔到："+(e.code||e.message),"Could not delete"); }
 };
-$("#dAte").onclick = () => removeItem(detailId, () => show("det", false));
 
-/* ═══ 分區管理 ═══════════════════════════════════════ */
-function openSections(){ renderSecList(); show("sec", true); }
-$("#openSections").onclick = openSections;
+/* ═══ 詳情 detail ════════════════════════════════════ */
+let detailId=null;
+async function openDetail(id){
+  const it=items.find(i=>i.id===id); if(!it) return;
+  detailId=id;
+  const d=daysLeft(it.expiry);
+  const nl=nameLines(it);
+  $("#dName").innerHTML = nl ? bi(nl.top, nl.bot) : bi("未命名","Unnamed");
+  const old=$("#dCount"); old.outerHTML=countHTML(d,"dCount");
+  $("#dWhen").innerHTML = it.expiry ? bi(fmtZh(it.expiry)+" 到期", fmtEn(it.expiry)+" expiry") : bi("冇入過期日","No expiry date");
+  $("#dWhere").innerHTML = bi(secZh(it.sectionId), secEn(it.sectionId));
+  $("#dNote").textContent = it.note||"";
+  $("#dDate").value = it.expiry||"";
+  $("#dateBox").open=false;
+  const img=$("#dImg");
+  img.src=it.thumb||""; img.style.filter=it.thumb?"blur(6px)":"none";
+  show("det",true);
+  if(it.photoId){
+    try{
+      const s=await F.getDoc(F.doc(db,"photos",it.photoId));
+      if(s.exists()&&detailId===id){ img.src=s.data().full; }
+    }catch(_){}
+  }
+  img.style.filter="none";
+}
+$("#dDateSave").onclick=async()=>{
+  const v=$("#dDate").value;
+  if(!v){ toast("揀個日期先","Pick a date first"); return; }
+  busy(true,"儲存緊…","Saving…");
+  try{
+    await F.updateDoc(F.doc(db,"items",detailId),{expiry:v,updatedAt:F.serverTimestamp()});
+    busy(false); toast("改咗日期","Date updated"); show("det",false);
+  }catch(e){ busy(false); toast("改唔到："+(e.code||e.message),"Could not update"); }
+};
+$("#dEdit").onclick=()=>{ const it=items.find(i=>i.id===detailId); show("det",false); if(it) openForm(it); };
 
+/* 食咗 → 入返「買開嘅嘢」*/
+$("#dAte").onclick=async()=>{
+  const it=items.find(i=>i.id===detailId); if(!it) return;
+  const ok=await ask({ tz:"食咗喇？", te:"Eaten?",
+    mz:"會由清單度拎走，但張相同個名會留喺「買開嘅嘢」，下次買返同一樣就唔使再影相。",
+    me:"It leaves the list, but the photo and name stay under Buy again, so you never need to photograph it twice.",
+    yz:"係，食咗", ye:"Yes, eaten" });
+  if(!ok) return;
+  busy(true,"處理緊…","Working…");
+  try{
+    const lib = it.libId ? library.find(l=>l.id===it.libId) : null;
+    if(lib){
+      await F.updateDoc(F.doc(db,"library",lib.id),{ lastUsed:F.serverTimestamp(), times:(lib.times||1)+1 });
+    }else if(it.thumb){
+      await F.addDoc(F.collection(db,"library"),{
+        zh:nameZh(it), en:nameEn(it), brand:it.brand||"",
+        thumb:it.thumb, photoId:it.photoId||"", sectionId:it.sectionId||"",
+        lastUsed:F.serverTimestamp(), times:1
+      });
+    }
+    await F.deleteDoc(F.doc(db,"items",it.id));
+    busy(false); toast("記低咗，下次可以直接揀返","Saved — you can add it again in one tap"); show("det",false);
+  }catch(e){ busy(false); toast("失敗："+(e.code||e.message),"Failed"); }
+};
+
+/* ═══ 買開嘅嘢 library ═══════════════════════════════ */
+function openLib(){ renderLib(); show("lib",true); }
+function renderLib(){
+  const g=$("#libGrid"); if(!g) return;
+  const ls=library.slice().sort((a,b)=>(b.times||0)-(a.times||0));
+  if(!ls.length){
+    g.innerHTML=`<div class="empty" style="padding:36px 10px"><div class="big">🗂</div>
+      <p>仲係空嘅。<span class="e">Nothing here yet.</span></p>
+      <p>撳「食咗 / 用完」之後，張相會自動留喺呢度。<span class="e">Photos land here when you mark something eaten.</span></p></div>`;
+    return;
+  }
+  g.innerHTML=`<div class="lgrid">`+ls.map(l=>`
+    <div class="lcard">
+      <button data-again="${esc(l.id)}" style="display:block;width:100%;text-align:left">
+        ${l.thumb?`<img src="${l.thumb}" alt="">`:`<div style="aspect-ratio:1;display:grid;place-items:center;font-size:26px">🍽</div>`}
+        <div class="cap">${ (ln=>ln?bi(ln.top,ln.bot):bi("未命名","Unnamed"))(nameLines(l)) }</div>
+      </button>
+      <button class="rm" data-rmlib="${esc(l.id)}" aria-label="刪走 Remove">✕</button>
+    </div>`).join("")+`</div>`;
+  g.querySelectorAll("[data-again]").forEach(b=>b.onclick=()=>openAgain(b.dataset.again));
+  g.querySelectorAll("[data-rmlib]").forEach(b=>b.onclick=()=>rmLib(b.dataset.rmlib));
+}
+let againId=null;
+function openAgain(id){
+  const l=library.find(x=>x.id===id); if(!l) return;
+  againId=id;
+  const ln=nameLines(l);
+  $("#agName").innerHTML = ln ? bi(ln.top, ln.bot||"Add it again") : bi("再入一次","Add it again");
+  $("#agImg").src=l.thumb||"";
+  $("#agDate").value=plusDays(7);
+  agSection = sections.some(s=>s.id===l.sectionId) ? l.sectionId : (sections[0]||{}).id;
+  paintPicker("#agSections","agSection");
+  show("again",true);
+}
+$("#agSave").onclick=async()=>{
+  const l=library.find(x=>x.id===againId); if(!l) return;
+  const expiry=$("#agDate").value;
+  if(!expiry){ toast("入返個過期日期","Please set an expiry date"); return; }
+  busy(true,"儲存緊…","Saving…");
+  try{
+    await F.addDoc(F.collection(db,"items"),{
+      zh:l.zh||"", en:l.en||"", brand:l.brand||"", note:"",
+      expiry, sectionId:agSection||l.sectionId||"",
+      thumb:l.thumb||"", photoId:l.photoId||"", libId:l.id,
+      createdAt:F.serverTimestamp(), updatedAt:F.serverTimestamp(), updatedBy:(user&&user.email)||""
+    });
+    busy(false); toast("入咗貨","Added"); show("again",false); show("lib",false);
+  }catch(e){ busy(false); toast("失敗："+(e.code||e.message),"Failed"); }
+};
+async function rmLib(id){
+  const l=library.find(x=>x.id===id); if(!l) return;
+  const inUse=items.some(i=>i.libId===id);
+  const ok=await ask({ tz:"由「買開嘅嘢」刪走？", te:"Remove from Buy again?",
+    mz:"之後買返同一樣就要重新影相。", me:"You would have to photograph it again next time.",
+    yz:"刪走", ye:"Remove", danger:true });
+  if(!ok) return;
+  try{
+    await F.deleteDoc(F.doc(db,"library",id));
+    if(l.photoId && !inUse){ try{ await F.deleteDoc(F.doc(db,"photos",l.photoId)); }catch(_){} }
+    toast("刪咗","Removed");
+  }catch(e){ toast("刪唔到："+(e.code||e.message),"Could not remove"); }
+}
+
+/* ═══ AI 一鍵改名 batch naming ═══════════════════════ */
+let aiStop=false;
+async function runAI(list){
+  if(!aiReady()){ toast("先去 ⚙ 填 AI 設定","Set up the AI in Settings first"); return; }
+  aiStop=false;
+  let done=0, ok=0, fail=0;
+  busy(true,`改緊名 ${done} / ${list.length}`,"Naming photos…",()=>{aiStop=true;});
+  for(const it of list){
+    if(aiStop) break;
+    try{
+      let img=it.thumb;
+      if(it.photoId){
+        try{ const s=await F.getDoc(F.doc(db,"photos",it.photoId)); if(s.exists()) img=s.data().full; }catch(_){}
+      }
+      const r=await askVision(img);
+      if(r.zh||r.en){
+        await F.updateDoc(F.doc(db,"items",it.id),{ zh:r.zh, en:r.en, brand:r.brand||"", updatedAt:F.serverTimestamp() });
+        ok++;
+      } else fail++;
+    }catch(e){
+      fail++;
+      if(e.message==="NET"){
+        busy(false);
+        toast("接駁唔到 AI。多數係瀏覽器 CORS 擋咗。","Could not reach the AI — usually a browser CORS block.");
+        return;
+      }
+    }
+    done++;
+    busy(true,`改緊名 ${done} / ${list.length}`,"Naming photos…",()=>{aiStop=true;});
+  }
+  busy(false);
+  toast(`改好 ${ok} 樣` + (fail?`，${fail} 樣唔得`:"") + (aiStop?"（停咗）":""), `${ok} named` + (fail?`, ${fail} failed`:""));
+}
+
+/* ═══ 設定 settings ══════════════════════════════════ */
+$("#openSet").onclick=()=>{ loadAiForm(); renderSecList(); show("set",true); };
 function renderSecList(){
-  const box = $("#secList");
-  if(!box) return;
-  if(!sections.length){ box.innerHTML = `<p style="color:var(--mute);font-size:14px;margin:0">仲未有分區。加一個，例如「雪櫃上格」。</p>`; return; }
-  box.innerHTML = sections.map((s, i) => {
-    const n = items.filter(x => x.sectionId === s.id).length;
+  const b=$("#secList"); if(!b) return;
+  if(b.contains(document.activeElement)) return;   // 唔好喺打緊字嗰陣重畫
+  if(!sections.length){ b.innerHTML=`<p class="hintline" style="margin:0">${bi("仲未有分區。","No areas yet.")}</p>`; return; }
+  b.innerHTML=sections.map((s,i)=>{
+    const n=items.filter(x=>x.sectionId===s.id).length;
     return `<div class="srow" data-id="${esc(s.id)}">
-      <input value="${esc(s.name)}" data-rename aria-label="分區名">
-      <span style="font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums">${n}</span>
-      <button class="mini" data-up ${i===0?"disabled style=opacity:.3":""} aria-label="向上">↑</button>
-      <button class="mini" data-down ${i===sections.length-1?"disabled style=opacity:.3":""} aria-label="向下">↓</button>
-      <button class="mini del" data-del aria-label="刪除">✕</button>
+      <div class="ins">
+        <input class="a" value="${esc(s.zh||s.name||"")}" data-zh aria-label="中文名">
+        <input class="b" value="${esc(s.en||"")}" data-en aria-label="English name" placeholder="English name">
+      </div>
+      <span class="n">${n}</span>
+      <button class="mini" data-up ${i===0?"disabled":""} aria-label="向上 Up">↑</button>
+      <button class="mini" data-down ${i===sections.length-1?"disabled":""} aria-label="向下 Down">↓</button>
+      <button class="mini del" data-del aria-label="刪除 Delete">✕</button>
     </div>`;
   }).join("");
-  const F = window.__F;
-  box.querySelectorAll(".srow").forEach(row => {
-    const id = row.dataset.id;
-    row.querySelector("[data-rename]").onchange = async e => {
-      const v = e.target.value.trim();
-      if(!v) return renderSecList();
-      try{ await F.updateDoc(F.doc(db, "sections", id), { name:v }); toast("改咗名"); }
-      catch(err){ toast("改唔到：" + err.code); }
-    };
-    row.querySelector("[data-up]").onclick = () => moveSec(id, -1);
-    row.querySelector("[data-down]").onclick = () => moveSec(id, 1);
-    row.querySelector("[data-del]").onclick = async () => {
-      const n = items.filter(x => x.sectionId === id).length;
-      if(n){ toast(`呢格仲有 ${n} 樣嘢，搬走咗先至刪得`); return; }
-      if(!confirm("刪咗呢個分區？")) return;
-      try{ await F.deleteDoc(F.doc(db, "sections", id)); }catch(e){ toast("刪唔到：" + e.code); }
+  b.querySelectorAll(".srow").forEach(row=>{
+    const id=row.dataset.id;
+    const upd=async patch=>{ try{ await F.updateDoc(F.doc(db,"sections",id),patch); toast("改咗","Updated"); }catch(e){ toast("改唔到："+e.code,"Could not update"); } };
+    row.querySelector("[data-zh]").onchange=e=>{ const v=e.target.value.trim(); if(!v) return renderSecList(); upd({zh:v,name:v}); };
+    row.querySelector("[data-en]").onchange=e=>upd({en:e.target.value.trim()});
+    row.querySelector("[data-up]").onclick=()=>moveSec(id,-1);
+    row.querySelector("[data-down]").onclick=()=>moveSec(id,1);
+    row.querySelector("[data-del]").onclick=async()=>{
+      const n=items.filter(x=>x.sectionId===id).length;
+      if(n){ toast(`呢格仲有 ${n} 樣嘢，搬走咗先刪得`,`${n} items are still here — move them first`); return; }
+      const ok=await ask({ tz:"刪咗呢個分區？", te:"Delete this area?", mz:"入面冇嘢，刪咗唔會影響任何食物。", me:"It is empty, so no food will be affected.", yz:"刪除", ye:"Delete", danger:true });
+      if(!ok) return;
+      try{ await F.deleteDoc(F.doc(db,"sections",id)); }catch(e){ toast("刪唔到："+e.code,"Could not delete"); }
     };
   });
 }
-async function moveSec(id, dir){
-  const F = window.__F;
-  const i = sections.findIndex(s => s.id === id), j = i + dir;
-  if(i < 0 || j < 0 || j >= sections.length) return;
-  const a = sections[i], b = sections[j];
-  const batch = F.writeBatch(db);
-  batch.update(F.doc(db, "sections", a.id), { order: j });
-  batch.update(F.doc(db, "sections", b.id), { order: i });
-  try{ await batch.commit(); }catch(e){ toast("排唔到：" + e.code); }
+async function moveSec(id,dir){
+  const i=sections.findIndex(s=>s.id===id), j=i+dir;
+  if(i<0||j<0||j>=sections.length) return;
+  const b=F.writeBatch(db);
+  b.update(F.doc(db,"sections",sections[i].id),{order:j});
+  b.update(F.doc(db,"sections",sections[j].id),{order:i});
+  try{ await b.commit(); }catch(e){ toast("排唔到："+e.code,"Could not reorder"); }
 }
-$("#secAdd").onclick = async () => {
-  const name = prompt("新分區叫咩名？", "");
-  if(!name || !name.trim()) return;
-  const F = window.__F;
-  try{
-    await F.addDoc(F.collection(db, "sections"), { name:name.trim(), order: sections.length });
-    toast("加咗");
-  }catch(e){ toast("加唔到：" + e.code); }
+$("#secAdd").onclick=async()=>{
+  const zh=prompt("中文名 Chinese name","");
+  if(!zh||!zh.trim()) return;
+  const en=prompt("English name","")||"";
+  try{ await F.addDoc(F.collection(db,"sections"),{zh:zh.trim(),name:zh.trim(),en:en.trim(),order:sections.length}); toast("加咗","Added"); }
+  catch(e){ toast("加唔到："+e.code,"Could not add"); }
+};
+
+$("#signout").onclick=async()=>{
+  const ok=await ask({ tz:"真係要登出？", te:"Sign out?",
+    mz:"登出之後要再用 Google 登入一次先睇得返啲食物。", me:"You will need to sign in with Google again to see the food list.",
+    yz:"登出", ye:"Sign out", danger:true });
+  if(ok && A) A.signOut(auth);
 };
 
 /* ═══ sheet 開關 ═════════════════════════════════════ */
-function show(which, on){
-  $("#" + which + "Scrim").classList.toggle("hide", !on);
-  $("#" + which + "Sheet").classList.toggle("hide", !on);
-  document.body.style.overflow = on ? "hidden" : "";
+const SHEETS=["form","det","lib","again","set"];
+function show(k,on){
+  $("#"+k+"Scrim").classList.toggle("hide",!on);
+  $("#"+k+"Sheet").classList.toggle("hide",!on);
+  document.body.style.overflow = SHEETS.some(s=>!$("#"+s+"Sheet").classList.contains("hide")) ? "hidden" : "";
 }
-document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => show(b.dataset.close, false));
-["form","det","sec"].forEach(k => $("#" + k + "Scrim").onclick = () => show(k, false));
-addEventListener("keydown", e => {
-  if(e.key !== "Escape") return;
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>show(b.dataset.close,false));
+SHEETS.forEach(k=>$("#"+k+"Scrim").onclick=()=>show(k,false));
+addEventListener("keydown",e=>{
+  if(e.key!=="Escape") return;
+  if(!$("#askScrim").classList.contains("hide")) return;
   if(!$("#cropper").classList.contains("hide")) return closeCropper(null);
-  ["form","det","sec"].forEach(k => show(k, false));
+  SHEETS.forEach(k=>show(k,false));
 });
 
-/* 過咗午夜自動重新計數 */
-let lastDay = todayISO();
-setInterval(() => { const t = todayISO(); if(t !== lastDay){ lastDay = t; render(); } }, 60000);
+let lastDay=todayISO();
+setInterval(()=>{ const t=todayISO(); if(t!==lastDay){ lastDay=t; render(); } },60000);
 </script>
 </body>
 </html>
