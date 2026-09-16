@@ -86,14 +86,23 @@ h1 .e{font-size:11.5px;opacity:.55;letter-spacing:.06em}
 
 main{padding:8px 16px calc(112px + var(--safe-b))}
 
+/* 保安警告條 */
+#ruleWarn{background:var(--gone-bg);border:1px solid var(--gone);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;font-size:13.5px;color:var(--gone);font-weight:600}
+#ruleWarn .e{font-weight:500}
+.who.bad{background:var(--gone-bg);color:var(--gone)}
+.who.good{background:var(--brand-tint);color:var(--brand)}
+.gear{position:relative}
+.gear.alert::after{content:"";position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%;background:var(--gone)}
+
 /* AI 提示橫額 */
-#aiBanner{
+.aibar{
   display:flex;align-items:center;gap:12px;background:var(--brand-tint);
   border-radius:var(--r);padding:12px 14px;margin-bottom:10px
 }
-#aiBanner .txt{flex:1;font-size:14px;color:var(--brand);font-weight:600;min-width:0}
-#aiBanner .e{font-weight:500;opacity:.75}
-#aiGo{padding:9px 14px;border-radius:9px;background:var(--brand);color:#fff;font-size:13.5px;font-weight:600;flex:none;text-align:center}
+.aibar .txt{flex:1;font-size:14px;color:var(--brand);font-weight:600;min-width:0}
+.aibar .e{font-weight:500;opacity:.75}
+.aibar button{padding:9px 14px;border-radius:9px;background:var(--brand);color:#fff;font-size:13.5px;font-weight:600;flex:none;text-align:center;line-height:1.2}
+.aibar button .e{font-size:9.5px;opacity:.85;white-space:nowrap}
 
 .row{
   display:flex;gap:13px;align-items:center;width:100%;text-align:left;
@@ -135,13 +144,17 @@ main{padding:8px 16px calc(112px + var(--safe-b))}
 
 .scrim{position:fixed;inset:0;background:rgba(14,26,32,.55);z-index:40;backdrop-filter:blur(2px)}
 .sheet{
-  position:fixed;left:0;right:0;bottom:0;z-index:41;max-height:92vh;overflow-y:auto;
+  position:fixed;left:0;right:0;bottom:0;z-index:41;overflow-y:auto;
+  /* iOS Safari 嘅 vh = 網址列收起時嘅大高度，面板釘喺 bottom:0 就會向上
+     長出畫面、切走個頭。svh = 網址列展開時嘅細高度，實入得晒。
+     三行由舊到新排，瀏覽器識邊個就用邊個。 */
+  max-height:92vh; max-height:92dvh; max-height:92svh;
   background:var(--card);border-radius:20px 20px 0 0;padding:0 18px calc(20px + var(--safe-b));
   animation:up .22s cubic-bezier(.2,.8,.3,1)
 }
 @keyframes up{from{transform:translateY(100%)}}
 @media (min-width:640px){
-  .sheet{left:50%;right:auto;bottom:auto;top:50%;transform:translate(-50%,-50%);width:540px;border-radius:18px;animation:none;max-height:88vh}
+  .sheet{left:50%;right:auto;bottom:auto;top:50%;transform:translate(-50%,-50%);width:540px;border-radius:18px;animation:none;max-height:88vh;max-height:88svh}
 }
 .shead{
   position:sticky;top:0;background:var(--card);z-index:2;display:flex;align-items:center;gap:10px;
@@ -366,6 +379,10 @@ details.more .inner{padding-top:14px}
         <div class="flab"><span class="z">英文名</span><span class="e">English name</span></div>
         <input id="fEn" type="text" placeholder="Broccoli" autocomplete="off">
       </div>
+      <button type="button" id="fTranslate" class="btn plain" style="margin:-4px 0 16px">
+        <span class="z">AI 譯返另一種語言</span><span class="e">Translate to the other language</span>
+      </button>
+      <p class="hintline" style="margin:-10px 0 16px">AI 認錯字嘅話，自己改返啱嗰邊，另一邊清空，再撳呢個掣。<span class="e">If the AI got it wrong, fix the correct side by hand, clear the other, then tap this.</span></p>
       <div class="fld">
         <div class="flab"><span class="z">牌子</span><span class="e">Brand</span></div>
         <input id="fBrand" type="text" placeholder="Kirkland" autocomplete="off">
@@ -479,6 +496,13 @@ details.more .inner{padding-top:14px}
   </div>
   <button id="aiSave" class="btn ghost"><span class="z">儲存 AI 設定</span><span class="e">Save AI settings</span></button>
   <div class="brow"><button id="aiTest" class="btn plain"><span class="z">試一次</span><span class="e">Test the connection</span></button></div>
+  <div class="brow"><button id="aiClear" class="btn danger hide"><span class="z">清除呢部電話嘅 API Key</span><span class="e">Clear the API key on this phone</span></button></div>
+  <p class="hintline" style="margin-top:14px">只需要喺**一部**電話設定。所有電話共用同一份食物清單，所以其他人影嘅相，一樣會喺你部機出現喺「AI 幫我填」入面，撳一次就全部改晒。<span class="e">Set this up on ONE phone only. Everyone shares one food list, so photos taken on other phones also get named when you tap the button here.</span></p>
+
+  <div class="ghead"><span class="z">版本同保安</span><span class="e">Version &amp; security</span></div>
+  <div class="who" id="verBox"></div>
+  <div class="who" id="ruleBox"></div>
+  <button id="ruleCheck" class="btn plain"><span class="z">再檢查一次 rules</span><span class="e">Check the rules again</span></button>
 
   <div class="ghead"><span class="z">帳戶</span><span class="e">Account</span></div>
   <div class="who" id="whoBox"></div>
@@ -524,6 +548,50 @@ details.more .inner{padding-top:14px}
 <input id="fileLib" type="file" accept="image/*" class="hide">
 
 <script type="module">
+/* ═══════════════════════════════════════════════════════
+   版本 VERSION
+   ═══════════════════════════════════════════════════════ */
+/* 版本號用日期：yyyy-mm-dd 再加一個大楷字母。
+   同一日出多過一次，就 A → B → C 咁行落去。
+   格式排得好，所以直接字串比大細就已經係啱嘅時序。 */
+const APP_VERSION = "2026-09-16C";
+
+/* ═══════════════════════════════════════════════════════
+   FIRESTORE SECURITY RULES —— 呢度係一份副本，方便日後查閱
+   This is a COPY for reference. 真正生效嗰份喺 Firebase Console
+   → Firestore Database → Rules。改咗嗰邊記得返嚟改埋呢度同
+   RULES_COPY_DATE，否則呢段註釋會變成誤導。
+
+   RULES_COPY_DATE: 2026-09-16
+
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+
+       function household() {
+         return request.auth != null && request.auth.token.email in [
+           'your.email@gmail.com',
+           'wife.email@gmail.com',
+           'helper.email@gmail.com'
+         ];
+       }
+
+       match /items/{id}    { allow read, write: if household(); }
+       match /photos/{id}   { allow read, write: if household(); }
+       match /sections/{id} { allow read, write: if household(); }
+       match /library/{id}  { allow read, write: if household(); }
+       match /meta/{id}     { allow read, write: if household(); }
+     }
+   }
+
+   要緊嘅係：上面逐個 collection 逐條寫，冇用 match /{document=**} 嘅
+   一網打盡寫法。個 app 會喺開機時實測呢一點（見 checkRules），
+   如果你將來改成一網打盡或者 if true，主畫面會彈紅色警告。
+
+   Firebase 嘅 apiKey 公開係正常嘅，佢係識別碼唔係密碼。真正把鎖
+   係上面呢份 rules —— 特別係嗰個 email 名單。
+   ═══════════════════════════════════════════════════════ */
+
 /* ═══════════════════════════════════════════════════════
    1. Firebase 設定 — 換咗下面 6 行就用得
       Firebase config — replace the 6 lines below
@@ -729,21 +797,48 @@ $("#cropOk").onclick=()=>{
 
 /* ═══ AI 設定（存喺本機）AI settings, stored on this device ═══ */
 const AI_KEY="fm.ai.v1";
+/* 條 key 唔會以明文躺喺 localStorage。呢個只係防止隨手偷望，
+   唔係加密 —— 識技術嘅人一定攞得返。真正嘅保障係喺供應商嗰邊
+   設消費上限，同埋唔同電話用唔同 key。 */
+const XOR_SEED=0x5A;
+const obf = t => { try{ return btoa(t.split("").map((c,i)=>String.fromCharCode(c.charCodeAt(0)^(XOR_SEED+i%13))).join("")); }catch(_){ return ""; } };
+const deobf = t => { try{ return atob(t).split("").map((c,i)=>String.fromCharCode(c.charCodeAt(0)^(XOR_SEED+i%13))).join(""); }catch(_){ return ""; } };
+
 function aiCfg(){
-  try{ return JSON.parse(localStorage.getItem(AI_KEY)||"{}"); }catch(_){ return {}; }
+  let c={};
+  try{ c=JSON.parse(localStorage.getItem(AI_KEY)||"{}"); }catch(_){ return {}; }
+  if(c.key && !c.k){ c.k=obf(c.key); delete c.key;              // 由舊版明文搬過來
+    try{ localStorage.setItem(AI_KEY, JSON.stringify(c)); }catch(_){} }
+  return { url:c.url||"", model:c.model||"", key:c.k?deobf(c.k):"" };
 }
 function aiReady(){ const c=aiCfg(); return !!(c.url&&c.model&&c.key); }
 function loadAiForm(){
   const c=aiCfg();
   $("#aiUrl").value=c.url||AI_DEFAULT_URL;
   $("#aiModel").value=c.model||AI_DEFAULT_MODEL;
-  $("#aiKey").value=c.key||"";
+  $("#aiKey").value="";                       // 永遠唔寫返落個格，望都望唔到
+  $("#aiKey").placeholder = c.key ? "已設定 ●●●●●●●●　留空即係唔改" : "貼條新 key 落嚟";
+  $("#aiClear").classList.toggle("hide", !c.key);
 }
 $("#aiSave").onclick=()=>{
-  const c={ url:$("#aiUrl").value.trim().replace(/\/+$/,""), model:$("#aiModel").value.trim(), key:$("#aiKey").value.trim() };
-  if(!c.url||!c.model||!c.key){ toast("三格都要填","All three fields are required"); return; }
-  try{ localStorage.setItem(AI_KEY, JSON.stringify(c)); }catch(_){ toast("存唔到設定","Could not save settings"); return; }
+  const old=aiCfg();
+  const url=$("#aiUrl").value.trim().replace(/\/+$/,""), model=$("#aiModel").value.trim();
+  const typed=$("#aiKey").value.trim();
+  const key = typed || old.key;               // 留空 = 保留原本嗰條
+  if(!url||!model||!key){ toast("三格都要填","All three fields are required"); return; }
+  try{ localStorage.setItem(AI_KEY, JSON.stringify({url,model,k:obf(key)})); }
+  catch(_){ toast("存唔到設定","Could not save settings"); return; }
+  $("#aiKey").value=""; loadAiForm();
   toast("儲存咗","Saved"); render();
+};
+$("#aiClear").onclick=async()=>{
+  const ok=await ask({ tz:"清除呢部電話嘅 API Key？", te:"Clear the API key on this phone?",
+    mz:"呢部電話就用唔到 AI 改名，其他電話唔受影響。", me:"AI naming stops working on this phone only.",
+    yz:"清除", ye:"Clear", danger:true });
+  if(!ok) return;
+  const c=aiCfg();
+  try{ localStorage.setItem(AI_KEY, JSON.stringify({url:c.url,model:c.model})); }catch(_){}
+  loadAiForm(); toast("清咗","Cleared"); render();
 };
 function endpoint(url){ return /\/chat\/completions\/?$/.test(url) ? url : url.replace(/\/+$/,"")+"/chat/completions"; }
 
@@ -772,51 +867,76 @@ function knownNames(){
   });
   return [...m.values()].sort().slice(0,80);
 }
-async function askVision(dataUrl, known){
+/* 純翻譯用。要緊嘅係：人手改過嗰邊唔准郁 —— 呢個喺下面用程式保證，
+   唔係靠模型聽話。 */
+const TR_PROMPT =
+ "You translate food names for a bilingual household food inventory in Hong Kong.\n" +
+ 'Reply with ONE JSON object and nothing else: {"zh":"...","en":"..."}\n' +
+ "You are given ONE side only. A human wrote it and it is CORRECT. Do not change it, do not correct it, do not re-interpret it. Just translate it to the other language.\n" +
+ "Rules for the side you write:\n" +
+ "- Begin with the plain general noun. Any qualifier goes after a comma: \"Milk, low fat\" / \"牛奶, 低脂\".\n" +
+ "- No brand name, no adjectives, no packaging words.\n" +
+ "- zh is Traditional Chinese, Hong Kong usage.\n" +
+ "- Keep it short, 1 to 4 words.";
+
+async function callAI(body){
   const c=aiCfg();
+  if(/glm/i.test(c.model) && !body.thinking) body.thinking={type:"disabled"};
+  const hdr={ "Content-Type":"application/json", "Authorization":"Bearer "+c.key };
+  const url=endpoint(c.url);
+  let res;
+  try{ res=await fetch(url,{method:"POST",headers:hdr,body:JSON.stringify(body)}); }
+  catch(_){ throw new Error("NET"); }                       // CORS 或者上唔到網
+  if(res.status===400 && body.thinking){                    // 唔食 thinking 就照走一次
+    delete body.thinking;
+    try{ res=await fetch(url,{method:"POST",headers:hdr,body:JSON.stringify(body)}); }
+    catch(_){ throw new Error("NET"); }
+  }
+  if(!res.ok) throw new Error("HTTP "+res.status+" "+(await res.text()).slice(0,140));
+  const data=await res.json();
+  const msg=(data.choices&&data.choices[0]&&data.choices[0].message)||{};
+  let txt=msg.content;
+  if(Array.isArray(txt)) txt=txt.map(x=>typeof x==="string"?x:(x.text||"")).join("");
+  txt=String(txt||"");
+  const i=txt.indexOf("{"), j=txt.lastIndexOf("}");
+  if(i<0||j<i) throw new Error("模型冇俾到 JSON");
+  return JSON.parse(txt.slice(i,j+1));
+}
+
+/* 睇相認食物 */
+async function askVision(dataUrl, known){
   const prompt = AI_PROMPT + ((known&&known.length)
     ? "\n\nNAMES ALREADY USED IN THIS INVENTORY. If the food matches one of these, reuse that exact wording instead of inventing a new one:\n" + known.join("\n")
     : "");
-  const body={
-    model:c.model, max_tokens:300, temperature:0.2,
+  const o=await callAI({
+    model:aiCfg().model, max_tokens:300, temperature:0.2,
     messages:[{ role:"user", content:[
       { type:"image_url", image_url:{ url:dataUrl } },
       { type:"text", text:prompt }
     ]}]
-  };
-  if(/glm/i.test(c.model)) body.thinking={type:"disabled"};
-  let res;
-  try{
-    res=await fetch(endpoint(c.url),{ method:"POST",
-      headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+c.key },
-      body:JSON.stringify(body) });
-  }catch(err){
-    throw new Error("NET");   // CORS 或者上唔到網
-  }
-  if(res.status===400 && body.thinking){
-    delete body.thinking;
-    res=await fetch(endpoint(c.url),{ method:"POST",
-      headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+c.key },
-      body:JSON.stringify(body) });
-  }
-  if(!res.ok){ throw new Error("HTTP "+res.status+" "+(await res.text()).slice(0,140)); }
-  const data=await res.json();
-  const msg=(data.choices&&data.choices[0]&&data.choices[0].message)||{};
-  let txt=msg.content;
-  if(Array.isArray(txt)) txt=txt.map(p=>typeof p==="string"?p:(p.text||"")).join("");
-  txt=String(txt||"");
-  const a=txt.indexOf("{"), b=txt.lastIndexOf("}");
-  if(a<0||b<a) throw new Error("模型冇俾到 JSON");
-  const o=JSON.parse(txt.slice(a,b+1));
-  return { zh:clean(o.zh), en:clean(o.en), brand:clean(o.brand) };  // 「未知」會變空，下次可以再試
+  });
+  return { zh:clean(o.zh), en:clean(o.en), brand:clean(o.brand) };
 }
+
+/* 純翻譯，唔會再睇幅相 */
+async function askTranslate(zh, en, known){
+  const prompt = TR_PROMPT
+    + ((known&&known.length) ? "\n\nNames already used here — reuse the exact wording if it matches:\n"+known.join("\n") : "")
+    + '\n\nInput: zh="' + zh + '" en="' + en + '"';
+  const o=await callAI({
+    model:aiCfg().model, max_tokens:200, temperature:0,
+    messages:[{ role:"user", content:prompt }]
+  });
+  return { zh:clean(o.zh), en:clean(o.en) };
+}
+
 $("#aiTest").onclick=async()=>{
   if(!aiReady()){ toast("三格都要填先","Fill in all three fields first"); return; }
   const cv=document.createElement("canvas"); cv.width=cv.height=64;
   const g=cv.getContext("2d"); g.fillStyle="#d33"; g.fillRect(0,0,64,64);
   busy(true,"試緊…","Testing…");
   try{
-    const r=await askVision(cv.toDataURL("image/jpeg",.8));
+    const r=await askVision(cv.toDataURL("image/jpeg",.8), []);
     busy(false); toast("通到！模型答："+(r.en||r.zh||"—"),"Connected. The model replied.");
   }catch(e){
     busy(false);
@@ -863,7 +983,7 @@ async function boot(){
     $("#gate").classList.toggle("hide",!!u);
     $("#app").classList.toggle("hide",!u);
     unsub.forEach(f=>f()); unsub=[];
-    if(u){ $("#whoBox").innerHTML=bi(u.email||"—","Signed in on this device"); listen(); }
+    if(u){ $("#whoBox").innerHTML=bi(u.email||"—","Signed in on this device"); listen(); checkRules(); }
     else { items=[]; sections=[]; library=[]; }
   });
 }
@@ -879,6 +999,18 @@ function listen(){
     renderHints(); renderSecList(); render();
   },e=>toast("讀唔到食物："+e.code,"Could not load food")));
 
+  unsub.push(F.onSnapshot(F.doc(db,"meta","app"),snap=>{
+    metaErr=false;
+    const v = snap.exists() ? (snap.data().version||"0.0.0") : "0.0.0";
+    latestVer=v;
+    if(cmpVer(APP_VERSION,v)>0){          // 我哋比記錄新 → 記低我哋呢個
+      latestVer=APP_VERSION;
+      F.setDoc(F.doc(db,"meta","app"),{version:APP_VERSION,
+        updatedAt:F.serverTimestamp(),updatedBy:(user&&user.email)||""}).catch(()=>{});
+    }
+    paintSecurity();
+  },()=>{ metaErr=true; latestVer=null; paintSecurity(); }));
+
   unsub.push(F.onSnapshot(F.collection(db,"library"),s=>{
     library=s.docs.map(d=>({id:d.id,...d.data()}));
     renderChips(); renderLib();
@@ -889,6 +1021,62 @@ async function seedSections(){
   DEFAULT_SECTIONS.forEach(([z,e],i)=>b.set(F.doc(F.collection(db,"sections")),{zh:z,en:e,order:i}));
   try{ await b.commit(); }catch(e){ toast("建立唔到預設分區："+e.code,"Could not create default areas"); }
 }
+
+/* ═══ 版本 + rules 自我檢查 ═══════════════════════════
+   checkRules 會試去讀一個唔喺 rules 名單入面嘅位置。
+   rules 鎖得啱 → Firestore 拒絕 → 證明把鎖真係鎖住。
+   讀得到 → rules 太鬆 → 主畫面彈紅色警告。
+   ═══════════════════════════════════════════════════ */
+let rulesState="pending", latestVer=null, metaErr=false;
+function cmpVer(a,b){
+  a=String(a||""); b=String(b||"");
+  if(a===b) return 0;
+  return a<b ? -1 : 1;   // yyyy-mm-ddX 排得好，字串比較就係時序
+}
+const outdated = () => !!(latestVer && cmpVer(APP_VERSION,latestVer)<0);
+async function checkRules(){
+  if(!db||!F){ rulesState="unknown"; return; }
+  try{
+    const ref=F.doc(db,"__rules_probe__","probe");
+    if(F.getDocFromServer) await F.getDocFromServer(ref); else await F.getDoc(ref);
+    rulesState="open";
+  }catch(e){
+    const c=String(e.code||e.message||"");
+    rulesState = c.indexOf("permission-denied")>-1 ? "tight"
+               : (c.indexOf("unavailable")>-1||c.indexOf("offline")>-1) ? "offline" : "unknown";
+  }
+  paintSecurity(); render();
+}
+const RULE_TXT={
+  tight:["把鎖鎖住咗。啱啱試過去讀一個唔喺名單嘅位置，Firestore 拒絕咗 —— 正確。",
+         "Locked. A read outside the allow-list was just refused, exactly as it should be."],
+  open: ["你個 rules 太鬆！唔喺名單嘅位置都讀得到。任何人攞到你段 config 都可能讀到你啲嘢。快啲去 Firestore → Rules 改返。",
+         "Your rules are too open — data outside the allow-list is readable. Fix them in Firestore → Rules."],
+  offline:["而家離線，檢查唔到。","Offline, cannot check right now."],
+  unknown:["檢查唔到。","Could not check."],
+  pending:["檢查緊…","Checking…"]
+};
+function paintSecurity(){
+  const v=$("#verBox");
+  if(v){
+    let cls="", zh="", en="";
+    if(metaErr){ cls=""; zh="睇唔到版本記錄（rules 可能未加 match /meta）"; en="Cannot read the version record — rules may be missing match /meta."; }
+    else if(outdated()){ cls="bad"; zh=`⚠ 呢部機係舊版本，最新係 ${latestVer}。閂晒個 app 再開，或者喺瀏覽器 refresh。`; en=`This phone is out of date — latest is ${latestVer}. Close and reopen the app, or refresh.`; }
+    else if(latestVer){ cls="good"; zh="✓ 已經係最新版本"; en="Up to date"; }
+    v.className="who"+(cls?" "+cls:"");
+    v.innerHTML=`<b>${esc("版本 Version "+APP_VERSION)}</b>`+(zh?`<div style="margin-top:5px">${bi(zh,en)}</div>`:"");
+  }
+  const r=$("#ruleBox");
+  if(r){
+    const t=RULE_TXT[rulesState]||RULE_TXT.unknown;
+    const icon = rulesState==="tight"?"✓ ":rulesState==="open"?"⚠ ":"";
+    r.className="who"+(rulesState==="tight"?" good":rulesState==="open"?" bad":"");
+    r.innerHTML=`<b>${icon}Firestore rules</b><div style="margin-top:5px">${bi(t[0],t[1])}</div>`;
+  }
+  const g=$("#openSet");
+  if(g) g.classList.toggle("alert", rulesState==="open"||outdated());
+}
+$("#ruleCheck").onclick=()=>{ rulesState="pending"; paintSecurity(); checkRules(); };
 
 /* ═══ 讀資料嘅小工具 ══════════════════════════════════ */
 const sec = id => sections.find(s=>s.id===id) || null;
@@ -901,6 +1089,10 @@ const clean = v => { const t=String(v??"").trim(); return PLACEHOLDER.has(t.toLo
 const nameZh = o => clean(o.zh||o.name);
 const nameEn = o => clean(o.en);
 const brandOf = o => clean(o.brand);
+/* 舊版本將相存成 photos/{item id}；新版本用 photos/{photoId}。
+   兩邊都要撈得到，否則會靜靜雞跌返去用 360px 細相。 */
+const photoRef = o => o.photoId || o.id;
+const halfNamed = o => (!!nameZh(o)) !== (!!nameEn(o));   // 得一邊有名
 const hasName = o => !!(nameZh(o)||nameEn(o));
 const withBrand = (n,b) => n ? (b? n+" ("+b+")" : n) : "";
 /* 拆成上下兩行：有中有英就對照，得一種就只出一行 */
@@ -967,15 +1159,25 @@ function countHTML(d,id){
 }
 function render(){
   renderSignals();
-  const unnamed=items.filter(i=>i.thumb&&!hasName(i));
-  const ban=$("#aiBanner");
-  if(ban) ban.remove();
+  /* 兩籮嘢分開處理：乜都冇名而有相 → 睇相認；得一邊有名 → 純翻譯 */
+  const needEye = [...items.filter(i=>i.thumb&&!hasName(i)).map(o=>({o,col:"items"})),
+                   ...library.filter(l=>l.thumb&&!hasName(l)).map(o=>({o,col:"library"}))];
+  const needTr  = [...items.filter(halfNamed).map(o=>({o,col:"items"})),
+                   ...library.filter(halfNamed).map(o=>({o,col:"library"}))];
   const rows=visible(), main=$("#list");
 
   let html="";
-  if(unnamed.length && aiReady()){
-    html += `<div id="aiBanner"><div class="txt">${bi("有 "+unnamed.length+" 樣嘢影咗相但未有名", unnamed.length+" photos have no name yet")}</div>
-      <button id="aiGo">${bi("AI 幫我填","Name them")}</button></div>`;
+  if(rulesState==="open"){
+    html += `<div id="ruleWarn">${bi("⚠ 保安警告：你個 Firestore rules 太鬆，任何人都可能讀到你啲嘢。去 Firebase → Firestore → Rules 改返。",
+      "Security warning: your Firestore rules are too open. Anyone could read your data. Fix them in Firebase → Firestore → Rules.")}</div>`;
+  }
+  if(needEye.length && aiReady()){
+    html += `<div class="aibar"><div class="txt">${bi("有 "+needEye.length+" 樣嘢影咗相但未有名", needEye.length+" photos have no name yet")}</div>
+      <button id="aiGo">${bi("AI 睇相","Read photos")}</button></div>`;
+  }
+  if(needTr.length && aiReady()){
+    html += `<div class="aibar"><div class="txt">${bi("有 "+needTr.length+" 樣嘢得一種語言", needTr.length+" items have only one language")}</div>
+      <button id="trGo">${bi("AI 補譯","Translate")}</button></div>`;
   }
   if(!rows.length){
     html += `<div class="empty"><div class="big">🧺</div>
@@ -999,7 +1201,8 @@ function render(){
     }).join("");
   }
   main.innerHTML=html;
-  const go=$("#aiGo"); if(go) go.onclick=()=>runAI(unnamed);
+  const go=$("#aiGo"); if(go) go.onclick=()=>runAI(needEye);
+  const tg=$("#trGo"); if(tg) tg.onclick=()=>runTranslate(needTr);
   main.querySelectorAll(".row").forEach(r=>r.onclick=()=>openDetail(r.dataset.id));
 }
 function renderHints(){
@@ -1108,6 +1311,24 @@ async function save(next){
     }else show("form",false);
   }catch(e){ busy(false); toast("儲存失敗："+(e.code||e.message),"Save failed"); }
 }
+$("#fTranslate").onclick=async()=>{
+  if(!aiReady()){ toast("先去 ⚙ 填 AI 設定","Set up the AI in Settings first"); return; }
+  const z=$("#fZh").value.trim(), e=$("#fEn").value.trim();
+  if(!z && !e){ toast("最少要有一邊有字","Fill in one side first"); return; }
+  if(z && e){ toast("兩邊都有字。想重譯就清空錯嗰邊先。","Both sides are filled — clear the wrong one first."); return; }
+  busy(true,"譯緊…","Translating…");
+  try{
+    const r=await askTranslate(z,e,knownNames());
+    busy(false);
+    if(z && r.en){ $("#fEn").value=r.en; toast("譯好咗","Translated"); }        // 中文唔郁
+    else if(e && r.zh){ $("#fZh").value=r.zh; toast("譯好咗","Translated"); }   // 英文唔郁
+    else toast("譯唔到，試多次","Could not translate, try again");
+  }catch(err){
+    busy(false);
+    toast(err.message==="NET" ? "接駁唔到 AI。多數係瀏覽器 CORS 擋咗。" : "失敗："+err.message,
+          err.message==="NET" ? "Could not reach the AI." : "Failed");
+  }
+};
 $("#fSave").onclick=()=>save(false);
 $("#fSaveNext").onclick=()=>save(true);
 $("#fab").onclick=()=>openForm(null);
@@ -1143,12 +1364,10 @@ async function openDetail(id){
   const img=$("#dImg");
   img.src=it.thumb||""; img.style.filter=it.thumb?"blur(6px)":"none";
   show("det",true);
-  if(it.photoId){
-    try{
-      const s=await F.getDoc(F.doc(db,"photos",it.photoId));
-      if(s.exists()&&detailId===id){ img.src=s.data().full; }
-    }catch(_){}
-  }
+  try{
+    const s=await F.getDoc(F.doc(db,"photos",photoRef(it)));
+    if(s.exists()&&detailId===id){ img.src=s.data().full; }
+  }catch(_){}
   img.style.filter="none";
 }
 $("#dDateSave").onclick=async()=>{
@@ -1305,41 +1524,80 @@ async function rmLib(id){
 
 /* ═══ AI 一鍵改名 batch naming ═══════════════════════ */
 let aiStop=false;
+const colRef = e => F.doc(db, e.col, e.o.id);
+
+/* 攞 1000px 原相俾 AI 睇。攞唔到先至跌返落 360px 細相，
+   而且會數返有幾多張係咁，最後照直話俾你聽。 */
+async function bigPhoto(o){
+  try{
+    const s=await F.getDoc(F.doc(db,"photos",photoRef(o)));
+    if(s.exists() && s.data().full) return { url:s.data().full, full:true };
+  }catch(_){}
+  return { url:o.thumb||"", full:false };
+}
+
 async function runAI(list){
   if(!aiReady()){ toast("先去 ⚙ 填 AI 設定","Set up the AI in Settings first"); return; }
   aiStop=false;
   const known=knownNames();
-  let done=0, ok=0, fail=0;
-  busy(true,`改緊名 ${done} / ${list.length}`,"Naming photos…",()=>{aiStop=true;});
-  for(const it of list){
+  let done=0, ok=0, fail=0, small=0;
+  const tick=()=>busy(true,`認緊相 ${done} / ${list.length}`,"Reading photos…",()=>{aiStop=true;});
+  tick();
+  for(const e of list){
     if(aiStop) break;
     try{
-      let img=it.thumb;
-      if(it.photoId){
-        try{ const s=await F.getDoc(F.doc(db,"photos",it.photoId)); if(s.exists()) img=s.data().full; }catch(_){}
-      }
-      const r=await askVision(img, known);
+      const ph=await bigPhoto(e.o);
+      if(!ph.full) small++;
+      if(!ph.url) throw new Error("冇相");
+      const r=await askVision(ph.url, known);
       if(r.zh||r.en){
-        await F.updateDoc(F.doc(db,"items",it.id),{ zh:r.zh, en:r.en, brand:r.brand||"", updatedAt:F.serverTimestamp() });
+        await F.updateDoc(colRef(e),{ zh:r.zh, en:r.en, brand:r.brand||"", updatedAt:F.serverTimestamp() });
         ok++;
       } else fail++;
-    }catch(e){
+    }catch(err){
       fail++;
-      if(e.message==="NET"){
-        busy(false);
-        toast("接駁唔到 AI。多數係瀏覽器 CORS 擋咗。","Could not reach the AI — usually a browser CORS block.");
-        return;
-      }
+      if(err.message==="NET"){ busy(false); toast("接駁唔到 AI。多數係瀏覽器 CORS 擋咗。","Could not reach the AI — usually a browser CORS block."); return; }
     }
-    done++;
-    busy(true,`改緊名 ${done} / ${list.length}`,"Naming photos…",()=>{aiStop=true;});
+    done++; tick();
   }
   busy(false);
-  toast(`改好 ${ok} 樣` + (fail?`，${fail} 樣唔得`:"") + (aiStop?"（停咗）":""), `${ok} named` + (fail?`, ${fail} failed`:""));
+  toast(`認到 ${ok} 樣` + (fail?`，${fail} 樣唔得`:"") + (small?`（${small} 張搵唔到原相，用咗細相，認得冇咁準）`:"") + (aiStop?"（停咗）":""),
+        `${ok} named` + (fail?`, ${fail} failed`:"") + (small?`, ${small} used a low-res copy`:""));
+}
+
+/* 純翻譯。人手改過嗰邊由程式保證唔會被覆蓋 —— 只寫返空嗰邊。 */
+async function runTranslate(list){
+  if(!aiReady()){ toast("先去 ⚙ 填 AI 設定","Set up the AI in Settings first"); return; }
+  aiStop=false;
+  const known=knownNames();
+  let done=0, ok=0, fail=0;
+  const tick=()=>busy(true,`譯緊 ${done} / ${list.length}`,"Translating…",()=>{aiStop=true;});
+  tick();
+  for(const e of list){
+    if(aiStop) break;
+    const z=nameZh(e.o), en=nameEn(e.o);
+    try{
+      const r=await askTranslate(z, en, known);
+      const patch={};
+      if(z && !en && r.en) patch.en=r.en;      // 中文係人手寫，唔郁
+      if(en && !z && r.zh) patch.zh=r.zh;      // 英文係人手寫，唔郁
+      if(Object.keys(patch).length){
+        patch.updatedAt=F.serverTimestamp();
+        await F.updateDoc(colRef(e), patch); ok++;
+      } else fail++;
+    }catch(err){
+      fail++;
+      if(err.message==="NET"){ busy(false); toast("接駁唔到 AI。多數係瀏覽器 CORS 擋咗。","Could not reach the AI — usually a browser CORS block."); return; }
+    }
+    done++; tick();
+  }
+  busy(false);
+  toast(`譯好 ${ok} 樣` + (fail?`，${fail} 樣唔得`:"") + (aiStop?"（停咗）":""),
+        `${ok} translated` + (fail?`, ${fail} failed`:""));
 }
 
 /* ═══ 設定 settings ══════════════════════════════════ */
-$("#openSet").onclick=()=>{ loadAiForm(); renderSecList(); show("set",true); };
+$("#openSet").onclick=()=>{ loadAiForm(); renderSecList(); paintSecurity(); show("set",true); };
 function renderSecList(){
   const b=$("#secList"); if(!b) return;
   if(b.contains(document.activeElement)) return;   // 唔好喺打緊字嗰陣重畫
