@@ -46,18 +46,21 @@ button{cursor:pointer;border:0;background:none}
 
 header{
   position:sticky;top:0;z-index:30;background:var(--chill);
-  padding:calc(var(--safe-t) + 12px) 16px 0;border-bottom:1px solid var(--rule)
+  padding:calc(var(--safe-t) + 14px) 16px 0;border-bottom:1px solid var(--rule)
 }
-.htop{display:flex;align-items:center;gap:10px}
-h1{margin:0;flex:1;font-size:20px;font-weight:700;letter-spacing:-.015em}
+.htop{display:flex;align-items:center;gap:10px;min-height:44px}
+h1{margin:0;flex:1;min-width:0;font-size:20px;font-weight:700;letter-spacing:-.015em}
+h1 .z,h1 .e{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 h1 .e{font-size:11.5px;opacity:.55;letter-spacing:.06em}
 .gear{
-  display:flex;flex-direction:column;align-items:center;gap:1px;
-  padding:5px 9px;border-radius:10px;color:var(--mute);flex:none
+  display:flex;flex-direction:row;align-items:center;gap:6px;
+  padding:7px 11px;border-radius:11px;color:var(--mute);flex:none;
+  border:1px solid var(--rule);background:var(--card);text-align:left
 }
-.gear i{font-style:normal;font-size:19px;line-height:1}
-.gear em{font-style:normal;font-size:9.5px;letter-spacing:.04em}
-.gear:hover{background:var(--brand-tint);color:var(--brand)}
+.gear i{font-style:normal;font-size:17px;line-height:1;flex:none}
+.gear .z{font-size:13px;font-weight:600;white-space:nowrap}
+.gear .e{font-size:9.5px;letter-spacing:.03em;white-space:nowrap}
+.gear:active{background:var(--brand-tint);color:var(--brand);border-color:var(--brand)}
 #search{width:100%;margin-top:10px;padding:10px 14px;border-radius:10px;border:1px solid var(--rule);background:var(--card)}
 
 .signals{display:flex;gap:8px;margin-top:12px;overflow-x:auto;scrollbar-width:none}
@@ -97,7 +100,8 @@ main{padding:8px 16px calc(112px + var(--safe-b))}
   background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:10px;margin-bottom:8px
 }
 .row.expired{background:var(--gone-bg)}
-.thumb{width:74px;height:74px;border-radius:10px;object-fit:cover;flex:none;background:var(--brand-tint);display:block}
+/* contain = 睇到成幅相；改返 cover 就會填滿個格但裁走側邊 */
+.thumb{width:74px;height:74px;border-radius:10px;object-fit:contain;flex:none;background:var(--chill);display:block}
 .thumb.ph{display:grid;place-items:center;font-size:24px;color:var(--brand)}
 .rmid{flex:1;min-width:0}
 .rname{font-size:16.5px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
@@ -120,11 +124,14 @@ main{padding:8px 16px calc(112px + var(--safe-b))}
 
 #fab{
   position:fixed;right:18px;bottom:calc(20px + var(--safe-b));z-index:35;
-  height:58px;padding:0 20px 0 16px;border-radius:29px;background:var(--brand);color:#fff;
+  min-height:58px;padding:9px 20px 9px 16px;border-radius:29px;background:var(--brand);color:#fff;
   display:flex;align-items:center;gap:9px;box-shadow:0 6px 18px rgba(14,107,122,.35);text-align:left
 }
 #fab .plus{font-size:24px;line-height:1}
-#fab .z{font-size:15.5px;font-weight:700} #fab .e{font-size:10px;opacity:.85}
+#fab .z{font-size:15.5px;font-weight:700;white-space:nowrap}
+#fab .e{font-size:10px;opacity:.85;white-space:nowrap}
+/* 細部件嘅中英兩行唔准斷行，斷咗就會谷爆個掣 */
+.chip .z,.chip .e,.pk .z,.pk .e,.qb .z,.qb .e,.sig .z,.sig .e,.tbtn .z,.tbtn .e{white-space:nowrap}
 
 .scrim{position:fixed;inset:0;background:rgba(14,26,32,.55);z-index:40;backdrop-filter:blur(2px)}
 .sheet{
@@ -222,10 +229,12 @@ details.more .inner{padding-top:14px}
 /* 買開嘅嘢 grid */
 .lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
 .lcard{background:var(--chill);border-radius:12px;overflow:hidden;text-align:left;position:relative}
-.lcard img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:var(--brand-tint)}
+.lcard img{width:100%;aspect-ratio:1;object-fit:contain;display:block;background:var(--chill)}
 .lcard .cap{padding:7px 9px 9px}
 .lcard .cap .z{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lcard .cap .e{font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lghead{font-size:12px;font-weight:700;color:var(--brand);letter-spacing:.09em;margin:18px 0 9px;padding-bottom:5px;border-bottom:1px solid var(--rule)}
+.lghead:first-child{margin-top:0}
 .lcard .rm{position:absolute;top:5px;right:5px;width:26px;height:26px;border-radius:50%;background:rgba(10,20,26,.6);color:#fff;font-size:13px;display:grid;place-items:center}
 
 #cropper{position:fixed;inset:0;z-index:60;background:#0C1519;color:#fff;display:flex;flex-direction:column;touch-action:none}
@@ -307,7 +316,7 @@ details.more .inner{padding-top:14px}
   <header>
     <div class="htop">
       <h1><span class="z">食物管理</span><span class="e">FOOD MANAGEMENT</span></h1>
-      <button id="openSet" class="gear" aria-label="設定 Settings"><i>⚙</i><em>設定 Settings</em></button>
+      <button id="openSet" class="gear" aria-label="設定 Settings"><i>⚙</i><span><span class="z">設定</span><span class="e">Settings</span></span></button>
     </div>
     <input id="search" type="text" placeholder="搵嘢食　Search food" autocomplete="off">
     <div class="signals" id="signals"></div>
@@ -412,7 +421,9 @@ details.more .inner{padding-top:14px}
     <h2><span class="z">買開嘅嘢</span><span class="e">Things you buy again</span></h2>
     <button class="x" data-close="lib" aria-label="閂 Close">✕</button>
   </div>
-  <p class="hintline" style="margin:-6px 0 16px">撳一下就可以唔使再影相，直接入返同一樣嘢。<span class="e">Tap one to add it again — no need to take a new photo.</span></p>
+  <input id="libSearch" type="text" placeholder="搵返樣嘢　Search saved items" autocomplete="off">
+  <div class="quick" id="libSort" style="margin:10px 0 0"></div>
+  <p class="hintline" id="libHint" style="margin:10px 0 16px"></p>
   <div id="libGrid"></div>
 </section>
 
@@ -739,22 +750,38 @@ function endpoint(url){ return /\/chat\/completions\/?$/.test(url) ? url : url.r
 const AI_PROMPT =
  "You label food photos for a household food inventory in Hong Kong.\n" +
  "Reply with ONE JSON object and nothing else. No markdown fences, no explanation.\n" +
- '{"zh":"...","en":"...","brand":"..."}\n' +
- "Rules:\n" +
- "- zh: the food name in Traditional Chinese, Hong Kong usage.\n" +
- "- en: the food name in simple English that a non-native reader understands.\n" +
- "- Keep both names short, 1 to 4 words. No adjectives like fresh or delicious, no packaging description.\n" +
- "- brand: the brand name printed on the package, only if it is clearly legible. Otherwise an empty string.\n" +
- "- If several foods are visible, name the most prominent one.\n" +
- "- If you cannot tell what the food is, use zh \"未知\" and en \"Unknown\".";
+ '{"zh":"...","en":"...","brand":"..."}\n\n' +
+ "NAMING RULES. The list is sorted A to Z by the English name and searched by name, so being CONSISTENT matters more than being precise:\n" +
+ "1. \"en\" MUST BEGIN with the plain general noun for the food: Milk, Bread, Yogurt, Egg, Cheese, Chicken, Apple, Rice, Noodle.\n" +
+ "2. Any qualifier goes AFTER a comma, never in front. Write \"Milk, low fat\" not \"Low fat milk\". Write \"Bread, whole wheat\" not \"Whole wheat bread\". Write \"Chicken, wings\" not \"Chicken wings\".\n" +
+ "3. NEVER put the brand inside \"en\" or \"zh\". The brand belongs in \"brand\" and nowhere else.\n" +
+ "4. \"zh\" is the same food in Traditional Chinese, Hong Kong usage, base noun first, qualifier after a comma: 牛奶 / 牛奶, 低脂 / 麵包, 全麥.\n" +
+ "5. Singular. No adjectives such as fresh, delicious, organic, premium. No packaging words such as bottle, pack, box, carton.\n" +
+ "6. \"brand\": the brand printed on the package, only when clearly legible. Otherwise an empty string.\n" +
+ "7. If several foods are visible, name the most prominent one.\n" +
+ "8. If you cannot tell what it is, use zh \"未知\" and en \"Unknown\".";
 
-async function askVision(dataUrl){
+/* 已經用過嘅名 — 餵返俾模型，等佢重用而唔係每次創作新講法 */
+function knownNames(){
+  const m=new Map();
+  [...items,...library].forEach(o=>{
+    const e=nameEn(o), z=nameZh(o);
+    if(!e && !z) return;
+    const k=(e||z).toLowerCase();
+    if(!m.has(k)) m.set(k, (e&&z) ? e+" = "+z : (e||z));
+  });
+  return [...m.values()].sort().slice(0,80);
+}
+async function askVision(dataUrl, known){
   const c=aiCfg();
+  const prompt = AI_PROMPT + ((known&&known.length)
+    ? "\n\nNAMES ALREADY USED IN THIS INVENTORY. If the food matches one of these, reuse that exact wording instead of inventing a new one:\n" + known.join("\n")
+    : "");
   const body={
     model:c.model, max_tokens:300, temperature:0.2,
     messages:[{ role:"user", content:[
       { type:"image_url", image_url:{ url:dataUrl } },
-      { type:"text", text:AI_PROMPT }
+      { type:"text", text:prompt }
     ]}]
   };
   if(/glm/i.test(c.model)) body.thinking={type:"disabled"};
@@ -781,7 +808,7 @@ async function askVision(dataUrl){
   const a=txt.indexOf("{"), b=txt.lastIndexOf("}");
   if(a<0||b<a) throw new Error("模型冇俾到 JSON");
   const o=JSON.parse(txt.slice(a,b+1));
-  return { zh:String(o.zh||"").trim(), en:String(o.en||"").trim(), brand:String(o.brand||"").trim() };
+  return { zh:clean(o.zh), en:clean(o.en), brand:clean(o.brand) };  // 「未知」會變空，下次可以再試
 }
 $("#aiTest").onclick=async()=>{
   if(!aiReady()){ toast("三格都要填先","Fill in all three fields first"); return; }
@@ -804,7 +831,7 @@ let db,auth,user=null,F=null,A=null;
 let items=[],sections=[],library=[],unsub=[];
 let filterSection="all", filterSignal="all", term="", seeded=false;
 
-if(firebaseConfig.apiKey.indexOf("PASTE")===0){
+if(!firebaseConfig.apiKey || firebaseConfig.apiKey.indexOf("PASTE")===0){
   $("#gateMsg").innerHTML=bi("仲未駁到 Firebase。喺 index.html 搵 firebaseConfig，貼返你自己個 project 嘅資料入去。","Firebase is not connected yet. Find firebaseConfig in index.html and paste your own project details in.");
   $("#signin").classList.add("hide");
   $("#gateCfg").classList.remove("hide");
@@ -867,13 +894,18 @@ async function seedSections(){
 const sec = id => sections.find(s=>s.id===id) || null;
 const secZh = id => { const s=sec(id); return s ? (s.zh||s.name||"未分區") : "未分區"; };
 const secEn = id => { const s=sec(id); return s ? (s.en||"Unsorted") : "Unsorted"; };
-const nameZh = o => (o.zh||o.name||"").trim();
-const nameEn = o => (o.en||"").trim();
+/* 呢啲字唔算係名 — 舊版本自動填過「未命名」，AI 認唔到嗰陣會答「未知」*/
+const PLACEHOLDER = new Set(["未命名","未知","未命名食物","無","冇","沒有","不詳",
+  "unnamed","unknown","untitled","n/a","na","none","-","—","?","？"]);
+const clean = v => { const t=String(v??"").trim(); return PLACEHOLDER.has(t.toLowerCase())?"":t; };
+const nameZh = o => clean(o.zh||o.name);
+const nameEn = o => clean(o.en);
+const brandOf = o => clean(o.brand);
 const hasName = o => !!(nameZh(o)||nameEn(o));
 const withBrand = (n,b) => n ? (b? n+" ("+b+")" : n) : "";
 /* 拆成上下兩行：有中有英就對照，得一種就只出一行 */
 function nameLines(o){
-  const z=withBrand(nameZh(o), o.brand), e=withBrand(nameEn(o), o.brand);
+  const z=withBrand(nameZh(o), brandOf(o)), e=withBrand(nameEn(o), brandOf(o));
   if(z&&e) return {top:z, bot:nameEn(o)};
   if(z) return {top:z, bot:""};
   if(e) return {top:e, bot:""};
@@ -909,7 +941,7 @@ function renderSignals(){
 function visible(){
   let r=items.slice();
   if(filterSection!=="all") r=r.filter(i=>i.sectionId===filterSection);
-  if(term) r=r.filter(i=>(nameZh(i)+" "+nameEn(i)+" "+(i.brand||"")+" "+(i.note||"")).toLowerCase().includes(term));
+  if(term) r=r.filter(i=>(nameZh(i)+" "+nameEn(i)+" "+brandOf(i)+" "+(i.note||"")).toLowerCase().includes(term));
   if(filterSignal!=="all") r=r.filter(i=>{
     const d=daysLeft(i.expiry); if(d===null) return false;
     if(filterSignal==="gone") return d<0;
@@ -1156,27 +1188,80 @@ $("#dAte").onclick=async()=>{
 };
 
 /* ═══ 買開嘅嘢 library ═══════════════════════════════ */
-function openLib(){ renderLib(); show("lib",true); }
+function openLib(){ libTerm=""; const si=$("#libSearch"); if(si) si.value=""; renderLib(); show("lib",true); }
+let libTerm="", libSort="az";
+try{ libSort=localStorage.getItem("fm.libsort")||"az"; }catch(_){}
+const ms = t => !t ? 0 : (typeof t.toMillis==="function" ? t.toMillis() : (t.seconds?t.seconds*1000:0));
+const libKey = l => (nameEn(l)||nameZh(l)||"~~~").toLowerCase();
+function libGroup(l){
+  const k=(nameEn(l)||nameZh(l)||"").trim();
+  if(!k) return "未命名 Unnamed";
+  const c=k[0].toUpperCase();
+  return /[A-Z]/.test(c) ? c : "中文 Chinese";
+}
+function libCard(l){
+  const ln=nameLines(l);
+  return `<div class="lcard">
+    <button data-again="${esc(l.id)}" style="display:block;width:100%;text-align:left">
+      ${l.thumb?`<img src="${l.thumb}" alt="">`:`<div style="aspect-ratio:1;display:grid;place-items:center;font-size:26px">🍽</div>`}
+      <div class="cap">${ln?bi(ln.top,ln.bot):bi("未命名","Unnamed")}</div>
+    </button>
+    <button class="rm" data-rmlib="${esc(l.id)}" aria-label="刪走 Remove">✕</button>
+  </div>`;
+}
+const LIB_SORTS=[["A–Z","By name","az"],["最近買","Recent","recent"],["最常買","Most often","often"]];
 function renderLib(){
   const g=$("#libGrid"); if(!g) return;
-  const ls=library.slice().sort((a,b)=>(b.times||0)-(a.times||0));
-  if(!ls.length){
+  const sb=$("#libSort");
+  if(sb){
+    sb.innerHTML=LIB_SORTS.map(([z,e,k])=>`<button type="button" class="qb ${libSort===k?"on":""}" data-ls="${k}">${bi(z,e)}</button>`).join("");
+    sb.querySelectorAll("[data-ls]").forEach(b=>b.onclick=()=>{
+      libSort=b.dataset.ls;
+      try{ localStorage.setItem("fm.libsort",libSort); }catch(_){}
+      renderLib();
+    });
+  }
+  let ls=library.slice();
+  if(libTerm) ls=ls.filter(l=>(nameZh(l)+" "+nameEn(l)+" "+brandOf(l)).toLowerCase().includes(libTerm));
+  if(libSort==="recent") ls.sort((a,b)=>ms(b.lastUsed)-ms(a.lastUsed));
+  else if(libSort==="often") ls.sort((a,b)=>(b.times||0)-(a.times||0)||ms(b.lastUsed)-ms(a.lastUsed));
+  else ls.sort((a,b)=>libKey(a).localeCompare(libKey(b),"en"));
+
+  const hint=$("#libHint");
+  if(hint) hint.innerHTML = library.length
+    ? bi(`${ls.length} / ${library.length} 樣　撳一下就唔使再影相`, `${ls.length} of ${library.length} — tap one to add it back without a new photo`)
+    : "";
+
+  if(!library.length){
     g.innerHTML=`<div class="empty" style="padding:36px 10px"><div class="big">🗂</div>
       <p>仲係空嘅。<span class="e">Nothing here yet.</span></p>
       <p>撳「食咗 / 用完」之後，張相會自動留喺呢度。<span class="e">Photos land here when you mark something eaten.</span></p></div>`;
     return;
   }
-  g.innerHTML=`<div class="lgrid">`+ls.map(l=>`
-    <div class="lcard">
-      <button data-again="${esc(l.id)}" style="display:block;width:100%;text-align:left">
-        ${l.thumb?`<img src="${l.thumb}" alt="">`:`<div style="aspect-ratio:1;display:grid;place-items:center;font-size:26px">🍽</div>`}
-        <div class="cap">${ (ln=>ln?bi(ln.top,ln.bot):bi("未命名","Unnamed"))(nameLines(l)) }</div>
-      </button>
-      <button class="rm" data-rmlib="${esc(l.id)}" aria-label="刪走 Remove">✕</button>
-    </div>`).join("")+`</div>`;
+  if(!ls.length){
+    g.innerHTML=`<div class="empty" style="padding:36px 10px"><div class="big">🔍</div>
+      <p>搵唔到「${esc(libTerm)}」。<span class="e">No match.</span></p></div>`;
+    return;
+  }
+  let html="", cur=null, buf=[];
+  if(libSort==="az"){
+    ls.forEach(l=>{
+      const k=libGroup(l);
+      if(k!==cur){
+        if(buf.length){ html+=`<div class="lgrid">`+buf.join("")+`</div>`; buf=[]; }
+        cur=k; html+=`<div class="lghead">${esc(k)}</div>`;
+      }
+      buf.push(libCard(l));
+    });
+    if(buf.length) html+=`<div class="lgrid">`+buf.join("")+`</div>`;
+  }else{
+    html=`<div class="lgrid">`+ls.map(libCard).join("")+`</div>`;
+  }
+  g.innerHTML=html;
   g.querySelectorAll("[data-again]").forEach(b=>b.onclick=()=>openAgain(b.dataset.again));
   g.querySelectorAll("[data-rmlib]").forEach(b=>b.onclick=()=>rmLib(b.dataset.rmlib));
 }
+$("#libSearch").oninput=e=>{ libTerm=e.target.value.trim().toLowerCase(); renderLib(); };
 let againId=null;
 function openAgain(id){
   const l=library.find(x=>x.id===id); if(!l) return;
@@ -1223,6 +1308,7 @@ let aiStop=false;
 async function runAI(list){
   if(!aiReady()){ toast("先去 ⚙ 填 AI 設定","Set up the AI in Settings first"); return; }
   aiStop=false;
+  const known=knownNames();
   let done=0, ok=0, fail=0;
   busy(true,`改緊名 ${done} / ${list.length}`,"Naming photos…",()=>{aiStop=true;});
   for(const it of list){
@@ -1232,7 +1318,7 @@ async function runAI(list){
       if(it.photoId){
         try{ const s=await F.getDoc(F.doc(db,"photos",it.photoId)); if(s.exists()) img=s.data().full; }catch(_){}
       }
-      const r=await askVision(img);
+      const r=await askVision(img, known);
       if(r.zh||r.en){
         await F.updateDoc(F.doc(db,"items",it.id),{ zh:r.zh, en:r.en, brand:r.brand||"", updatedAt:F.serverTimestamp() });
         ok++;
