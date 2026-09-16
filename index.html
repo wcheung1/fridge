@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#0E6B7A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>雪櫃盤點</title>
+<style>
+/* ── tokens ───────────────────────────────────────────── */
+:root{
+  --chill:#EAEEF1;      /* page */
+  --card:#FFFFFF;
+  --ink:#16232B;
+  --mute:#657781;
+  --rule:#DDE4E8;
+  --brand:#0E6B7A;
+  --brand-dk:#0A5561;
+  --brand-tint:#E2EFF1;
+  --gone:#AE3628;       /* 已過期 */
+  --gone-bg:#FBEBE8;
+  --soon:#9C6510;       /* 快到期 */
+  --soon-bg:#FBF1DF;
+  --fresh:#1D6F49;      /* 仲新鮮 */
+  --r:14px;
+  --sh:0 1px 2px rgba(22,35,43,.06);
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --chill:#111A1F; --card:#18242B; --ink:#E7EDF0; --mute:#93A5AE;
+    --rule:#26343C; --brand:#3FA5B4; --brand-dk:#2E8391; --brand-tint:#1B3239;
+    --gone:#F08A7B; --gone-bg:#3A201C;
+    --soon:#E5B15C; --soon-bg:#33290F; --fresh:#63C295;
+    --sh:0 1px 2px rgba(0,0,0,.3);
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%}
+body{
+  background:var(--chill); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang HK","PingFang TC","Hiragino Sans TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+  font-size:16px; line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+  overscroll-behavior-y:none;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.hide{display:none!important}
+
+/* ── header ───────────────────────────────────────────── */
+header{
+  position:sticky;top:0;z-index:30;
+  background:var(--chill);
+  padding:calc(var(--safe-t) + 12px) 16px 0;
+  border-bottom:1px solid var(--rule);
+}
+.htop{display:flex;align-items:baseline;gap:10px}
+h1{font-size:21px;font-weight:700;letter-spacing:-.01em;margin:0;flex:1}
+.hsub{font-size:13px;color:var(--mute)}
+.iconbtn{
+  width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
+  color:var(--mute);font-size:19px;flex:none
+}
+.iconbtn:hover{background:var(--brand-tint);color:var(--brand)}
+#search{
+  width:100%;margin:10px 0 0;padding:10px 14px;border-radius:10px;
+  border:1px solid var(--rule);background:var(--card);
+}
+#search::placeholder{color:var(--mute)}
+
+/* signal strip — tappable filters */
+.signals{display:flex;gap:8px;margin:12px 0 0;overflow-x:auto;scrollbar-width:none}
+.signals::-webkit-scrollbar{display:none}
+.sig{
+  flex:none;display:flex;align-items:baseline;gap:6px;
+  padding:6px 12px;border-radius:999px;border:1px solid var(--rule);
+  background:var(--card);font-size:13px;color:var(--mute)
+}
+.sig b{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
+.sig[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-tint);color:var(--brand)}
+.sig[aria-pressed="true"] b{color:var(--brand)}
+.sig.g b{color:var(--gone)} .sig.s b{color:var(--soon)}
+
+/* section chips */
+.chips{display:flex;gap:8px;margin:12px 0 0;padding-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none;padding:7px 14px;border-radius:999px;font-size:14px;
+  border:1px solid var(--rule);background:var(--card);color:var(--mute);white-space:nowrap
+}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+.chip.ghost{border-style:dashed}
+
+/* ── list ─────────────────────────────────────────────── */
+main{padding:8px 16px calc(112px + var(--safe-b))}
+.row{
+  display:flex;gap:13px;align-items:center;width:100%;text-align:left;
+  background:var(--card);border-radius:var(--r);box-shadow:var(--sh);
+  padding:10px;margin-bottom:8px
+}
+.row.expired{background:var(--gone-bg)}
+.row:active{transform:scale(.995)}
+.thumb{
+  width:74px;height:74px;border-radius:10px;object-fit:cover;flex:none;
+  background:var(--brand-tint);display:block
+}
+.thumb.ph{display:grid;place-items:center;font-size:24px;color:var(--brand)}
+.rmid{flex:1;min-width:0}
+.rname{font-size:17px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rmeta{font-size:13px;color:var(--mute);margin-top:3px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tag{
+  font-size:12px;padding:1px 8px;border-radius:5px;
+  background:var(--brand-tint);color:var(--brand);font-weight:600
+}
+.rnote{font-size:13px;color:var(--mute);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* the hero: countdown */
+.count{flex:none;text-align:right;min-width:60px;padding-right:2px}
+.cnum{
+  display:block;font-size:34px;font-weight:700;line-height:1;
+  letter-spacing:-.045em;font-variant-numeric:tabular-nums;color:var(--fresh)
+}
+.cunit{display:block;font-size:12px;color:var(--mute);margin-top:3px}
+.count.gone .cnum,.count.gone .cunit{color:var(--gone)}
+.count.soon .cnum,.count.soon .cunit{color:var(--soon)}
+.cword{display:block;font-size:17px;font-weight:700;line-height:1.15;letter-spacing:-.01em}
+
+.empty{text-align:center;padding:64px 24px;color:var(--mute)}
+.empty .big{font-size:40px;margin-bottom:12px}
+.empty p{margin:0 0 4px;font-size:15px}
+
+#fab{
+  position:fixed;right:18px;bottom:calc(20px + var(--safe-b));z-index:35;
+  height:56px;padding:0 22px 0 18px;border-radius:28px;
+  background:var(--brand);color:#fff;font-size:16px;font-weight:600;
+  display:flex;align-items:center;gap:8px;box-shadow:0 6px 18px rgba(14,107,122,.35)
+}
+#fab:active{background:var(--brand-dk)}
+#fab span{font-size:23px;line-height:1}
+
+/* ── sheets / modals ──────────────────────────────────── */
+.scrim{position:fixed;inset:0;background:rgba(14,26,32,.55);z-index:40;backdrop-filter:blur(2px)}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:41;max-height:92vh;overflow-y:auto;
+  background:var(--card);border-radius:20px 20px 0 0;
+  padding:0 18px calc(20px + var(--safe-b));
+  animation:up .22s cubic-bezier(.2,.8,.3,1)
+}
+@keyframes up{from{transform:translateY(100%)}}
+@media (min-width:640px){
+  .sheet{left:50%;right:auto;bottom:auto;top:50%;transform:translate(-50%,-50%);
+    width:520px;border-radius:18px;animation:none;max-height:88vh}
+}
+.shead{
+  position:sticky;top:0;background:var(--card);z-index:2;
+  display:flex;align-items:center;gap:10px;padding:16px 0 12px;
+  border-bottom:1px solid var(--rule);margin-bottom:16px
+}
+.shead h2{flex:1;font-size:18px;font-weight:700;margin:0;letter-spacing:-.01em}
+.grab{width:38px;height:4px;border-radius:2px;background:var(--rule);margin:8px auto -2px}
+@media (min-width:640px){.grab{display:none}}
+
+label.f{display:block;margin-bottom:16px}
+label.f>span{display:block;font-size:13px;color:var(--mute);margin-bottom:6px}
+input[type=text],input[type=date],textarea{
+  width:100%;padding:12px 14px;border-radius:10px;
+  border:1px solid var(--rule);background:var(--chill)
+}
+textarea{resize:vertical;min-height:52px}
+.quick{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.qb{padding:7px 13px;border-radius:999px;border:1px solid var(--rule);font-size:13px;color:var(--mute);background:var(--card)}
+.qb:active{border-color:var(--brand);color:var(--brand)}
+
+.picker{display:flex;flex-wrap:wrap;gap:8px}
+.pk{padding:9px 15px;border-radius:999px;border:1px solid var(--rule);font-size:14px;color:var(--mute);background:var(--card)}
+.pk[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+
+/* photo slot */
+.shot{
+  display:flex;gap:12px;align-items:stretch;margin-bottom:18px
+}
+.shot img{width:112px;height:112px;object-fit:cover;border-radius:12px;flex:none;background:var(--chill)}
+.shotbtns{flex:1;display:flex;flex-direction:column;gap:8px}
+.big-b{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  border:1.5px dashed var(--rule);border-radius:12px;color:var(--brand);
+  font-size:15px;font-weight:600;min-height:52px;background:var(--card)
+}
+.big-b:active{background:var(--brand-tint)}
+
+.btn{
+  width:100%;padding:15px;border-radius:12px;font-size:16px;font-weight:600;
+  background:var(--brand);color:#fff;display:block
+}
+.btn:active{background:var(--brand-dk)}
+.btn.ghost{background:var(--brand-tint);color:var(--brand)}
+.btn.danger{background:transparent;color:var(--gone);font-weight:500}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.brow{display:flex;gap:10px;margin-top:4px}
+
+/* detail */
+#dImg{width:100%;border-radius:14px;display:block;background:var(--chill);margin-bottom:16px}
+.dfacts{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.dfacts .count{text-align:left;min-width:0}
+.dline{font-size:14px;color:var(--mute);margin-top:2px}
+
+/* sections manager */
+.srow{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--rule)}
+.srow input{flex:1;background:transparent;border:0;padding:6px 0;font-weight:600}
+.srow .mini{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:var(--mute);font-size:15px;flex:none}
+.srow .mini:hover{background:var(--chill)}
+.srow .mini.del{color:var(--gone)}
+
+/* ── cropper ──────────────────────────────────────────── */
+#cropper{
+  position:fixed;inset:0;z-index:60;background:#0C1519;color:#fff;
+  display:flex;flex-direction:column;touch-action:none
+}
+.cropbar{
+  display:flex;align-items:center;gap:6px;
+  padding:calc(var(--safe-t) + 10px) 12px 10px;flex:none
+}
+.tbtn{padding:9px 14px;border-radius:9px;color:#fff;font-size:15px}
+.tbtn.primary{background:var(--brand);font-weight:700}
+.tbtn.icon{font-size:20px;padding:8px 11px;color:#C7D6DC}
+.cropbar-mid{flex:1;display:flex;justify-content:center;gap:2px}
+#cropStage{flex:1;position:relative;display:grid;place-items:center;overflow:hidden;min-height:0}
+#cropWrap{position:relative;line-height:0}
+#cropCanvas{display:block;max-width:100%}
+#cropBox{
+  position:absolute;box-shadow:0 0 0 9999px rgba(10,20,26,.68);
+  outline:1px solid rgba(255,255,255,.85);cursor:move;touch-action:none
+}
+#cropBox::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(to right,transparent 33.33%,rgba(255,255,255,.28) 33.33%,rgba(255,255,255,.28) calc(33.33% + 1px),transparent calc(33.33% + 1px),transparent 66.66%,rgba(255,255,255,.28) 66.66%,rgba(255,255,255,.28) calc(66.66% + 1px),transparent calc(66.66% + 1px)),
+    linear-gradient(to bottom,transparent 33.33%,rgba(255,255,255,.28) 33.33%,rgba(255,255,255,.28) calc(33.33% + 1px),transparent calc(33.33% + 1px),transparent 66.66%,rgba(255,255,255,.28) 66.66%,rgba(255,255,255,.28) calc(66.66% + 1px),transparent calc(66.66% + 1px))
+}
+.hd{position:absolute;display:block}
+.hd::after{content:"";position:absolute;background:#fff;border-radius:2px}
+.hd[data-h=n],.hd[data-h=s]{left:18%;right:18%;height:36px;cursor:ns-resize}
+.hd[data-h=n]{top:-18px} .hd[data-h=s]{bottom:-18px}
+.hd[data-h=n]::after,.hd[data-h=s]::after{left:50%;transform:translateX(-50%);width:36px;height:4px;top:16px}
+.hd[data-h=e],.hd[data-h=w]{top:18%;bottom:18%;width:36px;cursor:ew-resize}
+.hd[data-h=w]{left:-18px} .hd[data-h=e]{right:-18px}
+.hd[data-h=e]::after,.hd[data-h=w]::after{top:50%;transform:translateY(-50%);width:4px;height:36px;left:16px}
+.hd.cn{width:46px;height:46px}
+.hd[data-h=nw]{top:-16px;left:-16px;cursor:nwse-resize}
+.hd[data-h=ne]{top:-16px;right:-16px;cursor:nesw-resize}
+.hd[data-h=sw]{bottom:-16px;left:-16px;cursor:nesw-resize}
+.hd[data-h=se]{bottom:-16px;right:-16px;cursor:nwse-resize}
+.hd.cn::after,.hd.cn::before{content:"";position:absolute;background:#fff}
+.hd.cn::after{width:22px;height:4px} .hd.cn::before{width:4px;height:22px}
+.hd[data-h=nw]::after{top:14px;left:14px} .hd[data-h=nw]::before{top:14px;left:14px}
+.hd[data-h=ne]::after{top:14px;right:14px} .hd[data-h=ne]::before{top:14px;right:14px}
+.hd[data-h=sw]::after{bottom:14px;left:14px} .hd[data-h=sw]::before{bottom:14px;left:14px}
+.hd[data-h=se]::after{bottom:14px;right:14px} .hd[data-h=se]::before{bottom:14px;right:14px}
+#cropHint{
+  flex:none;text-align:center;font-size:13px;color:#9FB4BC;
+  margin:0;padding:12px 16px calc(14px + var(--safe-b))
+}
+
+/* ── gate / toast ─────────────────────────────────────── */
+#gate{
+  position:fixed;inset:0;z-index:70;background:var(--chill);
+  display:grid;place-items:center;padding:28px;text-align:center
+}
+#gate .box{max-width:400px}
+#gate .mark{font-size:52px;margin-bottom:8px}
+#gate h2{font-size:24px;margin:0 0 6px;letter-spacing:-.02em}
+#gate p{color:var(--mute);font-size:15px;margin:0 0 24px}
+#gate pre{
+  text-align:left;background:var(--card);border:1px solid var(--rule);border-radius:10px;
+  padding:12px;font-size:12px;overflow-x:auto;line-height:1.5;color:var(--mute)
+}
+#toast{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + var(--safe-b));
+  z-index:80;background:var(--ink);color:var(--chill);padding:11px 18px;border-radius:999px;
+  font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none
+}
+#busy{
+  position:fixed;inset:0;z-index:90;background:rgba(14,26,32,.5);
+  display:grid;place-items:center;color:#fff;font-size:15px
+}
+.spin{width:30px;height:30px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;
+  border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 12px}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- ══ gate (sign-in / setup) ══ -->
+<div id="gate">
+  <div class="box">
+    <div class="mark">🧊</div>
+    <h2>雪櫃盤點</h2>
+    <p id="gateMsg">影低、寫個日期，到期之前提你食。</p>
+    <button id="signin" class="btn">用 Google 登入</button>
+    <pre id="gateCfg" class="hide"></pre>
+  </div>
+</div>
+
+<!-- ══ app ══ -->
+<div id="app" class="hide">
+  <header>
+    <div class="htop">
+      <h1>雪櫃盤點</h1>
+      <button id="openSections" class="iconbtn" title="管理分區" aria-label="管理分區">⚙</button>
+      <button id="signout" class="iconbtn" title="登出" aria-label="登出">⏻</button>
+    </div>
+    <input id="search" type="text" placeholder="搵食物…" autocomplete="off">
+    <div class="signals" id="signals"></div>
+    <div class="chips" id="chips"></div>
+  </header>
+  <main id="list"></main>
+  <button id="fab"><span>＋</span>入貨</button>
+</div>
+
+<!-- ══ add / edit sheet ══ -->
+<div id="formScrim" class="scrim hide"></div>
+<section id="formSheet" class="sheet hide" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+  <div class="grab"></div>
+  <div class="shead">
+    <h2 id="formTitle">入貨</h2>
+    <button class="iconbtn" data-close="form" aria-label="閂">✕</button>
+  </div>
+
+  <div class="shot">
+    <img id="fPreview" alt="" class="hide">
+    <div class="shotbtns">
+      <button class="big-b" id="btnCam">📷 影相</button>
+      <button class="big-b" id="btnLib">🖼 揀相</button>
+    </div>
+  </div>
+
+  <label class="f">
+    <span>食物名</span>
+    <input id="fName" type="text" list="nameHints" placeholder="例如：西蘭花" autocomplete="off">
+  </label>
+  <datalist id="nameHints"></datalist>
+
+  <label class="f" style="margin-bottom:8px">
+    <span>過期日期</span>
+    <input id="fDate" type="date">
+  </label>
+  <div class="quick" id="quickDates"></div>
+
+  <div class="f" style="margin-top:18px">
+    <span style="display:block;font-size:13px;color:var(--mute);margin-bottom:6px">放喺邊格</span>
+    <div class="picker" id="fSections"></div>
+  </div>
+
+  <label class="f">
+    <span>備註（數量、幾時買、隨意）</span>
+    <textarea id="fNote" rows="1" placeholder="2 盒"></textarea>
+  </label>
+
+  <button id="fSave" class="btn">儲存</button>
+  <div class="brow"><button id="fSaveNext" class="btn ghost">儲存，跟住入下一樣</button></div>
+  <button id="fDelete" class="btn danger hide" style="margin-top:6px">刪除呢樣嘢</button>
+</section>
+
+<!-- ══ detail sheet ══ -->
+<div id="detScrim" class="scrim hide"></div>
+<section id="detSheet" class="sheet hide" role="dialog" aria-modal="true" aria-labelledby="dName">
+  <div class="grab"></div>
+  <div class="shead">
+    <h2 id="dName">—</h2>
+    <button class="iconbtn" data-close="det" aria-label="閂">✕</button>
+  </div>
+  <img id="dImg" alt="">
+  <div class="dfacts">
+    <div class="count" id="dCount"></div>
+    <div>
+      <div id="dWhen" style="font-weight:600"></div>
+      <div class="dline" id="dWhere"></div>
+      <div class="dline" id="dNote"></div>
+    </div>
+  </div>
+  <button id="dAte" class="btn">食咗 / 用完</button>
+  <div class="brow"><button id="dEdit" class="btn ghost">改資料</button></div>
+</section>
+
+<!-- ══ sections manager ══ -->
+<div id="secScrim" class="scrim hide"></div>
+<section id="secSheet" class="sheet hide" role="dialog" aria-modal="true" aria-labelledby="secTitle">
+  <div class="grab"></div>
+  <div class="shead">
+    <h2 id="secTitle">分區</h2>
+    <button class="iconbtn" data-close="sec" aria-label="閂">✕</button>
+  </div>
+  <div id="secList"></div>
+  <button id="secAdd" class="btn ghost" style="margin-top:18px">加一個分區</button>
+</section>
+
+<!-- ══ cropper ══ -->
+<div id="cropper" class="hide">
+  <div class="cropbar">
+    <button id="cropCancel" class="tbtn">取消</button>
+    <div class="cropbar-mid">
+      <button id="rotL" class="tbtn icon" aria-label="向左轉">↺</button>
+      <button id="rotR" class="tbtn icon" aria-label="向右轉">↻</button>
+      <button id="cropAll" class="tbtn icon" aria-label="要成幅相">⛶</button>
+    </div>
+    <button id="cropOk" class="tbtn primary">用呢個範圍</button>
+  </div>
+  <div id="cropStage">
+    <div id="cropWrap">
+      <canvas id="cropCanvas"></canvas>
+      <div id="cropBox">
+        <span class="hd" data-h="n"></span><span class="hd" data-h="s"></span>
+        <span class="hd" data-h="w"></span><span class="hd" data-h="e"></span>
+        <span class="hd cn" data-h="nw"></span><span class="hd cn" data-h="ne"></span>
+        <span class="hd cn" data-h="sw"></span><span class="hd cn" data-h="se"></span>
+      </div>
+    </div>
+  </div>
+  <p id="cropHint">拉四條邊或者四個角，剪走唔要嘅位</p>
+</div>
+
+<div id="busy" class="hide"><div><div class="spin"></div><div id="busyMsg">處理緊…</div></div></div>
+<input id="fileCam" type="file" accept="image/*" capture="environment" class="hide">
+<input id="fileLib" type="file" accept="image/*" class="hide">
+
+<script type="module">
+/* ═══════════════════════════════════════════════════════
+   1. Firebase 設定 —— 換咗下面 6 行就用得
+   ═══════════════════════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey:            "AIzaSyDEkS_E9qSdkvaIa7A4oA98Gqh8IbbSY6s",
+  authDomain:        "home-fridge-1.firebaseapp.com",
+  projectId:         "home-fridge-1",
+  storageBucket:     "home-fridge-1.firebasestorage.app",
+  messagingSenderId: "776220761130",
+  appId:             "1:776220761130:web:329c34b63c42393e25f753"
+};
+
+/* 壓縮設定 */
+const MAX_EDGE   = 1000;   // 最長嗰邊壓到幾多 px
+const THUMB_EDGE = 360;    // 清單細相
+const FULL_CAP   = 880000; // 大相上限（Firestore 一份文件最多 1MB）
+const THUMB_CAP  = 110000;
+
+/* 到期分界（日） */
+const T_SOON = 3, T_WATCH = 7;
+
+const DEFAULT_SECTIONS = ["雪櫃上格","雪櫃下格","急凍格","Cabinet"];
+
+/* ═══════════════════════════════════════════════════════ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s??"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const todayISO = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+
+function daysLeft(iso){
+  if(!iso) return null;
+  const [y,m,d] = iso.split("-").map(Number);
+  const t = new Date(y, m-1, d); t.setHours(0,0,0,0);
+  const now = new Date(); now.setHours(0,0,0,0);
+  return Math.round((t - now) / 86400000);
+}
+function plusDays(n){
+  const d = new Date(); d.setDate(d.getDate()+n);
+  d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+  return d.toISOString().slice(0,10);
+}
+function fmtDate(iso){
+  if(!iso) return "冇日期";
+  const [y,m,d] = iso.split("-").map(Number);
+  const now = new Date();
+  return (y === now.getFullYear() ? "" : y+"年") + m + "月" + d + "日";
+}
+function tier(n){ return n===null ? "" : n < 0 ? "gone" : n <= T_SOON ? "soon" : ""; }
+
+let toastT;
+function toast(msg){
+  clearTimeout(toastT);
+  let t = $("#toast");
+  if(!t){ t = document.createElement("div"); t.id = "toast"; document.body.appendChild(t); }
+  t.textContent = msg;
+  toastT = setTimeout(() => t.remove(), 2200);
+}
+const busy = (on, msg) => { $("#busyMsg").textContent = msg || "處理緊…"; $("#busy").classList.toggle("hide", !on); };
+
+/* ═══ 裁相 + 壓縮 ═════════════════════════════════════ */
+let srcCv = null, DW = 0, DH = 0, B = {x:0,y:0,w:0,h:0}, cropResolve = null, drag = null;
+
+async function decode(file){
+  try{
+    const bm = await createImageBitmap(file, { imageOrientation:"from-image" });
+    const c = document.createElement("canvas");
+    c.width = bm.width; c.height = bm.height;
+    c.getContext("2d").drawImage(bm, 0, 0);
+    bm.close();
+    return c;
+  }catch(_){
+    const url = URL.createObjectURL(file);
+    try{
+      const img = await new Promise((res, rej) => {
+        const i = new Image();
+        i.onload = () => res(i); i.onerror = () => rej(new Error("讀唔到呢張相"));
+        i.src = url;
+      });
+      const c = document.createElement("canvas");
+      c.width = img.naturalWidth; c.height = img.naturalHeight;
+      c.getContext("2d").drawImage(img, 0, 0);
+      return c;
+    } finally { URL.revokeObjectURL(url); }
+  }
+}
+
+function openCropper(file){
+  return new Promise(async (resolve) => {
+    busy(true, "開緊張相…");
+    try{
+      srcCv = await decode(file);
+    }catch(e){ busy(false); toast(e.message); resolve(null); return; }
+    busy(false);
+    cropResolve = resolve;
+    $("#cropper").classList.remove("hide");
+    document.body.style.overflow = "hidden";
+    requestAnimationFrame(() => layoutCrop(true));
+  });
+}
+function closeCropper(result){
+  $("#cropper").classList.add("hide");
+  document.body.style.overflow = "";
+  srcCv = null; drag = null;
+  const r = cropResolve; cropResolve = null;
+  if(r) r(result);
+}
+
+function layoutCrop(reset){
+  if(!srcCv) return;
+  const stage = $("#cropStage");
+  const aw = stage.clientWidth - 40, ah = stage.clientHeight - 40;
+  const W = srcCv.width, H = srcCv.height;
+  const scale = Math.min(aw / W, ah / H, 1);
+  const dw = Math.max(1, Math.round(W * scale)), dh = Math.max(1, Math.round(H * scale));
+  const ratio = (DW && !reset) ? dw / DW : 0;
+  const c = $("#cropCanvas");
+  c.width = dw; c.height = dh;
+  const g = c.getContext("2d");
+  g.imageSmoothingQuality = "high";
+  g.drawImage(srcCv, 0, 0, dw, dh);
+  const wrap = $("#cropWrap");
+  wrap.style.width = dw + "px"; wrap.style.height = dh + "px";
+  B = (reset || !ratio)
+    ? { x:0, y:0, w:dw, h:dh }
+    : { x:B.x*ratio, y:B.y*ratio, w:B.w*ratio, h:B.h*ratio };
+  DW = dw; DH = dh;
+  paintBox();
+}
+function paintBox(){
+  const s = $("#cropBox").style;
+  s.left = B.x + "px"; s.top = B.y + "px";
+  s.width = B.w + "px"; s.height = B.h + "px";
+}
+
+const MIN = 48;
+const box = $("#cropBox");
+box.addEventListener("pointerdown", e => {
+  const hd = e.target.closest(".hd");
+  drag = { mode: hd ? hd.dataset.h : "move", sx:e.clientX, sy:e.clientY, b:{...B} };
+  box.setPointerCapture(e.pointerId);
+  e.preventDefault(); e.stopPropagation();
+});
+box.addEventListener("pointermove", e => {
+  if(!drag) return;
+  const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+  let { x, y, w, h } = drag.b;
+  if(drag.mode === "move"){
+    x = clamp(x + dx, 0, DW - w);
+    y = clamp(y + dy, 0, DH - h);
+  }else{
+    const m = drag.mode;
+    if(m.indexOf("n") > -1){ const ny = clamp(y + dy, 0, y + h - MIN); h = y + h - ny; y = ny; }
+    if(m.indexOf("s") > -1){ const nb = clamp(y + h + dy, y + MIN, DH); h = nb - y; }
+    if(m.indexOf("w") > -1){ const nx = clamp(x + dx, 0, x + w - MIN); w = x + w - nx; x = nx; }
+    if(m.indexOf("e") > -1){ const nr = clamp(x + w + dx, x + MIN, DW); w = nr - x; }
+  }
+  B = { x, y, w, h };
+  paintBox();
+});
+const endDrag = () => { drag = null; };
+box.addEventListener("pointerup", endDrag);
+box.addEventListener("pointercancel", endDrag);
+addEventListener("resize", () => { if(srcCv) layoutCrop(false); });
+
+$("#cropAll").onclick = () => layoutCrop(true);
+$("#cropCancel").onclick = () => closeCropper(null);
+$("#rotL").onclick = () => rotate(-90);
+$("#rotR").onclick = () => rotate(90);
+function rotate(deg){
+  if(!srcCv) return;
+  const c = document.createElement("canvas");
+  c.width = srcCv.height; c.height = srcCv.width;
+  const g = c.getContext("2d");
+  g.translate(c.width / 2, c.height / 2);
+  g.rotate(deg * Math.PI / 180);
+  g.drawImage(srcCv, -srcCv.width / 2, -srcCv.height / 2);
+  srcCv = c;
+  layoutCrop(true);
+}
+
+/* 分段縮圖，保住畫質 */
+function resample(src, sx, sy, sw, sh, tw, th){
+  let cur = document.createElement("canvas");
+  cur.width = Math.max(1, Math.round(sw)); cur.height = Math.max(1, Math.round(sh));
+  const c0 = cur.getContext("2d"); c0.imageSmoothingQuality = "high";
+  c0.drawImage(src, sx, sy, sw, sh, 0, 0, cur.width, cur.height);
+  while(cur.width > tw * 2 && cur.height > th * 2){
+    const n = document.createElement("canvas");
+    n.width = Math.max(tw, Math.round(cur.width / 2));
+    n.height = Math.max(th, Math.round(cur.height / 2));
+    const g = n.getContext("2d"); g.imageSmoothingQuality = "high";
+    g.drawImage(cur, 0, 0, n.width, n.height);
+    cur = n;
+  }
+  const out = document.createElement("canvas");
+  out.width = tw; out.height = th;
+  const g = out.getContext("2d"); g.imageSmoothingQuality = "high";
+  g.drawImage(cur, 0, 0, tw, th);
+  return out;
+}
+function toJpeg(cv, cap){
+  let q = 0.85, url = cv.toDataURL("image/jpeg", q);
+  while(url.length > cap && q > 0.32){ q -= 0.09; url = cv.toDataURL("image/jpeg", q); }
+  return url;
+}
+function fit(sw, sh, edge){
+  const m = Math.max(sw, sh);
+  const k = m > edge ? edge / m : 1;
+  return [Math.max(1, Math.round(sw * k)), Math.max(1, Math.round(sh * k))];
+}
+
+$("#cropOk").onclick = () => {
+  if(!srcCv) return;
+  busy(true, "壓縮緊…");
+  setTimeout(() => {
+    try{
+      const W = srcCv.width, H = srcCv.height;
+      const sx = B.x / DW * W, sy = B.y / DH * H;
+      const sw = B.w / DW * W, sh = B.h / DH * H;
+      const [fw, fh] = fit(sw, sh, MAX_EDGE);
+      const [tw, th] = fit(sw, sh, THUMB_EDGE);
+      const full  = toJpeg(resample(srcCv, sx, sy, sw, sh, fw, fh), FULL_CAP);
+      const thumb = toJpeg(resample(srcCv, sx, sy, sw, sh, tw, th), THUMB_CAP);
+      busy(false);
+      closeCropper({ full, thumb, w:fw, h:fh });
+    }catch(e){ busy(false); toast("壓縮失敗，試多次"); closeCropper(null); }
+  }, 30);
+};
+
+/* ═══ Firebase ═══════════════════════════════════════ */
+const V = "10.12.5";
+let db, auth, user = null;
+let items = [], sections = [], unsub = [];
+let filterSection = "all", filterSignal = "all", term = "";
+let editingId = null, pendingPhoto = null, existingThumb = null, seeded = false;
+
+if(firebaseConfig.apiKey.indexOf("PASTE") === 0){
+  $("#gateMsg").textContent = "仲未駁到 Firebase。喺 index.html 入面搵 firebaseConfig，貼返你自己個 project 嘅資料入去。";
+  $("#signin").classList.add("hide");
+  $("#gateCfg").classList.remove("hide");
+  $("#gateCfg").textContent = "Firebase Console → 專案設定 → 你的應用程式\n→ 揀 Config → 抄成段 firebaseConfig 貼入 index.html";
+}else{
+  boot();
+}
+
+async function boot(){
+  const [{ initializeApp }, A, F] = await Promise.all([
+    import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`),
+    import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`),
+    import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`)
+  ]);
+  window.__F = F; window.__A = A;
+  const app = initializeApp(firebaseConfig);
+  auth = A.getAuth(app);
+  try{
+    db = F.initializeFirestore(app, {
+      localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() })
+    });
+  }catch(_){ db = F.getFirestore(app); }
+
+  try{ await A.setPersistence(auth, A.browserLocalPersistence); }catch(_){}
+  try{ await A.getRedirectResult(auth); }catch(_){}
+
+  $("#signin").onclick = async () => {
+    const p = new A.GoogleAuthProvider();
+    try{ await A.signInWithPopup(auth, p); }
+    catch(e){
+      if(String(e.code||"").indexOf("popup") > -1){ A.signInWithRedirect(auth, p); }
+      else toast("登入失敗：" + (e.code || e.message));
+    }
+  };
+  $("#signout").onclick = () => A.signOut(auth);
+
+  A.onAuthStateChanged(auth, u => {
+    user = u;
+    $("#gate").classList.toggle("hide", !!u);
+    $("#app").classList.toggle("hide", !u);
+    unsub.forEach(f => f()); unsub = [];
+    if(u) listen();
+    else { items = []; sections = []; }
+  });
+}
+
+function listen(){
+  const F = window.__F;
+  unsub.push(F.onSnapshot(F.query(F.collection(db, "sections"), F.orderBy("order")), snap => {
+    sections = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+    if(!sections.length && !seeded){ seeded = true; seedSections(); }
+    renderChips(); renderSectionPicker(); renderSecList(); render();
+  }, err => toast("讀唔到分區：" + err.code)));
+
+  unsub.push(F.onSnapshot(F.collection(db, "items"), snap => {
+    items = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+    renderHints(); render();
+  }, err => toast("讀唔到食物：" + err.code)));
+}
+async function seedSections(){
+  const F = window.__F;
+  const batch = F.writeBatch(db);
+  DEFAULT_SECTIONS.forEach((name, i) => batch.set(F.doc(F.collection(db, "sections")), { name, order:i }));
+  try{ await batch.commit(); }catch(e){ toast("建立唔到預設分區：" + e.code); }
+}
+
+/* ═══ 畫面 ═══════════════════════════════════════════ */
+const secName = id => (sections.find(s => s.id === id) || {}).name || "未分區";
+
+function renderChips(){
+  const c = $("#chips");
+  const list = [{ id:"all", name:"全部" }, ...sections];
+  c.innerHTML = list.map(s =>
+    `<button class="chip" data-sec="${esc(s.id)}" aria-pressed="${filterSection === s.id}">${esc(s.name)}</button>`
+  ).join("") + `<button class="chip ghost" id="chipManage">＋ 分區</button>`;
+  c.querySelectorAll("[data-sec]").forEach(b => b.onclick = () => {
+    filterSection = b.dataset.sec; renderChips(); render();
+  });
+  $("#chipManage").onclick = openSections;
+}
+
+function renderSignals(){
+  const live = items;
+  const n = k => live.filter(k).length;
+  const gone  = n(i => { const d = daysLeft(i.expiry); return d !== null && d < 0; });
+  const soon  = n(i => { const d = daysLeft(i.expiry); return d !== null && d >= 0 && d <= T_SOON; });
+  const watch = n(i => { const d = daysLeft(i.expiry); return d !== null && d > T_SOON && d <= T_WATCH; });
+  const defs = [
+    { k:"all",   label:"全部",   v:live.length, cls:"" },
+    { k:"gone",  label:"過咗期", v:gone,  cls:"g" },
+    { k:"soon",  label:"3日內",  v:soon,  cls:"s" },
+    { k:"watch", label:"一星期內", v:watch, cls:"" }
+  ];
+  $("#signals").innerHTML = defs.map(d =>
+    `<button class="sig ${d.cls}" data-sig="${d.k}" aria-pressed="${filterSignal === d.k}"><b>${d.v}</b>${esc(d.label)}</button>`
+  ).join("");
+  $("#signals").querySelectorAll("[data-sig]").forEach(b => b.onclick = () => {
+    filterSignal = filterSignal === b.dataset.sig ? "all" : b.dataset.sig;
+    renderSignals(); render();
+  });
+}
+
+function visible(){
+  let r = items.slice();
+  if(filterSection !== "all") r = r.filter(i => i.sectionId === filterSection);
+  if(term) r = r.filter(i => ((i.name || "") + " " + (i.note || "")).toLowerCase().includes(term));
+  if(filterSignal !== "all") r = r.filter(i => {
+    const d = daysLeft(i.expiry);
+    if(d === null) return false;
+    if(filterSignal === "gone")  return d < 0;
+    if(filterSignal === "soon")  return d >= 0 && d <= T_SOON;
+    if(filterSignal === "watch") return d > T_SOON && d <= T_WATCH;
+    return true;
+  });
+  // 最快到期嘅頂上；冇日期嘅排最後
+  r.sort((a, b) => {
+    const da = daysLeft(a.expiry), dbv = daysLeft(b.expiry);
+    if(da === null && dbv === null) return (a.name||"").localeCompare(b.name||"");
+    if(da === null) return 1;
+    if(dbv === null) return -1;
+    return da - dbv || (a.name||"").localeCompare(b.name||"");
+  });
+  return r;
+}
+
+function countHTML(d){
+  if(d === null) return `<div class="count"><span class="cword" style="color:var(--mute)">冇日期</span></div>`;
+  const t = tier(d);
+  if(d < 0)  return `<div class="count gone"><span class="cnum">${-d}</span><span class="cunit">日前過咗</span></div>`;
+  if(d === 0) return `<div class="count soon"><span class="cword">今日</span><span class="cunit">到期</span></div>`;
+  if(d === 1) return `<div class="count soon"><span class="cword">聽日</span><span class="cunit">到期</span></div>`;
+  return `<div class="count ${t}"><span class="cnum">${d}</span><span class="cunit">日</span></div>`;
+}
+
+function render(){
+  renderSignals();
+  const rows = visible();
+  const main = $("#list");
+  if(!rows.length){
+    main.innerHTML = `<div class="empty">
+      <div class="big">🧺</div>
+      <p>${items.length ? "呢度冇嘢符合。" : "雪櫃仲係空嘅。"}</p>
+      <p>${items.length ? "試下換個分區或者清走個篩選。" : "撳右下角「入貨」影低第一樣嘢。"}</p>
+    </div>`;
+    return;
+  }
+  main.innerHTML = rows.map(i => {
+    const d = daysLeft(i.expiry);
+    return `<button class="row ${d !== null && d < 0 ? "expired" : ""}" data-id="${esc(i.id)}">
+      ${i.thumb ? `<img class="thumb" src="${i.thumb}" alt="">` : `<div class="thumb ph">🍽</div>`}
+      <div class="rmid">
+        <div class="rname">${esc(i.name || "未命名")}</div>
+        <div class="rmeta"><span class="tag">${esc(secName(i.sectionId))}</span><span>${esc(fmtDate(i.expiry))}</span></div>
+        ${i.note ? `<div class="rnote">${esc(i.note)}</div>` : ""}
+      </div>
+      ${countHTML(d)}
+    </button>`;
+  }).join("");
+  main.querySelectorAll(".row").forEach(r => r.onclick = () => openDetail(r.dataset.id));
+}
+
+function renderHints(){
+  const names = [...new Set(items.map(i => i.name).filter(Boolean))].slice(0, 60);
+  $("#nameHints").innerHTML = names.map(n => `<option value="${esc(n)}">`).join("");
+}
+
+$("#search").oninput = e => { term = e.target.value.trim().toLowerCase(); render(); };
+
+/* ═══ 入貨 / 改資料 ═══════════════════════════════════ */
+function openForm(item){
+  editingId = item ? item.id : null;
+  pendingPhoto = null;
+  existingThumb = item ? (item.thumb || null) : null;
+  $("#formTitle").textContent = item ? "改資料" : "入貨";
+  $("#fName").value = item ? (item.name || "") : "";
+  $("#fDate").value = item ? (item.expiry || "") : plusDays(7);
+  $("#fNote").value = item ? (item.note || "") : "";
+  formSection = item ? item.sectionId : (filterSection !== "all" ? filterSection : (sections[0] || {}).id);
+  setPreview(existingThumb);
+  renderSectionPicker();
+  $("#fDelete").classList.toggle("hide", !item);
+  $("#fSaveNext").parentElement.classList.toggle("hide", !!item);
+  show("form", true);
+}
+function setPreview(src){
+  const img = $("#fPreview");
+  if(src){ img.src = src; img.classList.remove("hide"); }
+  else { img.removeAttribute("src"); img.classList.add("hide"); }
+}
+let formSection = null;
+function renderSectionPicker(){
+  const p = $("#fSections");
+  if(!p) return;
+  if(!sections.length){ p.innerHTML = `<span style="color:var(--mute);font-size:14px">仲未有分區，撳上面 ⚙ 加一個。</span>`; return; }
+  if(!sections.some(s => s.id === formSection)) formSection = sections[0].id;
+  p.innerHTML = sections.map(s =>
+    `<button type="button" class="pk" data-s="${esc(s.id)}" aria-pressed="${formSection === s.id}">${esc(s.name)}</button>`
+  ).join("");
+  p.querySelectorAll("[data-s]").forEach(b => b.onclick = () => { formSection = b.dataset.s; renderSectionPicker(); });
+}
+
+$("#quickDates").innerHTML = [["今日",0],["3日",3],["1星期",7],["2星期",14],["1個月",30],["3個月",90]]
+  .map(([l,n]) => `<button type="button" class="qb" data-d="${n}">${l}</button>`).join("");
+$("#quickDates").querySelectorAll("[data-d]").forEach(b =>
+  b.onclick = () => { $("#fDate").value = plusDays(+b.dataset.d); });
+
+$("#btnCam").onclick = () => $("#fileCam").click();
+$("#btnLib").onclick = () => $("#fileLib").click();
+["#fileCam","#fileLib"].forEach(sel => $(sel).onchange = async e => {
+  const f = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if(!f) return;
+  const out = await openCropper(f);
+  if(out){ pendingPhoto = out; setPreview(out.thumb); }
+});
+
+async function save(andNext){
+  const F = window.__F;
+  const name = $("#fName").value.trim();
+  const expiry = $("#fDate").value;
+  if(!name && !pendingPhoto && !existingThumb){ toast("最少要有個名或者一張相"); return; }
+  if(!expiry){ toast("入返個過期日期"); return; }
+  if(!formSection){ toast("揀個分區先"); return; }
+  busy(true, "儲存緊…");
+  try{
+    const base = {
+      name: name || "未命名",
+      expiry,
+      sectionId: formSection,
+      note: $("#fNote").value.trim(),
+      updatedAt: F.serverTimestamp(),
+      updatedBy: (user && user.email) || ""
+    };
+    if(pendingPhoto) base.thumb = pendingPhoto.thumb;
+    let id = editingId;
+    if(id){
+      await F.updateDoc(F.doc(db, "items", id), base);
+    }else{
+      base.createdAt = F.serverTimestamp();
+      base.thumb = pendingPhoto ? pendingPhoto.thumb : "";
+      const ref = await F.addDoc(F.collection(db, "items"), base);
+      id = ref.id;
+    }
+    if(pendingPhoto) await F.setDoc(F.doc(db, "photos", id), { full: pendingPhoto.full });
+    busy(false);
+    toast(editingId ? "改好喇" : "入咗貨");
+    if(andNext){
+      editingId = null; pendingPhoto = null; existingThumb = null;
+      $("#fName").value = ""; $("#fNote").value = ""; setPreview(null);
+      $("#fDate").value = plusDays(7);
+      $("#fName").focus();
+    }else show("form", false);
+  }catch(e){ busy(false); toast("儲存失敗：" + (e.code || e.message)); }
+}
+$("#fSave").onclick = () => save(false);
+$("#fSaveNext").onclick = () => save(true);
+$("#fab").onclick = () => openForm(null);
+
+$("#fDelete").onclick = () => removeItem(editingId, () => show("form", false));
+async function removeItem(id, done){
+  if(!id) return;
+  if(!confirm("確定刪除？")) return;
+  const F = window.__F;
+  busy(true, "刪緊…");
+  try{
+    await F.deleteDoc(F.doc(db, "items", id));
+    try{ await F.deleteDoc(F.doc(db, "photos", id)); }catch(_){}
+    busy(false); toast("刪咗"); done && done();
+  }catch(e){ busy(false); toast("刪唔到：" + (e.code || e.message)); }
+}
+
+/* ═══ 詳情 ═══════════════════════════════════════════ */
+let detailId = null;
+async function openDetail(id){
+  const it = items.find(i => i.id === id);
+  if(!it) return;
+  detailId = id;
+  const d = daysLeft(it.expiry);
+  $("#dName").textContent = it.name || "未命名";
+  $("#dCount").outerHTML = countHTML(d).replace('class="count', 'id="dCount" class="count');
+  $("#dWhen").textContent = it.expiry ? fmtDate(it.expiry) + " 到期" : "冇入過期日";
+  $("#dWhere").textContent = secName(it.sectionId);
+  $("#dNote").textContent = it.note || "";
+  const img = $("#dImg");
+  img.src = it.thumb || "";
+  img.style.filter = it.thumb ? "blur(6px)" : "none";
+  show("det", true);
+  try{
+    const F = window.__F;
+    const snap = await F.getDoc(F.doc(db, "photos", id));
+    if(snap.exists() && detailId === id){ img.src = snap.data().full; img.style.filter = "none"; }
+    else img.style.filter = "none";
+  }catch(_){ img.style.filter = "none"; }
+}
+$("#dEdit").onclick = () => {
+  const it = items.find(i => i.id === detailId);
+  show("det", false);
+  if(it) openForm(it);
+};
+$("#dAte").onclick = () => removeItem(detailId, () => show("det", false));
+
+/* ═══ 分區管理 ═══════════════════════════════════════ */
+function openSections(){ renderSecList(); show("sec", true); }
+$("#openSections").onclick = openSections;
+
+function renderSecList(){
+  const box = $("#secList");
+  if(!box) return;
+  if(!sections.length){ box.innerHTML = `<p style="color:var(--mute);font-size:14px;margin:0">仲未有分區。加一個，例如「雪櫃上格」。</p>`; return; }
+  box.innerHTML = sections.map((s, i) => {
+    const n = items.filter(x => x.sectionId === s.id).length;
+    return `<div class="srow" data-id="${esc(s.id)}">
+      <input value="${esc(s.name)}" data-rename aria-label="分區名">
+      <span style="font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums">${n}</span>
+      <button class="mini" data-up ${i===0?"disabled style=opacity:.3":""} aria-label="向上">↑</button>
+      <button class="mini" data-down ${i===sections.length-1?"disabled style=opacity:.3":""} aria-label="向下">↓</button>
+      <button class="mini del" data-del aria-label="刪除">✕</button>
+    </div>`;
+  }).join("");
+  const F = window.__F;
+  box.querySelectorAll(".srow").forEach(row => {
+    const id = row.dataset.id;
+    row.querySelector("[data-rename]").onchange = async e => {
+      const v = e.target.value.trim();
+      if(!v) return renderSecList();
+      try{ await F.updateDoc(F.doc(db, "sections", id), { name:v }); toast("改咗名"); }
+      catch(err){ toast("改唔到：" + err.code); }
+    };
+    row.querySelector("[data-up]").onclick = () => moveSec(id, -1);
+    row.querySelector("[data-down]").onclick = () => moveSec(id, 1);
+    row.querySelector("[data-del]").onclick = async () => {
+      const n = items.filter(x => x.sectionId === id).length;
+      if(n){ toast(`呢格仲有 ${n} 樣嘢，搬走咗先至刪得`); return; }
+      if(!confirm("刪咗呢個分區？")) return;
+      try{ await F.deleteDoc(F.doc(db, "sections", id)); }catch(e){ toast("刪唔到：" + e.code); }
+    };
+  });
+}
+async function moveSec(id, dir){
+  const F = window.__F;
+  const i = sections.findIndex(s => s.id === id), j = i + dir;
+  if(i < 0 || j < 0 || j >= sections.length) return;
+  const a = sections[i], b = sections[j];
+  const batch = F.writeBatch(db);
+  batch.update(F.doc(db, "sections", a.id), { order: j });
+  batch.update(F.doc(db, "sections", b.id), { order: i });
+  try{ await batch.commit(); }catch(e){ toast("排唔到：" + e.code); }
+}
+$("#secAdd").onclick = async () => {
+  const name = prompt("新分區叫咩名？", "");
+  if(!name || !name.trim()) return;
+  const F = window.__F;
+  try{
+    await F.addDoc(F.collection(db, "sections"), { name:name.trim(), order: sections.length });
+    toast("加咗");
+  }catch(e){ toast("加唔到：" + e.code); }
+};
+
+/* ═══ sheet 開關 ═════════════════════════════════════ */
+function show(which, on){
+  $("#" + which + "Scrim").classList.toggle("hide", !on);
+  $("#" + which + "Sheet").classList.toggle("hide", !on);
+  document.body.style.overflow = on ? "hidden" : "";
+}
+document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => show(b.dataset.close, false));
+["form","det","sec"].forEach(k => $("#" + k + "Scrim").onclick = () => show(k, false));
+addEventListener("keydown", e => {
+  if(e.key !== "Escape") return;
+  if(!$("#cropper").classList.contains("hide")) return closeCropper(null);
+  ["form","det","sec"].forEach(k => show(k, false));
+});
+
+/* 過咗午夜自動重新計數 */
+let lastDay = todayISO();
+setInterval(() => { const t = todayISO(); if(t !== lastDay){ lastDay = t; render(); } }, 60000);
+</script>
+</body>
+</html>
