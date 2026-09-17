@@ -39,7 +39,9 @@
 <html lang="zh-HK">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<!-- 唔可以加 maximum-scale=1 / user-scalable=no：咁樣會連雙指放大都禁埋，
+     老人家同視力差嘅用家就冇得放大 —— Do not re-add maximum-scale, it kills pinch zoom. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0E6B7A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Food">
@@ -234,7 +236,11 @@ main{padding:8px 16px calc(112px + var(--safe-b))}
 .tcard .mk{position:absolute;top:5px;right:5px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px;color:#fff;background:rgba(10,20,26,.35)}
 .tcard.here{border-color:var(--fresh)} .tcard.here .mk{background:var(--fresh)}
 .tcard.gone{border-color:var(--gone);opacity:.5} .tcard.gone .mk{background:var(--gone)}
+.tcard{position:relative}
 .tcard .tmain{display:block;width:100%;text-align:left}
+.tcard .tzoom{position:absolute;right:4px;top:calc(100% - 100px);width:28px;height:28px;border-radius:50%;
+  background:rgba(10,20,26,.6);color:#fff;font-size:13px;display:grid;place-items:center;z-index:2}
+.tcard .tzoom:active{background:var(--brand)}
 .tcard .tdate{display:block;width:100%;text-align:center;padding:5px 4px;font-size:10.5px;
   line-height:1.25;color:var(--brand);background:var(--brand-tint);border-top:1px solid var(--rule)}
 .tcard .tdate .e{font-size:9.5px;opacity:.75}
@@ -550,9 +556,16 @@ details.more .inner{padding-top:14px}
 
 #lightbox{position:fixed;inset:0;z-index:70;background:#0C1519;display:flex;flex-direction:column}
 .lbbar{display:flex;align-items:center;gap:8px;padding:calc(var(--safe-t) + 10px) 12px 10px;flex:none}
-.lbwrap{flex:1;min-height:0;overflow:auto;display:grid;place-items:center;-webkit-overflow-scrolling:touch}
-#lbImg{display:block;max-width:100%;max-height:100%}
-#lbImg.zoom{max-width:none;max-height:none;width:280%}
+/* 千祈唔好喺呢個捲動容器度用 place-items:center 或者 justify-content:center。
+   內容大過容器嗰陣，居中會令左邊同上面嗰截捲唔到 —— 放大之後就移唔到位。
+   正確做法：容器用 flex，張相用 margin:auto。
+   Never centre with place-items/justify-content on a scrolling box — the
+   start-side overflow becomes unreachable. Use margin:auto on the child. */
+.lbwrap{flex:1;min-height:0;overflow:auto;display:flex;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:auto}
+#lbImg{display:block;margin:auto;max-width:100%;max-height:100%}
+#lbImg.z2{max-width:none;max-height:none;width:200%;height:auto}
+#lbImg.z3{max-width:none;max-height:none;width:400%;height:auto}
 .lbhint{flex:none;text-align:center;font-size:11.5px;color:#8FA6AE;margin:0;padding:8px 16px calc(12px + var(--safe-b))}
 [data-zoom]{cursor:zoom-in}
 #toastUndo{margin-left:12px;padding:4px 12px;border-radius:999px;background:var(--chill);color:var(--ink);font-size:12.5px;font-weight:700;line-height:1.2}
@@ -745,7 +758,7 @@ details.more .inner{padding-top:14px}
     <button class="x" data-close="again" aria-label="閂 Close">✕</button>
   </div>
   <div style="display:flex;gap:14px;margin-bottom:18px">
-    <img id="agImg" alt="" style="width:96px;height:96px;object-fit:cover;border-radius:12px;background:var(--chill);flex:none">
+    <img id="agImg" alt="" style="width:96px;height:96px;object-fit:contain;border-radius:12px;background:var(--chill);flex:none;cursor:zoom-in">
     <div style="flex:1;min-width:0">
       <div class="flab"><span class="z">過期日期</span><span class="e">Expiry date</span></div>
       <input id="agDate" type="date">
@@ -925,8 +938,8 @@ details.more .inner{padding-top:14px}
     <div style="flex:1"></div>
     <button id="lbClose" class="tbtn"><span class="z">閂</span><span class="e">Close</span></button>
   </div>
-  <div class="lbwrap"><img id="lbImg" alt=""></div>
-  <p class="lbhint"><span class="z">兩隻手指可以再放大</span><span class="e">Pinch with two fingers to zoom in further</span></p>
+  <div class="lbwrap" id="lbWrap"><img id="lbImg" alt=""></div>
+  <p class="lbhint"><span class="z">撳「放大」或者撳一撳張相就會放大；放大咗之後用手指拖就可以上下左右移。兩隻手指亦都可以自己再放大。</span><span class="e">Tap Zoom, or tap the photo itself, to magnify it. Once it is magnified you can drag with one finger to move around in any direction. You can also pinch with two fingers to zoom further.</span></p>
 </div>
 
 <div id="askScrim" class="hide"><div id="askBox" role="alertdialog" aria-modal="true">
@@ -949,7 +962,7 @@ details.more .inner{padding-top:14px}
 /* 版本號用日期：yyyy-mm-dd 再加一個大楷字母。
    同一日出多過一次，就 A → B → C 咁行落去。
    格式排得好，所以直接字串比大細就已經係啱嘅時序。 */
-const APP_VERSION = "2026-09-17L";
+const APP_VERSION = "2026-09-17M";
 
 /* ═══════════════════════════════════════════════════════
    FIRESTORE SECURITY RULES —— 呢度係一份副本，方便日後查閱
@@ -1913,7 +1926,7 @@ function langCheck(){
     const t=(n.nodeValue||"").trim();
     if(!t||!CJK.test(t)) continue;
     const pe=n.parentElement;
-    if(!pe||pe.closest(".z")||pe.closest(USERDATA)) continue;
+    if(!pe||pe.closest(".z")||pe.closest(".e")||pe.closest(USERDATA)) continue;
     if(pe.closest(".hide")) continue;
     bad.push("裸中文：「"+t.slice(0,30)+"」");
   }
@@ -2094,19 +2107,23 @@ function jobsHTML(){
   const toss=all.filter(e=>e.v.rank<=1), today=all.filter(e=>e.v.key==="today"), soon=all.filter(e=>e.v.key==="soon");
   const note=(board.note||"").trim(), plan=board.plan;
   if(!toss.length && !today.length && !soon.length && !note && !plan) return "";
-  const nm=e=>{ const n=nameLines(e.o); return n?n.top:"未命名"; };
+  /* 食物名清單都要分兩種語言，唔係英文模式會見到中文名 */
+  const nmZh=e=>{ const n=nameLines(e.o); return n?(n.top||n.bot):"未命名"; };
+  const nmEn=e=>{ const n=nameLines(e.o); return n?(n.bot||n.top):"Unnamed"; };
   const line=(cls,zh,en,arr)=>arr.length
     ? `<div class="jline ${cls}"><b>${arr.length}</b><span>${bi(zh,en)}</span></div>
-       <div style="font-size:12px;color:var(--mute);padding:0 0 4px 29px;line-height:1.45">${esc(arr.slice(0,6).map(nm).join("、"))}${arr.length>6?" …":""}</div>` : "";
+       <div style="font-size:12px;color:var(--mute);padding:0 0 4px 29px;line-height:1.45">${bi(
+           arr.slice(0,6).map(nmZh).join("、")+(arr.length>6?" …":""),
+           arr.slice(0,6).map(nmEn).join(", ")+(arr.length>6?" …":""))}</div>` : "";
   let h=`<div id="jobs"><div class="bhd">
     <div class="ttl">${bi("今日要做","TODAY'S JOBS")}</div>
-    <div class="dt">${esc(fmtZh(todayISO()))}<span class="e">${esc(fmtEn(todayISO()))}</span></div></div>`;
+    <div class="dt">${dateBI(todayISO())}</div></div>`;
   h+=line("bad","掉咗佢","Throw out",toss);
   h+=line("warn","今日要清","Use up today",today);
   h+=line("","三日內要清","Use up within 3 days",soon);
   if(plan && plan.plan && plan.plan.length){
     h+=`<div class="dishes"><b>${bi("今餐煮咩","WHAT TO COOK")}</b>`
-      + plan.plan.map((x,i)=>`<div>${i+1}. ${esc(x.zh||"")}<span class="e" style="display:block;font-size:11.5px;opacity:.7">${esc(x.en||"")}</span></div>`).join("")
+      + plan.plan.map((x,i)=>`<div style="margin-bottom:4px">${bi((i+1)+". "+(x.zh||""), (i+1)+". "+(x.en||""))}</div>`).join("")
       + `</div>`;
   }
   if(note) h+=`<div class="memo">${esc(note)}<span class="who">${esc((board.noteBy||"")+(ms(board.noteAt)?"　"+new Date(ms(board.noteAt)).toLocaleDateString():""))}</span></div>`;
@@ -2672,6 +2689,7 @@ function openAgain(id, from){
     ? bi("換新一件　"+(ln?ln.top:"未命名"), "Replace with a new pack")
     : (ln ? bi(ln.top, ln.bot||"Add it again") : bi("再入一次","Add it again"));
   $("#agImg").src=l.thumb||"";
+  $("#agImg").onclick=()=>zoomPhoto(id);
   $("#agDate").value="";   // 再入貨都唔預設日期
   agSection = sections.some(s=>s.id===l.sectionId) ? l.sectionId : (sections[0]||{}).id;
   paintPicker("#agSections","agSection");
@@ -2815,10 +2833,9 @@ async function zoomPhoto(id){
   const o=items.find(x=>x.id===id)||library.find(x=>x.id===id)||waste.find(x=>x.id===id);
   if(!o) return;
   const g=$("#lbImg");
-  g.classList.remove("zoom");
   g.src=o.thumb||"";
-  $("#lbZoom").innerHTML=bi("🔍 放大","Zoom in");
   $("#lightbox").classList.remove("hide");
+  setZoom(0);
   document.body.style.overflow="hidden";
   try{
     const sn=await F.getDoc(F.doc(db,"photos",photoRef(o)));
@@ -2830,11 +2847,25 @@ function closeZoom(){
   $("#lbImg").removeAttribute("src");
   document.body.style.overflow = zStack.length ? "hidden" : "";
 }
+/* 三段放大：合身 → 2 倍 → 4 倍 → 合身。每次放大之後捲返去正中，
+   唔係嘅話你會由左上角開始搵嘢睇。 */
+let zLevel=0;
+const Z_LABEL=[["🔍 放大 2 倍","Zoom to 2×"],["🔍 放大 4 倍","Zoom to 4×"],["🔍 縮返合身","Fit to screen"]];
+function setZoom(n){
+  zLevel=((n%3)+3)%3;
+  const g=$("#lbImg");
+  g.classList.remove("z2","z3");
+  if(zLevel===1) g.classList.add("z2");
+  if(zLevel===2) g.classList.add("z3");
+  $("#lbZoom").innerHTML=bi(Z_LABEL[zLevel][0],Z_LABEL[zLevel][1]);
+  const w=$("#lbWrap");
+  requestAnimationFrame(()=>{
+    w.scrollLeft=Math.max(0,(w.scrollWidth-w.clientWidth)/2);
+    w.scrollTop =Math.max(0,(w.scrollHeight-w.clientHeight)/2);
+  });
+}
 $("#lbClose").onclick=closeZoom;
-$("#lbZoom").onclick=()=>{
-  const g=$("#lbImg"), on=g.classList.toggle("zoom");
-  $("#lbZoom").innerHTML = on?bi("🔍 縮細","Zoom out"):bi("🔍 放大","Zoom in");
-};
+$("#lbZoom").onclick=()=>setZoom(zLevel+1);
 $("#lbImg").onclick=()=>$("#lbZoom").click();
 document.addEventListener("click",e=>{
   const z=e.target.closest("[data-zoom]");
@@ -2990,6 +3021,7 @@ function renderTake(){
         <span class="mk">${m==="here"?"✓":m==="gone"?"✗":""}</span>
         <div class="cap">${nameBI(i)}</div>
       </button>
+      <button class="tzoom" data-zoom="${esc(i.id)}" aria-label="放大張相 Enlarge the photo">🔍</button>
       <button class="tdate" data-rep="${esc(i.id)}">${dateBI(i.expiry)}</button>
     </div>`;
   }).join("")+`</div>`;
@@ -3318,7 +3350,8 @@ function renderPlan(){
 function planHTML(p){
   return `<div style="margin-top:18px">${(p.plan||[]).map(x=>`<div class="dish">
     <div class="t">${bi(x.zh||"",x.en||"")}</div>
-    ${(x.uses&&x.uses.length)?`<div class="u">${esc(x.uses.join("、"))}</div>`:""}
+    ${((x.uses_zh&&x.uses_zh.length)||(x.uses_en&&x.uses_en.length))
+      ? `<div class="u">${bi("用："+((x.uses_zh||x.uses_en||[]).join("、")), "Uses: "+((x.uses_en||x.uses_zh||[]).join(", ")))}</div>` : ""}
   </div>`).join("")}
   ${(p.breakfast&&p.breakfast.length)?`<div class="vnote" style="background:var(--soon-bg);color:var(--soon)">
     <div class="ttl">${bi("留返做早餐","For breakfast")}</div>
@@ -3344,11 +3377,12 @@ const DISH_PROMPT =
  "You help a Hong Kong family use up food before it goes off.\n" +
  "The household eats together: two parents, a grandmother, a domestic helper, a 6-year-old girl and a 2.5-year-old girl.\n" +
  "IMPORTANT: the list you are given contains ONLY food that is still safe. Anything expired has already been removed before you see it. Never suggest eating expired food and never comment on whether expired food might still be fine — that is decided elsewhere.\n" +
- 'Reply with ONE JSON object and nothing else: {"plan":[{"zh":"...","en":"...","uses":["..."]}],"tip_zh":"...","tip_en":"..."}\n' +
+ 'Reply with ONE JSON object and nothing else: {"plan":[{"zh":"...","en":"...","uses_zh":["..."],"uses_en":["..."]}],"breakfast":[],"tip_zh":"...","tip_en":"..."}\n' +
  "- 2 to 4 simple home dishes, most urgent first. Use the items with the fewest days left first.\n" +
  "- zh: dish name plus one short sentence, Traditional Chinese, Hong Kong home cooking.\n" +
  "- en: the same in simple English that a non-native reader understands.\n" +
- "- uses: which listed foods the dish uses.\n" +
+ "- uses_zh: the foods this dish uses, written in Traditional Chinese, as an array of short strings.\n" +
+ "- uses_en: exactly the same list in English, same order, same length.\n" +
  "- The 2.5-year-old eats this too: cook meat, fish and eggs right through, keep it mild, and avoid choking hazards such as whole nuts, whole grapes and hard raw vegetable chunks.\n" +
  "- Bread, buns, mantou, steamed rolls, rice-noodle rolls, congee and similar items are BREAKFAST in this household. Never build a dinner dish around them and never suggest cooking bread as a main course. If they need using up, list them in \"breakfast\" instead.\n" +
  '- breakfast: an array of short bilingual notes like {"zh":"饅頭同腸粉聽朝早餐食晒","en":"Finish the mantou and rice rolls at breakfast tomorrow"}. Leave it empty if there is nothing to say.\n' +
@@ -3511,7 +3545,12 @@ function boardText(){
   t+=grp("⏳ 三日內要清  USE UP WITHIN 3 DAYS", all.filter(e=>e.v.key==="soon"), e=>`（${e.v.d} 日 / ${e.v.d}d）`);
   const p=board.plan||planPlan;
   if(p&&p.plan&&p.plan.length){
-    t+="🍲 今餐煮咩  WHAT TO COOK\n"+p.plan.map((x,i)=>`${i+1}. ${x.zh||""}\n   ${x.en||""}`+((x.uses&&x.uses.length)?`\n   → ${x.uses.join(", ")}`:"")).join("\n")+"\n\n";
+    /* 貼去 WhatsApp 嗰段跟你揀嘅語言走 —— 姐姐收到就唔會夾雜中文 */
+    const dz=LANG!=="en", de=LANG!=="zh";
+    t+=(dz?"🍲 今餐煮咩":"")+(dz&&de?"  ":"")+(de?"WHAT TO COOK":"")+"\n"
+      + p.plan.map((x,i)=>[dz?`${i+1}. ${x.zh||""}`:"", de?`${dz?"   ":""}${i+1}. ${x.en||""}`:"",
+          (x.uses_zh&&dz)?`   → ${x.uses_zh.join("、")}`:"",
+          (x.uses_en&&de)?`   → ${x.uses_en.join(", ")}`:""].filter(Boolean).join("\n")).join("\n")+"\n\n";
   }
   const n=(board.note||$("#boardNote").value||"").trim();
   if(n) t+="📋 留言  NOTE\n"+n+"\n\n";
