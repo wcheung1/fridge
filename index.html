@@ -498,6 +498,13 @@ details.more .inner{padding-top:14px}
 #askBox .acts{display:flex;gap:10px}
 #askBox .acts .btn{flex:1;padding:12px 8px;font-size:14.5px}
 
+#lightbox{position:fixed;inset:0;z-index:70;background:#0C1519;display:flex;flex-direction:column}
+.lbbar{display:flex;align-items:center;gap:8px;padding:calc(var(--safe-t) + 10px) 12px 10px;flex:none}
+.lbwrap{flex:1;min-height:0;overflow:auto;display:grid;place-items:center;-webkit-overflow-scrolling:touch}
+#lbImg{display:block;max-width:100%;max-height:100%}
+#lbImg.zoom{max-width:none;max-height:none;width:280%}
+.lbhint{flex:none;text-align:center;font-size:11.5px;color:#8FA6AE;margin:0;padding:8px 16px calc(12px + var(--safe-b))}
+[data-zoom]{cursor:zoom-in}
 #toastUndo{margin-left:12px;padding:4px 12px;border-radius:999px;background:var(--chill);color:var(--ink);font-size:12.5px;font-weight:700;line-height:1.2}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(94px + var(--safe-b));z-index:88;background:var(--ink);color:var(--chill);padding:10px 18px;border-radius:999px;font-size:13.5px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none;max-width:88vw;text-align:center;line-height:1.35}
 #busy{position:fixed;inset:0;z-index:90;background:rgba(14,26,32,.55);display:grid;place-items:center;color:#fff;font-size:14.5px;text-align:center;padding:24px}
@@ -636,7 +643,7 @@ details.more .inner{padding-top:14px}
     <button id="dSay" class="spk big" aria-label="讀出嚟 Read aloud">🔊</button>
     <button id="dCrop" class="spk big" aria-label="裁返張相 Crop the photo">✂️</button>
   </div>
-  <img id="dImg" alt="">
+  <img id="dImg" alt="" style="cursor:zoom-in">
   <div class="dfacts">
     <div class="count" id="dCount"></div>
     <div style="min-width:0">
@@ -711,7 +718,7 @@ details.more .inner{padding-top:14px}
     <h2><span class="z">AI 有嘢想改</span><span class="e">AI suggestions</span></h2>
     <button class="x" data-close="rev" aria-label="閂 Close">✕</button>
   </div>
-  <p class="hintline" style="margin:-6px 0 14px">AI 唔會自己改你啲嘢。你揀完之後佢會記低，下次再掃都唔會再問同一條 —— 除非佢俾到一個新答案。<span class="e">The AI never overwrites your data. Once you decide, it remembers and will not ask again unless it comes back with a different answer.</span></p>
+  <p class="hintline" style="margin:-6px 0 14px"><b>撳張相可以全屏放大</b>睇清楚。AI 唔會自己改你啲嘢。你揀完之後佢會記低，下次再掃都唔會再問同一條 —— 除非佢俾到一個新答案。<span class="e">The AI never overwrites your data. Once you decide, it remembers and will not ask again unless it comes back with a different answer.</span></p>
   <div id="revBody"></div>
 </section>
 
@@ -740,7 +747,7 @@ details.more .inner{padding-top:14px}
     <h2><span class="z">可能重複咗</span><span class="e">Possible duplicates</span></h2>
     <button class="x" data-close="dup" aria-label="閂 Close">✕</button>
   </div>
-  <p class="hintline" style="margin:-6px 0 14px">名一樣、到期日差三日之內，就會攞出嚟問你。睇下邊個影、幾時影 —— 通常一眼就知係咪同一件嘢影咗兩次。<span class="e">Same name and expiry dates within three days. Look at who logged each and when — that usually settles it.</span></p>
+  <p class="hintline" style="margin:-6px 0 14px"><b>撳張相可以全屏放大</b>，睇清楚價錢／重量貼紙上面嘅數字 —— 兩底貨嘅貼紙一定唔同，呢個先至分得開。名一樣、到期日差三日之內就會攞出嚟問你，睇埋邊個影、幾時影，通常一眼就知。<span class="e">Same name and expiry dates within three days. Look at who logged each and when — that usually settles it.</span></p>
   <div id="dupBody"></div>
 </section>
 
@@ -860,6 +867,16 @@ details.more .inner{padding-top:14px}
   <p id="cropHint">拉四條邊或者四個角，剪走唔要嘅位<span class="e">Drag the edges or corners to cut away what you don't need</span></p>
 </div>
 
+<div id="lightbox" class="hide">
+  <div class="lbbar">
+    <button id="lbZoom" class="tbtn"><span class="z">🔍 放大</span><span class="e">Zoom in</span></button>
+    <div style="flex:1"></div>
+    <button id="lbClose" class="tbtn"><span class="z">閂</span><span class="e">Close</span></button>
+  </div>
+  <div class="lbwrap"><img id="lbImg" alt=""></div>
+  <p class="lbhint">兩隻手指可以再放大　Pinch to zoom further</p>
+</div>
+
 <div id="askScrim" class="hide"><div id="askBox" role="alertdialog" aria-modal="true">
   <div class="t" id="askT"></div>
   <div class="m" id="askM"></div>
@@ -880,7 +897,7 @@ details.more .inner{padding-top:14px}
 /* 版本號用日期：yyyy-mm-dd 再加一個大楷字母。
    同一日出多過一次，就 A → B → C 咁行落去。
    格式排得好，所以直接字串比大細就已經係啱嘅時序。 */
-const APP_VERSION = "2026-09-17J";
+const APP_VERSION = "2026-09-17K";
 
 /* ═══════════════════════════════════════════════════════
    FIRESTORE SECURITY RULES —— 呢度係一份副本，方便日後查閱
@@ -2371,6 +2388,7 @@ document.addEventListener("click",async ev=>{
     await decideDate(it.id, !!t); show("det",false);
   }catch(e){ toast("改唔到："+(e.code||e.message),"Could not update"); }
 });
+$("#dImg").onclick=()=>{ if(detailId) zoomPhoto(detailId); };
 $("#dSay").onclick=()=>{ const it=items.find(i=>i.id===detailId); if(it) sayItem(it); };
 $("#dCrop").onclick=async()=>{
   const it=items.find(i=>i.id===detailId); if(!it) return;
@@ -2686,6 +2704,43 @@ async function runTranslate(list){
         `${ok} translated` + (fail?`, ${fail} failed`:""));
 }
 
+/* ═══ 放大睇相 ═══════════════════════════════════════
+   縮圖細到睇唔到貼紙上面啲字，就答唔到「係咪同一件」。
+   撳張相攞返 1000px 原相全屏睇。
+   ═══════════════════════════════════════════════════ */
+async function zoomPhoto(id){
+  const o=items.find(x=>x.id===id)||library.find(x=>x.id===id)||waste.find(x=>x.id===id);
+  if(!o) return;
+  const g=$("#lbImg");
+  g.classList.remove("zoom");
+  g.src=o.thumb||"";
+  $("#lbZoom").querySelector(".z").textContent="🔍 放大";
+  $("#lightbox").classList.remove("hide");
+  document.body.style.overflow="hidden";
+  try{
+    const sn=await F.getDoc(F.doc(db,"photos",photoRef(o)));
+    if(sn.exists() && !$("#lightbox").classList.contains("hide")) g.src=sn.data().full;
+  }catch(_){}
+}
+function closeZoom(){
+  $("#lightbox").classList.add("hide");
+  $("#lbImg").removeAttribute("src");
+  document.body.style.overflow = zStack.length ? "hidden" : "";
+}
+$("#lbClose").onclick=closeZoom;
+$("#lbZoom").onclick=()=>{
+  const g=$("#lbImg"), on=g.classList.toggle("zoom");
+  $("#lbZoom").querySelector(".z").textContent = on?"🔍 縮細":"🔍 放大";
+  $("#lbZoom").querySelector(".e").textContent = on?"Zoom out":"Zoom in";
+};
+$("#lbImg").onclick=()=>$("#lbZoom").click();
+document.addEventListener("click",e=>{
+  const z=e.target.closest("[data-zoom]");
+  if(!z) return;
+  e.preventDefault(); e.stopPropagation();
+  zoomPhoto(z.dataset.zoom);
+},true);
+
 /* ═══ AI 建議面板 ═══════════════════════════════════ */
 function openRev(){ renderRev(); show("rev",true); }
 function renderRev(){
@@ -2698,7 +2753,7 @@ function renderRev(){
   }
   b.innerHTML=ps.map(e=>{
     const o=e.o;
-    const img=o.thumb?`<img src="${o.thumb}" alt="">`:`<div class="ph">🍽</div>`;
+    const img=o.thumb?`<img src="${o.thumb}" alt="" data-zoom="${esc(o.id)}">`:`<div class="ph">🍽</div>`;
     if(e.kind==="name"){
       const oldN=nameLines(o), nn=nameLines({zh:o.aiZh,en:o.aiEn,brand:o.aiBrand});
       return `<div class="rev">${img}<div class="body">
@@ -2836,7 +2891,7 @@ function openDup(){ renderDup(); show("dup",true); }
 function dupCard(x){
   const nl=nameLines(x), t=fmtDT(ms(x.createdAt));
   return `<div class="card">
-    ${x.thumb?`<img src="${x.thumb}" alt="">`:`<div style="aspect-ratio:1;display:grid;place-items:center;font-size:26px;background:var(--card);border-radius:8px;margin-bottom:7px">🍽</div>`}
+    ${x.thumb?`<img src="${x.thumb}" alt="" data-zoom="${esc(x.id)}">`:`<div style="aspect-ratio:1;display:grid;place-items:center;font-size:26px;background:var(--card);border-radius:8px;margin-bottom:7px">🍽</div>`}
     <div class="nm">${nameBI(x)}</div>
     <div class="meta"><b>${esc(who(x.createdBy||x.updatedBy))}</b><br>${t?esc(t.zh):esc(x.addedOn||"—")}<br>${esc(secZh(x.sectionId))}　${esc(fmtZh(x.expiry))}</div>
   </div>`;
@@ -2963,7 +3018,7 @@ function renderWaste(){
     if(mk!==curM){ curM=mk; h+=`<div class="lghead">${esc(mk)}</div>`; }
     const k=kindOf(w);
     h+=`<div class="wrow">
-      ${w.thumb?`<img src="${w.thumb}" alt="">`:`<div class="ph">🍽</div>`}
+      ${w.thumb?`<img src="${w.thumb}" alt="" data-zoom="${esc(w.id)}">`:`<div class="ph">🍽</div>`}
       <div class="mid">
         <div class="nm">${nameBI(w)}</div>
         <div class="sub">${k==="eaten"?bi("食咗","Eaten"):bi("掉咗","Thrown out")}　${secBI(w.sectionId)}${t?"　"+esc(t.getMonth()+1+"月"+t.getDate()+"日"):""}</div>
@@ -3324,17 +3379,36 @@ function applyRole(){
 }
 /* ═══ sheet 開關 ═════════════════════════════════════ */
 const SHEETS=["form","det","lib","again","set","plan","waste","dup","take","rev"];
+/* 面板層次管理。
+   之前所有面板都係同一個 z-index，邊個喺 HTML 排得後就蓋住邊個 ——
+   由盤點度撳「換新一件」，個面板其實開咗，但俾盤點嗰版完全遮住。
+   而家按開啟次序逐層疊上去，底部操作列只跟最頂嗰塊走。 */
+let zStack=[];
 function show(k,on){
-  if(k==="form") $("#formBar").classList.toggle("hide", !on);
-  if(k==="take") $("#takeBar").classList.toggle("hide", !on);
-  $("#"+k+"Scrim").classList.toggle("hide",!on);
-  $("#"+k+"Sheet").classList.toggle("hide",!on);
-  document.body.style.overflow = SHEETS.some(s=>!$("#"+s+"Sheet").classList.contains("hide")) ? "hidden" : "";
+  const scrim=$("#"+k+"Scrim"), sheet=$("#"+k+"Sheet");
+  zStack=zStack.filter(x=>x!==k);
+  if(on) zStack.push(k);
+  scrim.classList.toggle("hide",!on);
+  sheet.classList.toggle("hide",!on);
+  if(!on){ scrim.style.zIndex=""; sheet.style.zIndex=""; }
+  zStack.forEach((key,i)=>{
+    const z=41+i*3;
+    $("#"+key+"Scrim").style.zIndex=z-1;
+    $("#"+key+"Sheet").style.zIndex=z;
+  });
+  const top=zStack[zStack.length-1]||"";
+  const barZ=41+Math.max(0,zStack.length-1)*3+1;
+  $("#formBar").classList.toggle("hide", top!=="form");
+  $("#takeBar").classList.toggle("hide", top!=="take");
+  if(top==="form") $("#formBar").style.zIndex=barZ;
+  if(top==="take") $("#takeBar").style.zIndex=barZ;
+  document.body.style.overflow = zStack.length ? "hidden" : "";
 }
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>show(b.dataset.close,false));
 SHEETS.forEach(k=>$("#"+k+"Scrim").onclick=()=>show(k,false));
 addEventListener("keydown",e=>{
   if(e.key!=="Escape") return;
+  if(!$("#lightbox").classList.contains("hide")) return closeZoom();
   if(!$("#askScrim").classList.contains("hide")) return;
   if(!$("#cropper").classList.contains("hide")) return closeCropper(null);
   SHEETS.forEach(k=>show(k,false));
