@@ -41,6 +41,16 @@ button{cursor:pointer;border:0;background:none}
 .hide{display:none!important}
 
 /* 中英對照：中文喺上，英文喺下（港式指示牌排法） */
+/* 語言模式：淨中文 / 中英對照 / 淨英文。
+   全部 UI 文字都係 bi() 出嘅 .z + .e，所以純 CSS 就切換到。 */
+body[data-lang="zh"] .e{display:none!important}
+body[data-lang="en"] .z{display:none!important}
+body[data-lang="en"] .e{font-size:1em!important;opacity:1!important;font-weight:inherit!important;letter-spacing:normal!important;margin-top:0!important}
+.cunit .e{font-size:1em}
+.spk{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:16px;color:var(--brand);flex:none;background:var(--brand-tint)}
+.spk:active{background:var(--rule)}
+.spk.big{width:44px;height:44px;font-size:19px}
+.row{cursor:pointer}
 .e{display:block;font-size:.72em;line-height:1.25;opacity:.62;font-weight:500;letter-spacing:.015em;margin-top:1px}
 .z{display:block;line-height:1.2}
 
@@ -162,7 +172,7 @@ main{padding:8px 16px calc(112px + var(--safe-b))}
 .actbar .right .z{font-size:15px}
 
 #monthPick{position:fixed;inset:0;z-index:55;background:var(--card);display:flex;flex-direction:column;padding:calc(var(--safe-t) + 14px) 14px calc(14px + var(--safe-b))}
-#monthPick .hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+#monthPick .bhd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 #monthPick .hd b{flex:1;font-size:17px}
 .mgrid{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
 .mgrid button{
@@ -178,13 +188,13 @@ main{padding:8px 16px calc(112px + var(--safe-b))}
 /* 中英兩行嘅 .z/.e 係 block 級，唔可以放入 <b>（inline）—— Chromium
    喺 flex 之下會將 block-in-inline 拆成匿名盒，結果標題同下面疊晒。
    一律用 div.ttl 包住。 */
-#jobs .hd{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+#jobs .bhd{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
 .ttl{font-weight:700;line-height:1.25}
 .ttl .e{font-weight:500;opacity:.65}
-#jobs .hd .ttl{flex:1;min-width:0;font-size:15px;letter-spacing:-.01em}
-#jobs .hd .ttl .e{font-size:10px;letter-spacing:.06em}
-#jobs .hd .dt{flex:none;text-align:right;font-size:11px;color:var(--mute);line-height:1.3}
-#jobs .hd .dt .e{font-size:10px}
+#jobs .bhd .ttl{flex:1;min-width:0;font-size:15px;letter-spacing:-.01em}
+#jobs .bhd .ttl .e{font-size:10px;letter-spacing:.06em}
+#jobs .bhd .dt{flex:none;text-align:right;font-size:11px;color:var(--mute);line-height:1.3}
+#jobs .bhd .dt .e{font-size:10px}
 .jline{display:flex;align-items:center;gap:9px;font-size:13.5px;padding:5px 0;line-height:1.3}
 .jline b{font-variant-numeric:tabular-nums;font-size:16px;min-width:20px;text-align:right}
 .jline.bad{color:var(--gone)} .jline.warn{color:var(--soon)}
@@ -410,25 +420,28 @@ details.more .inner{padding-top:14px}
    linear-gradient(to right,transparent 33.33%,rgba(255,255,255,.26) 33.33%,rgba(255,255,255,.26) calc(33.33% + 1px),transparent calc(33.33% + 1px),transparent 66.66%,rgba(255,255,255,.26) 66.66%,rgba(255,255,255,.26) calc(66.66% + 1px),transparent calc(66.66% + 1px)),
    linear-gradient(to bottom,transparent 33.33%,rgba(255,255,255,.26) 33.33%,rgba(255,255,255,.26) calc(33.33% + 1px),transparent calc(33.33% + 1px),transparent 66.66%,rgba(255,255,255,.26) 66.66%,rgba(255,255,255,.26) calc(66.66% + 1px),transparent calc(66.66% + 1px))
 }
-.hd{position:absolute;display:block}
-.hd::after{content:"";position:absolute;background:#fff;border-radius:2px}
-.hd[data-h=n],.hd[data-h=s]{left:18%;right:18%;height:36px;cursor:ns-resize}
-.hd[data-h=n]{top:-18px} .hd[data-h=s]{bottom:-18px}
-.hd[data-h=n]::after,.hd[data-h=s]::after{left:50%;transform:translateX(-50%);width:36px;height:4px;top:16px}
-.hd[data-h=e],.hd[data-h=w]{top:18%;bottom:18%;width:36px;cursor:ew-resize}
-.hd[data-h=w]{left:-18px} .hd[data-h=e]{right:-18px}
-.hd[data-h=e]::after,.hd[data-h=w]::after{top:50%;transform:translateY(-50%);width:4px;height:36px;left:16px}
-.hd.cn{width:46px;height:46px}
-.hd[data-h=nw]{top:-16px;left:-16px;cursor:nwse-resize}
-.hd[data-h=ne]{top:-16px;right:-16px;cursor:nesw-resize}
-.hd[data-h=sw]{bottom:-16px;left:-16px;cursor:nesw-resize}
-.hd[data-h=se]{bottom:-16px;right:-16px;cursor:nwse-resize}
-.hd.cn::after,.hd.cn::before{content:"";position:absolute;background:#fff}
-.hd.cn::after{width:22px;height:4px} .hd.cn::before{width:4px;height:22px}
-.hd[data-h=nw]::after,.hd[data-h=nw]::before{top:14px;left:14px}
-.hd[data-h=ne]::after,.hd[data-h=ne]::before{top:14px;right:14px}
-.hd[data-h=sw]::after,.hd[data-h=sw]::before{bottom:14px;left:14px}
-.hd[data-h=se]::after,.hd[data-h=se]::before{bottom:14px;right:14px}
+/* 呢啲係裁相畫面嘅四邊手柄。一定要限定喺 #cropBox 入面 ——
+   之前寫成裸 .hd，連「今日要做」同月份揀選嘅標題都俾佢
+   position:absolute 抽咗出文檔流，壓住下面啲字。 */
+#cropBox .hd{position:absolute;display:block}
+#cropBox .hd::after{content:"";position:absolute;background:#fff;border-radius:2px}
+#cropBox .hd[data-h=n],#cropBox .hd[data-h=s]{left:18%;right:18%;height:36px;cursor:ns-resize}
+#cropBox .hd[data-h=n]{top:-18px} #cropBox .hd[data-h=s]{bottom:-18px}
+#cropBox .hd[data-h=n]::after,#cropBox .hd[data-h=s]::after{left:50%;transform:translateX(-50%);width:36px;height:4px;top:16px}
+#cropBox .hd[data-h=e],#cropBox .hd[data-h=w]{top:18%;bottom:18%;width:36px;cursor:ew-resize}
+#cropBox .hd[data-h=w]{left:-18px} #cropBox .hd[data-h=e]{right:-18px}
+#cropBox .hd[data-h=e]::after,#cropBox .hd[data-h=w]::after{top:50%;transform:translateY(-50%);width:4px;height:36px;left:16px}
+#cropBox .hd.cn{width:46px;height:46px}
+#cropBox .hd[data-h=nw]{top:-16px;left:-16px;cursor:nwse-resize}
+#cropBox .hd[data-h=ne]{top:-16px;right:-16px;cursor:nesw-resize}
+#cropBox .hd[data-h=sw]{bottom:-16px;left:-16px;cursor:nesw-resize}
+#cropBox .hd[data-h=se]{bottom:-16px;right:-16px;cursor:nwse-resize}
+#cropBox .hd.cn::after,#cropBox .hd.cn::before{content:"";position:absolute;background:#fff}
+#cropBox .hd.cn::after{width:22px;height:4px} #cropBox .hd.cn::before{width:4px;height:22px}
+#cropBox .hd[data-h=nw]::after,#cropBox .hd[data-h=nw]::before{top:14px;left:14px}
+#cropBox .hd[data-h=ne]::after,#cropBox .hd[data-h=ne]::before{top:14px;right:14px}
+#cropBox .hd[data-h=sw]::after,#cropBox .hd[data-h=sw]::before{bottom:14px;left:14px}
+#cropBox .hd[data-h=se]::after,#cropBox .hd[data-h=se]::before{bottom:14px;right:14px}
 #cropHint{flex:none;text-align:center;font-size:12.5px;color:#9FB4BC;margin:0;padding:12px 16px calc(14px + var(--safe-b));line-height:1.4}
 
 #gate{position:fixed;inset:0;z-index:70;background:var(--chill);display:grid;place-items:center;padding:28px;text-align:center}
@@ -449,6 +462,7 @@ details.more .inner{padding-top:14px}
 #askBox .acts{display:flex;gap:10px}
 #askBox .acts .btn{flex:1;padding:12px 8px;font-size:14.5px}
 
+#toastUndo{margin-left:12px;padding:4px 12px;border-radius:999px;background:var(--chill);color:var(--ink);font-size:12.5px;font-weight:700;line-height:1.2}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(94px + var(--safe-b));z-index:88;background:var(--ink);color:var(--chill);padding:10px 18px;border-radius:999px;font-size:13.5px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none;max-width:88vw;text-align:center;line-height:1.35}
 #busy{position:fixed;inset:0;z-index:90;background:rgba(14,26,32,.55);display:grid;place-items:center;color:#fff;font-size:14.5px;text-align:center;padding:24px}
 .spin{width:30px;height:30px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 12px}
@@ -478,7 +492,10 @@ details.more .inner{padding-top:14px}
     <div class="signals" id="signals"></div>
     <div class="chips" id="chips"></div>
   </header>
-  <div style="padding:0 16px"><button id="planBtn" class="btn ghost" style="margin-bottom:10px"><span class="z">🍳 煮嘢食計劃</span><span class="e">Cooking plan — what to cook, what to bin</span></button></div>
+  <div style="padding:0 16px"><button id="planBtn" class="btn ghost" style="margin-bottom:10px"><span class="z">🍳 今餐點算</span><span class="e">What to use up, what to bin, what to cook</span></button></div>
+  <div id="viewerBar" class="hide" style="margin:0 16px 10px;background:var(--brand-tint);color:var(--brand);border-radius:14px;padding:11px 14px;font-size:13px;font-weight:600">
+    <span class="z">你係「淨係睇」嘅身份，改唔到嘢。</span><span class="e">You have view-only access.</span>
+  </div>
   <main id="list"></main>
   <button id="fab"><span class="plus">＋</span><span><span class="z">入貨</span><span class="e">Add food</span></span></button>
 </div>
@@ -522,6 +539,9 @@ details.more .inner{padding-top:14px}
           <span class="z">已經開咗封</span><span class="e">Already opened — the printed date no longer applies</span>
         </button>
       </div>
+      <button type="button" id="fRecrop" class="btn plain hide" style="margin-bottom:16px">
+        <span class="z">重新裁返張舊相</span><span class="e">Re-crop the existing photo</span>
+      </button>
       <div class="fld hide" id="frozenBox">
         <div class="flab"><span class="z">真正入急凍嘅日期</span><span class="e">Actual freeze date — leave blank and the logging date is used</span></div>
         <input id="fFrozen" type="date">
@@ -557,7 +577,7 @@ details.more .inner{padding-top:14px}
 </div>
 
 <div id="monthPick" class="hide">
-  <div class="hd"><b id="mpTitle">—</b><button class="x" id="mpClose" aria-label="閂 Close">✕</button></div>
+  <div class="bhd"><b id="mpTitle">—</b><button class="x" id="mpClose" aria-label="閂 Close">✕</button></div>
   <div class="mgrid" id="mpGrid"></div>
 </div>
 
@@ -570,6 +590,7 @@ details.more .inner{padding-top:14px}
     <h2 id="dName">—</h2>
     <button class="x" data-close="det" aria-label="閂 Close">✕</button>
   </div>
+  <button id="dSay" class="spk big" style="margin-bottom:12px" aria-label="讀出嚟 Read aloud">🔊</button>
   <img id="dImg" alt="">
   <div class="dfacts">
     <div class="count" id="dCount"></div>
@@ -593,6 +614,7 @@ details.more .inner{padding-top:14px}
   <div id="dWho"></div>
   <button id="dAte" class="btn"><span class="z">食咗 / 用完</span><span class="e">Eaten or used up</span></button>
   <div class="brow"><button id="dToss" class="btn danger"><span class="z">掉咗佢（過咗期）</span><span class="e">Thrown out — expired</span></button></div>
+  <p class="hintline hide" id="dNoEdit" style="margin:10px 0 0">呢件嘢係第二個人入嘅，你改唔到詳情。但你照樣可以撳「食咗」或者「掉咗佢」。<span class="e">Someone else logged this, so you cannot edit the details — but you can still mark it eaten or thrown out.</span></p>
   <div class="brow"><button id="dEdit" class="btn ghost"><span class="z">改資料</span><span class="e">Edit details</span></button></div>
 </section>
 
@@ -650,10 +672,11 @@ details.more .inner{padding-top:14px}
 <section id="wasteSheet" class="sheet hide" role="dialog" aria-modal="true">
   <div class="grab"></div>
   <div class="shead">
-    <h2><span class="z">掉咗嘅嘢</span><span class="e">Thrown out</span></h2>
+    <h2><span class="z">處理記錄</span><span class="e">History</span></h2>
     <button class="x" data-close="waste" aria-label="閂 Close">✕</button>
   </div>
-  <p class="hintline" style="margin:-6px 0 14px">呢度**冇記邊個掉**，亦都唔會記邊個買。撳「掉咗佢」嗰個人係做緊家務，唔係做錯嘢。要睇嘅係買嘢嘅規律，唔係人。<span class="e">This record does not name who binned it or who bought it. Whoever taps the button is doing the chore, not the wrong thing. What matters is the buying pattern.</span></p>
+  <div class="quick" id="wasteFilter" style="margin:-4px 0 12px"></div>
+  <p class="hintline" style="margin:0 0 14px">撳錯咗掣？撳「還原」就會原封不動放返落清單。呢度**冇記邊個掉**，亦都唔會記邊個買。撳「掉咗佢」嗰個人係做緊家務，唔係做錯嘢。要睇嘅係買嘢嘅規律，唔係人。<span class="e">This record does not name who binned it or who bought it. Whoever taps the button is doing the chore, not the wrong thing. What matters is the buying pattern.</span></p>
   <div id="wasteBody"></div>
 </section>
 
@@ -662,7 +685,7 @@ details.more .inner{padding-top:14px}
 <section id="planSheet" class="sheet hide" role="dialog" aria-modal="true">
   <div class="grab"></div>
   <div class="shead">
-    <h2 id="planTitle"><span class="z">煮嘢食計劃</span><span class="e">Cooking plan</span></h2>
+    <h2 id="planTitle"><span class="z">今餐點算</span><span class="e">What to use up</span></h2>
     <button class="x" data-close="plan" aria-label="閂 Close">✕</button>
   </div>
   <div id="planBody"></div>
@@ -686,7 +709,13 @@ details.more .inner{padding-top:14px}
     <button class="x" data-close="set" aria-label="閂 Close">✕</button>
   </div>
 
-  <div class="ghead"><span class="z">分區</span><span class="e">Storage areas</span></div>
+  <div class="ghead"><span class="z">語言</span><span class="e">Language</span></div>
+  <div class="picker" id="langPick"></div>
+  <p class="hintline" style="margin-top:10px">揀「English」就會隱藏晒中文，淨係顯示英文食物名同牌子。冇英文名嘅，會照出中文，總好過一片空白。<span class="e">Choosing English hides all Chinese. Items with no English name still show their Chinese name rather than nothing.</span></p>
+  <button id="spkToggle" class="pk" style="width:100%;margin-top:6px"><span class="z">🔊 每件食物旁邊顯示讀音掣</span><span class="e">Show a read-aloud button beside each item</span></button>
+  <p class="hintline" style="margin-top:8px">用電話內置語音，免費、唔使上網。中文會揀廣東話，英文揀英式或美式，兩邊都優先女聲。<span class="e">Uses the phone's built-in voice — free and offline. Female voices are preferred.</span></p>
+
+  <div class="ghead" id="secHead"><span class="z">分區</span><span class="e">Storage areas</span></div>
   <div id="secList"></div>
   <button id="secAdd" class="btn ghost" style="margin-top:14px"><span class="z">加一個分區</span><span class="e">Add an area</span></button>
 
@@ -773,7 +802,7 @@ details.more .inner{padding-top:14px}
 /* 版本號用日期：yyyy-mm-dd 再加一個大楷字母。
    同一日出多過一次，就 A → B → C 咁行落去。
    格式排得好，所以直接字串比大細就已經係啱嘅時序。 */
-const APP_VERSION = "2026-09-17D";
+const APP_VERSION = "2026-09-17F";
 
 /* ═══════════════════════════════════════════════════════
    FIRESTORE SECURITY RULES —— 呢度係一份副本，方便日後查閱
@@ -781,32 +810,41 @@ const APP_VERSION = "2026-09-17D";
    → Firestore Database → Rules。改咗嗰邊記得返嚟改埋呢度同
    RULES_COPY_DATE，否則呢段註釋會變成誤導。
 
-   RULES_COPY_DATE: 2026-09-16 (D)
+   RULES_COPY_DATE: 2026-09-17 (F)
 
    rules_version = '2';
    service cloud.firestore {
      match /databases/{database}/documents {
 
-       function household() {
-         return request.auth != null && request.auth.token.email in [
-           'your.email@gmail.com',
-           'wife.email@gmail.com',
-           'helper.email@gmail.com'
-         ];
-       }
+       function me()       { return request.auth != null ? request.auth.token.email.lower() : ''; }
+       function admins()   { return ['w.cheung815@gmail.com']; }
+       function viewers()  { return ['cheungcharlotte212@gmail.com']; }
+       function household(){ return ['w.cheung815@gmail.com','wymichele@gmail.com',
+                                     'lagamayorica@gmail.com','cheungcharlotte212@gmail.com']; }
+       function isMember() { return me() != '' && me() in household(); }
+       function isAdmin()  { return me() != '' && me() in admins(); }
+       function isViewer() { return me() in viewers(); }
+       function canWrite() { return isMember() && !isViewer(); }
+       function mine()     { return resource.data.createdBy is string
+                                    && resource.data.createdBy.lower() == me(); }
 
-       match /items/{id}    { allow read, write: if household(); }
-       match /photos/{id}   { allow read, write: if household(); }
-       match /sections/{id} { allow read, write: if household(); }
-       match /library/{id}  { allow read, write: if household(); }
-       match /waste/{id}    { allow read, write: if household(); }
-       match /meta/{id}     { allow read, write: if household(); }
+       match /items/{id} {
+         allow read:   if isMember();
+         allow create: if canWrite();
+         allow update: if canWrite() && (mine() || isAdmin());
+         allow delete: if canWrite();
+       }
+       match /photos/{id}   { allow read: if isMember(); allow write: if canWrite(); }
+       match /sections/{id} { allow read: if isMember(); allow write: if isAdmin(); }
+       match /library/{id}  { allow read: if isMember(); allow write: if canWrite(); }
+       match /waste/{id}    { allow read: if isMember(); allow write: if canWrite(); }
+       match /meta/{id}     { allow read: if isMember(); allow write: if canWrite(); }
      }
    }
 
-   要緊嘅係：上面逐個 collection 逐條寫，冇用 match /{document=**} 嘅
-   一網打盡寫法。個 app 會喺開機時實測呢一點（見 checkRules），
-   如果你將來改成一網打盡或者 if true，主畫面會彈紅色警告。
+   要緊嘅係：上面逐個 collection 逐條寫，冇用一網打盡嘅萬用字元寫法。
+   個 app 會喺開機時實測呢一點（見 checkRules）：試去讀 zz_rules_probe，
+   被拒絕先算「把鎖鎖住咗」。加幾多個 email 都唔會影響呢個檢查。
 
    Firebase 嘅 apiKey 公開係正常嘅，佢係識別碼唔係密碼。真正把鎖
    係上面呢份 rules —— 特別係嗰個 email 名單。
@@ -825,6 +863,11 @@ const firebaseConfig = {
   appId:             "1:776220761130:web:329c34b63c42393e25f753"
 };
 
+/* 權限 —— 呢度只係控制介面顯示。真正把關嘅係 Firestore rules，
+   兩邊嘅名單要一致。改咗呢度記住去 Firebase Console 改埋 rules。 */
+const ADMINS  = ["w.cheung815@gmail.com"];               // 可以管分區、刪記錄
+const VIEWERS = ["cheungcharlotte212@gmail.com"];        // 淨係睇得，改唔到
+
 /* 2. 可以改嘅設定 Tunables */
 const MAX_EDGE   = 1000;    // 最長邊壓到幾多 px
 const THUMB_EDGE = 360;
@@ -840,6 +883,22 @@ const DEFAULT_SECTIONS = [
   ["廚櫃上格",  "Cabinet — top"],
   ["廚櫃下格",  "Cabinet — bottom"]
 ];
+
+/* ═══ 語言 ═══════════════════════════════════════════ */
+const LANG_KEY="fm.lang", SPK_KEY="fm.speak";
+let LANG="both", SPEAK=true;
+try{ LANG=localStorage.getItem(LANG_KEY)||"both"; }catch(_){}
+try{ SPEAK=localStorage.getItem(SPK_KEY)!=="0"; }catch(_){}
+document.body.dataset.lang=LANG;
+const LANGS=[["中文","Chinese","zh"],["中英對照","Both","both"],["English","English","en"]];
+
+/* ═══ 權限 ═══════════════════════════════════════════ */
+const lc = e => String(e||"").trim().toLowerCase();
+const myEmail  = () => lc(user && user.email);
+const isAdmin  = () => ADMINS.map(lc).indexOf(myEmail())>-1;
+const isViewer = () => VIEWERS.map(lc).indexOf(myEmail())>-1;
+const canWrite = () => !!user && !isViewer();
+const canEdit  = it => isAdmin() || (lc(it.createdBy||it.updatedBy) && lc(it.createdBy||it.updatedBy)===myEmail());
 
 /* ═══ 細工具 helpers ═══════════════════════════════════ */
 const $ = s => document.querySelector(s);
@@ -872,12 +931,19 @@ function fmtEn(iso){
 }
 
 let toastT;
-function toast(z,e){
+function toast(z,e,undo){
   clearTimeout(toastT);
   let t=$("#toast");
   if(!t){ t=document.createElement("div"); t.id="toast"; document.body.appendChild(t); }
   t.innerHTML = e ? bi(z,e) : esc(z);
-  toastT=setTimeout(()=>t.remove(), e?3000:2200);
+  t.style.pointerEvents = undo ? "auto" : "none";
+  if(undo){
+    const b=document.createElement("button");
+    b.id="toastUndo"; b.innerHTML=bi("還原","Undo");
+    b.onclick=()=>{ t.remove(); clearTimeout(toastT); undo(); };
+    t.appendChild(b);
+  }
+  toastT=setTimeout(()=>t.remove(), undo?8000:(e?3000:2200));
 }
 function busy(on,z,e,onStop){
   $("#busyMsg").innerHTML = on ? (e?bi(z,e):esc(z||"處理緊…")) : "";
@@ -901,6 +967,46 @@ function ask(o){
   });
 }
 
+/* ═══ 讀出嚟 TTS ═════════════════════════════════════
+   用瀏覽器內置語音，免費、唔使上網。預設揀女聲。
+   ═══════════════════════════════════════════════════ */
+let VOICES=[];
+function loadVoices(){ try{ VOICES=speechSynthesis.getVoices()||[]; }catch(_){ VOICES=[]; } }
+if("speechSynthesis" in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+const FEMALE=/female|woman|女|Sinji|Ting-?Ting|Mei-?Jia|Yu-?shu|Samantha|Karen|Moira|Tessa|Fiona|Serena|Kate|Zoe|Google 粵語|Google 國語/i;
+const MALE=/male|man|男|Aaron|Daniel|Fred|Rishi|Gordon|Alex/i;
+function pickVoice(prefixes){
+  for(const p of prefixes){
+    const c=VOICES.filter(v=>String(v.lang||"").toLowerCase().replace(/_/g,"-").indexOf(p)===0);
+    if(!c.length) continue;
+    return c.find(v=>FEMALE.test(v.name)) || c.find(v=>!MALE.test(v.name)) || c[0];
+  }
+  return null;
+}
+function say(text, zh){
+  if(!("speechSynthesis" in window)){ toast("呢個瀏覽器唔支援讀出嚟","This browser cannot read aloud"); return; }
+  if(!text) return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    const v = zh ? pickVoice(["yue","zh-hk","zh-tw","zh"]) : pickVoice(["en-gb","en-us","en"]);
+    if(v){ u.voice=v; u.lang=v.lang; } else u.lang = zh?"zh-HK":"en-US";
+    u.rate=0.92; u.pitch=1.05;
+    speechSynthesis.speak(u);
+  }catch(_){ toast("讀唔到","Could not read aloud"); }
+}
+/* 讀個名同埋要唔要趕住處理 */
+function sayItem(it){
+  const n=nameLines(it), v=verdict(it);
+  const useZh = LANG!=="en";
+  if(useZh){
+    const nm=(n?(n.top||n.bot):"未命名");
+    say(nm+"。"+v.zh+"。", true);
+  }else{
+    const nm=(n?(n.bot||n.top):"Unnamed");
+    say(nm+". "+v.en+".", false);
+  }
+}
 /* ═══ 裁相 + 壓縮 crop & compress ═════════════════════ */
 let srcCv=null, DW=0, DH=0, B={x:0,y:0,w:0,h:0}, cropResolve=null, drag=null;
 
@@ -1203,10 +1309,36 @@ async function boot(){
   try{ await A.setPersistence(auth,A.browserLocalPersistence); }catch(_){}
   try{ await A.getRedirectResult(auth); }catch(_){}
 
+  const standalone = window.navigator.standalone===true ||
+    (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+  const inApp = /FBAN|FBAV|Instagram|Line\/|MicroMessenger|WhatsApp/i.test(navigator.userAgent);
+  function showSignInErr(code){
+    const HELP={
+      "ios-standalone":["由主畫面嘅圖示開係登入唔到嘅（iOS 限制）。請改為喺 Safari 直接開條網址登入一次，成功之後再返主畫面圖示就用得。",
+        "Signing in does not work from the Home Screen icon on iOS. Open the address in Safari, sign in once there, then go back to the Home Screen icon."],
+      "in-app-browser":["你而家係喺 WhatsApp／Messenger 之類嘅內置瀏覽器度開緊，Google 唔准喺呢度登入。撳「喺瀏覽器開啟」，用 Safari 或者 Chrome 開。",
+        "You are in an in-app browser (WhatsApp, Messenger…). Google blocks sign-in there. Open it in Safari or Chrome instead."],
+      "auth/unauthorized-domain":["呢個網域未授權。去 Firebase Console → Authentication → Settings → Authorized domains 加返。",
+        "This domain is not authorised. Add it in Firebase Console → Authentication → Settings → Authorized domains."],
+      "auth/operation-not-allowed":["Firebase 未開 Google 登入。去 Authentication → Sign-in method 開返。",
+        "Google sign-in is not enabled in Firebase → Authentication → Sign-in method."]
+    };
+    const h=HELP[code]||["登入失敗。下面係錯誤代碼，貼俾我睇就查到。","Sign-in failed. The error code is below."];
+    $("#gateMsg").innerHTML=bi(h[0],h[1])+`<div style="margin-top:8px;font-size:11px;opacity:.7;word-break:break-all">${esc(code)}</div>`;
+  }
   $("#signin").onclick=async()=>{
     const p=new A.GoogleAuthProvider();
-    try{ await A.signInWithPopup(auth,p); }
-    catch(e){ if(String(e.code||"").indexOf("popup")>-1) A.signInWithRedirect(auth,p); else toast("登入失敗："+(e.code||e.message),"Sign-in failed"); }
+    p.setCustomParameters({prompt:"select_account"});
+    try{ await A.signInWithPopup(auth,p); return; }
+    catch(e){
+      const code=String(e.code||"");
+      if(code.indexOf("popup")<0){ showSignInErr(code||e.message); return; }
+      /* 彈窗開唔到就要轉 redirect。但 iOS 由主畫面開（standalone）或者
+         喺 WhatsApp 之類嘅內置瀏覽器度，redirect 返嚟會去咗第二個情境，
+         session 會冇咗 —— 所以寧願叫佢用 Safari 開。 */
+      if(standalone || inApp){ showSignInErr(inApp?"in-app-browser":"ios-standalone"); return; }
+      try{ await A.signInWithRedirect(auth,p); }catch(e2){ showSignInErr(String(e2.code||e2.message)); }
+    }
   };
 
   A.onAuthStateChanged(auth,u=>{
@@ -1214,8 +1346,13 @@ async function boot(){
     $("#gate").classList.toggle("hide",!!u);
     $("#app").classList.toggle("hide",!u);
     unsub.forEach(f=>f()); unsub=[];
-    if(u){ $("#whoBox").innerHTML=bi(u.email||"—","Signed in on this device"); listen(); checkRules(); }
+    if(u){
+      $("#whoBox").innerHTML=bi((u.email||"—")+"　"+(isAdmin()?"管理員":isViewer()?"淨係睇":"家人"),
+        (isAdmin()?"Admin":isViewer()?"View only":"Household member"));
+      listen(); checkRules();
+    }
     else { items=[]; sections=[]; library=[]; waste=[]; board={}; }
+    applyRole();
   });
 }
 function listen(){
@@ -1275,9 +1412,9 @@ async function seedSections(){
    ═══════════════════════════════════════════════════════ */
 const V_TOSS ={key:"toss", rank:0, cls:"bad",  zh:"掉咗佢",   en:"Throw it out"};
 const V_JUDGE={key:"judge",rank:1, cls:"bad",  zh:"大人自己判斷，兩個女唔好食", en:"Adults judge — not for the children"};
-const V_TODAY={key:"today",rank:2, cls:"warn", zh:"今日一定要煮", en:"Must be cooked today"};
-const V_SOON ={key:"soon", rank:3, cls:"warn", zh:"盡快煮",   en:"Cook it soon"};
-const V_WATCH={key:"watch",rank:4, cls:"",     zh:"排住先",   en:"Coming up"};
+const V_TODAY={key:"today",rank:2, cls:"warn", zh:"今日要清晒佢", en:"Use it up today"};
+const V_SOON ={key:"soon", rank:3, cls:"warn", zh:"盡快清晒",   en:"Use it up soon"};
+const V_WATCH={key:"watch",rank:4, cls:"",     zh:"排住先",     en:"Coming up"};
 const V_OK   ={key:"ok",   rank:5, cls:"",     zh:"仲有時間", en:"Plenty of time"};
 const V_NONE ={key:"none", rank:6, cls:"",     zh:"冇入日期", en:"No date"};
 
@@ -1387,7 +1524,7 @@ function verdict(it){
       `過咗「此日期前最佳」${-d} 日。呢個係品質日期唔係安全日期，但發霉、變味、脹罐就一定要掉。細路唔好食。`,
       `${-d} days past Best Before — a quality date, not a safety one. Bin it if it is mouldy, smells off or the can is swollen. Not for the children.`]};
   }
-  if(d===0) return {...V_TODAY, d, notes, why:["今日到期。今日煮，唔好留到聽日。","Expires today. Cook it today, not tomorrow."]};
+  if(d===0) return {...V_TODAY, d, notes, why:["今日到期。飲得嘅今日飲咗，煮得嘅今日煮咗，唔好留到聽日。","Expires today. Drink it, cook it, finish it today — not tomorrow."]};
   if(d<=T_SOON) return {...V_SOON, d, notes, why:[`仲有 ${d} 日。`,`${d} days left.`]};
   if(d<=T_WATCH) return {...V_WATCH, d, notes, why:[`仲有 ${d} 日。`,`${d} days left.`]};
   return {...V_OK, d, notes, why:[`仲有 ${d} 日。`,`${d} days left.`]};
@@ -1398,7 +1535,7 @@ function verdict(it){
    rules 鎖得啱 → Firestore 拒絕 → 證明把鎖真係鎖住。
    讀得到 → rules 太鬆 → 主畫面彈紅色警告。
    ═══════════════════════════════════════════════════ */
-let rulesState="pending", latestVer=null, metaErr=false;
+let rulesState="pending", latestVer=null, metaErr=false, rulesErr="";
 function cmpVer(a,b){
   a=String(a||""); b=String(b||"");
   if(a===b) return 0;
@@ -1408,13 +1545,17 @@ const outdated = () => !!(latestVer && cmpVer(APP_VERSION,latestVer)<0);
 async function checkRules(){
   if(!db||!F){ rulesState="unknown"; return; }
   try{
-    const ref=F.doc(db,"__rules_probe__","probe");
+    /* 個名唔可以用 __xxx__ —— Firestore 規定 collection ID 不可以符合
+       __.*__，SDK 喺客戶端就直接彈錯，連伺服器都未去過。
+       之前用 __rules_probe__，所以永遠報「檢查唔到」。 */
+    const ref=F.doc(db,"zz_rules_probe","probe");
     if(F.getDocFromServer) await F.getDocFromServer(ref); else await F.getDoc(ref);
     rulesState="open";
   }catch(e){
-    const c=String(e.code||e.message||"");
+    const c=String(e.code||"")+" "+String(e.message||"");
+    rulesErr=c.trim().slice(0,160);
     rulesState = c.indexOf("permission-denied")>-1 ? "tight"
-               : (c.indexOf("unavailable")>-1||c.indexOf("offline")>-1) ? "offline" : "unknown";
+               : (c.indexOf("unavailable")>-1||c.indexOf("offline")>-1||c.indexOf("client is offline")>-1) ? "offline" : "unknown";
   }
   paintSecurity(); render();
 }
@@ -1424,7 +1565,7 @@ const RULE_TXT={
   open: ["你個 rules 太鬆！唔喺名單嘅位置都讀得到。任何人攞到你段 config 都可能讀到你啲嘢。快啲去 Firestore → Rules 改返。",
          "Your rules are too open — data outside the allow-list is readable. Fix them in Firestore → Rules."],
   offline:["而家離線，檢查唔到。","Offline, cannot check right now."],
-  unknown:["檢查唔到。","Could not check."],
+  unknown:["檢查唔到。下面係實際錯誤訊息。","Could not check — the raw error is below."],
   pending:["檢查緊…","Checking…"]
 };
 function paintSecurity(){
@@ -1442,7 +1583,8 @@ function paintSecurity(){
     const t=RULE_TXT[rulesState]||RULE_TXT.unknown;
     const icon = rulesState==="tight"?"✓ ":rulesState==="open"?"⚠ ":"";
     r.className="who"+(rulesState==="tight"?" good":rulesState==="open"?" bad":"");
-    r.innerHTML=`<b>${icon}Firestore rules</b><div style="margin-top:5px">${bi(t[0],t[1])}</div>`;
+    r.innerHTML=`<div class="ttl">${icon}Firestore rules</div><div style="margin-top:5px">${bi(t[0],t[1])}</div>`
+      + ((rulesState==="unknown"&&rulesErr)?`<div style="margin-top:6px;font-size:10.5px;opacity:.75;word-break:break-all">${esc(rulesErr)}</div>`:"");
   }
   const g=$("#openSet");
   if(g) g.classList.toggle("alert", rulesState==="open"||outdated());
@@ -1467,6 +1609,15 @@ const halfNamed = o => (!!nameZh(o)) !== (!!nameEn(o));   // 得一邊有名
 const hasName = o => !!(nameZh(o)||nameEn(o));
 const withBrand = (n,b) => n ? (b? n+" ("+b+")" : n) : "";
 /* 拆成上下兩行：有中有英就對照，得一種就只出一行 */
+/* 兩邊都出，等 CSS 揀。淨英文模式但冇英文名 → 照出中文，
+   總好過俾工人姐姐見到一片空白。 */
+function nameBI(o){
+  const n=nameLines(o);
+  if(!n) return bi("未命名","Unnamed");
+  return bi(n.top||n.bot, n.bot||n.top);
+}
+const secBI  = id => bi(secZh(id), secEn(id)||secZh(id));
+const dateBI = iso => bi(fmtZh(iso), fmtEn(iso));
 function nameLines(o){
   const z=withBrand(nameZh(o), brandOf(o)), e=withBrand(nameEn(o), brandOf(o));
   if(z&&e) return {top:z, bot:nameEn(o)};
@@ -1482,7 +1633,7 @@ function renderChips(){
   c.innerHTML = list.map(s=>
     `<button class="chip" data-sec="${esc(s.id)}" aria-pressed="${filterSection===s.id}">${bi(s.zh||s.name||"",s.en||"")}</button>`
   ).join("") + `<button class="chip lib" id="chipLib">${bi("🗂 買開嘅嘢"+(library.length?" ("+library.length+")":""),"Buy again")}</button>`
-+ `<button class="chip lib" id="chipWaste">${bi("🗑 掉咗嘅嘢"+(waste.length?" ("+waste.length+")":""),"Thrown out")}</button>`;
++ `<button class="chip lib" id="chipWaste">${bi("📋 處理記錄"+(waste.length?" ("+waste.length+")":""),"History")}</button>`;
   c.querySelectorAll("[data-sec]").forEach(b=>b.onclick=()=>{ filterSection=b.dataset.sec; renderChips(); render(); });
   $("#chipLib").onclick=openLib;
   const cw=$("#chipWaste"); if(cw) cw.onclick=openWaste;
@@ -1524,11 +1675,11 @@ function visible(){
 }
 function countHTML(d,id){
   const i = id ? ` id="${id}"` : "";
-  if(d===null) return `<div${i} class="count na"><span class="cword">冇日期</span><span class="cunit">No date</span></div>`;
-  if(d<0)  return `<div${i} class="count gone"><span class="cnum">${-d}</span><span class="cunit">日前過咗<br>days ago</span></div>`;
-  if(d===0) return `<div${i} class="count soon"><span class="cword">今日</span><span class="cunit">Today</span></div>`;
-  if(d===1) return `<div${i} class="count soon"><span class="cword">聽日</span><span class="cunit">Tomorrow</span></div>`;
-  return `<div${i} class="count ${d<=T_SOON?"soon":""}"><span class="cnum">${d}</span><span class="cunit">日 days</span></div>`;
+  if(d===null) return `<div${i} class="count na"><span class="cword">${bi("冇日期","No date")}</span></div>`;
+  if(d<0)  return `<div${i} class="count gone"><span class="cnum">${-d}</span><span class="cunit">${bi("日前過咗","days ago")}</span></div>`;
+  if(d===0) return `<div${i} class="count soon"><span class="cword">${bi("今日","Today")}</span></div>`;
+  if(d===1) return `<div${i} class="count soon"><span class="cword">${bi("聽日","Tomorrow")}</span></div>`;
+  return `<div${i} class="count ${d<=T_SOON?"soon":""}"><span class="cnum">${d}</span><span class="cunit">${bi("日","days")}</span></div>`;
 }
 function render(){
   renderSignals();
@@ -1566,16 +1717,15 @@ function render(){
     html += rows.map(i=>{
       const d=daysLeft(i.expiry);
       const nl=nameLines(i);
-      const nm = nl
-        ? `<div class="rname">${esc(nl.top)}${nl.bot?`<span class="e">${esc(nl.bot)}</span>`:""}</div>`
-        : `<div class="rname none">${bi("未命名","Unnamed")}</div>`;
-      return `<button class="row ${d!==null&&d<0?"expired":""}" data-id="${esc(i.id)}">
+      const nm = `<div class="rname${nl?"":" none"}">${nameBI(i)}</div>`;
+      return `<div class="row ${d!==null&&d<0?"expired":""}" data-id="${esc(i.id)}">
         ${i.thumb?`<img class="thumb" src="${i.thumb}" alt="">`:`<div class="thumb ph">🍽</div>`}
         <div class="rmid">${nm}
-          <div class="rmeta"><span class="tag">${esc(secZh(i.sectionId))}</span><span>${esc(fmtZh(i.expiry))}　${esc(fmtEn(i.expiry))}</span></div>
+          <div class="rmeta"><span class="tag">${secBI(i.sectionId)}</span><span>${dateBI(i.expiry)}</span></div>
         </div>
+        ${SPEAK?`<button class="spk" data-say="${esc(i.id)}" aria-label="讀出嚟 Read aloud">🔊</button>`:""}
         ${countHTML(d)}
-      </button>`;
+      </div>`;
     }).join("");
   }
   main.innerHTML=html;
@@ -1583,7 +1733,14 @@ function render(){
   const jg=$("#jobsGo"); if(jg) jg.onclick=()=>{ filterSection="all"; renderChips(); openPlan(); };
   const go=$("#aiGo"); if(go) go.onclick=()=>runAI(needEye);
   const tg=$("#trGo"); if(tg) tg.onclick=()=>runTranslate(needTr);
-  main.querySelectorAll(".row").forEach(r=>r.onclick=()=>openDetail(r.dataset.id));
+  main.querySelectorAll(".row").forEach(r=>r.onclick=e=>{
+    if(e.target.closest("[data-say]")) return;
+    openDetail(r.dataset.id);
+  });
+  main.querySelectorAll("[data-say]").forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    const it=items.find(x=>x.id===b.dataset.say); if(it) sayItem(it);
+  });
 }
 /* ═══ 今日要做 —— 主畫面頂部，全家同一份 ═══════════════ */
 function jobsHTML(){
@@ -1595,19 +1752,19 @@ function jobsHTML(){
   const line=(cls,zh,en,arr)=>arr.length
     ? `<div class="jline ${cls}"><b>${arr.length}</b><span>${bi(zh,en)}</span></div>
        <div style="font-size:12px;color:var(--mute);padding:0 0 4px 29px;line-height:1.45">${esc(arr.slice(0,6).map(nm).join("、"))}${arr.length>6?" …":""}</div>` : "";
-  let h=`<div id="jobs"><div class="hd">
+  let h=`<div id="jobs"><div class="bhd">
     <div class="ttl">${bi("今日要做","TODAY'S JOBS")}</div>
     <div class="dt">${esc(fmtZh(todayISO()))}<span class="e">${esc(fmtEn(todayISO()))}</span></div></div>`;
   h+=line("bad","掉咗佢","Throw out",toss);
-  h+=line("warn","今日要煮","Cook today",today);
-  h+=line("","三日內要煮","Cook within 3 days",soon);
+  h+=line("warn","今日要清","Use up today",today);
+  h+=line("","三日內要清","Use up within 3 days",soon);
   if(plan && plan.plan && plan.plan.length){
     h+=`<div class="dishes"><b>${esc("今餐煮咩　WHAT TO COOK")}</b>`
       + plan.plan.map((x,i)=>`<div>${i+1}. ${esc(x.zh||"")}<span class="e" style="display:block;font-size:11.5px;opacity:.7">${esc(x.en||"")}</span></div>`).join("")
       + `</div>`;
   }
   if(note) h+=`<div class="memo">${esc(note)}<span class="who">${esc((board.noteBy||"")+(ms(board.noteAt)?"　"+new Date(ms(board.noteAt)).toLocaleDateString():""))}</span></div>`;
-  h+=`<button class="go" id="jobsGo">${bi("睇晒成張單同煮嘢食計劃","See the full list and cooking plan")}</button></div>`;
+  h+=`<button class="go" id="jobsGo">${bi("睇晒成張單","See the full list")}</button></div>`;
   return h;
 }
 
@@ -1759,6 +1916,7 @@ function openForm(it, shoot){
   paintPicker("#fSections","formSection");
   paintPk();
   $("#fDelete").classList.toggle("hide",!it);
+  $("#fRecrop").classList.toggle("hide", !(it && (it.thumb||it.photoId)));
   $("#fSaveNext").classList.toggle("hide",!!it);
   $("#fSave").className = it ? "btn right" : "btn plain left";
   $("#formBar").classList.remove("hide");
@@ -1770,6 +1928,23 @@ function setPreview(src){
   if(src){ g.src=src; g.classList.remove("hide"); ic.classList.add("hide"); re.classList.remove("hide"); }
   else { g.removeAttribute("src"); g.classList.add("hide"); ic.classList.remove("hide"); re.classList.add("hide"); }
 }
+$("#fRecrop").onclick=async()=>{
+  const it=items.find(i=>i.id===editingId); if(!it) return;
+  busy(true,"攞緊張相…","Fetching the photo…");
+  let url="";
+  try{
+    const snap=await F.getDoc(F.doc(db,"photos",photoRef(it)));
+    if(snap.exists()) url=snap.data().full;
+  }catch(_){}
+  if(!url) url=it.thumb||"";
+  busy(false);
+  if(!url){ toast("搵唔到張相","No photo found"); return; }
+  try{
+    const blob=await (await fetch(url)).blob();
+    const out=await openCropper(new File([blob],"photo.jpg",{type:"image/jpeg"}));
+    if(out){ pendingPhoto=out; setPreview(out.thumb); toast("裁好咗，記住撳儲存","Cropped — remember to save"); }
+  }catch(_){ toast("開唔到張相","Could not open the photo"); }
+};
 $("#shotBtn").onclick=()=>$("#fileCam").click();
 $("#pickLib").onclick=()=>$("#fileLib").click();
 ["#fileCam","#fileLib"].forEach(x=>$(x).onchange=async e=>{
@@ -1914,8 +2089,12 @@ async function openDetail(id){
        <div class="ttl">${bi(vd.zh,vd.en)}</div><div style="margin-top:6px">${bi(vd.why[0],vd.why[1])}</div>
        ${vd.notes.map(n=>`<div style="margin-top:6px">${bi(n[0],n[1])}</div>`).join("")}
      </div>`;
-  $("#dAte").className = vd.rank<=1 ? "btn ghost" : "btn";
-  $("#dToss").className = vd.rank<=1 ? "btn danger" : "btn plain";
+  $("#dAte").className = (vd.rank<=1 ? "btn ghost" : "btn") + (canWrite()?"":" hide");
+  $("#dToss").className = (vd.rank<=1 ? "btn danger" : "btn plain") + (canWrite()?"":" hide");
+  $("#dEdit").classList.toggle("hide", !canEdit(it));
+  $("#dateBox").classList.toggle("hide", !canEdit(it));
+  const noEdit=$("#dNoEdit");
+  if(noEdit) noEdit.classList.toggle("hide", canEdit(it) || !canWrite());
   $("#dateBox").open=false;
   const img=$("#dImg");
   img.src=it.thumb||""; img.style.filter=it.thumb?"blur(6px)":"none";
@@ -1935,23 +2114,42 @@ $("#dDateSave").onclick=async()=>{
     busy(false); toast("改咗日期","Date updated"); show("det",false);
   }catch(e){ busy(false); toast("改唔到："+(e.code||e.message),"Could not update"); }
 };
+$("#dSay").onclick=()=>{ const it=items.find(i=>i.id===detailId); if(it) sayItem(it); };
 $("#dEdit").onclick=()=>{ const it=items.find(i=>i.id===detailId); show("det",false); if(it) openForm(it); };
 
+/* 食咗同掉咗都會留低一條完整快照，所以撳錯咗還原得返。
+   kind: "eaten" | "tossed" */
 async function retire(it, wasted){
   const lib = it.libId ? library.find(l=>l.id===it.libId) : null;
   if(lib) await F.updateDoc(F.doc(db,"library",lib.id),{ lastUsed:F.serverTimestamp(), times:(lib.times||1)+1 });
   else if(it.thumb) await F.addDoc(F.collection(db,"library"),{
     zh:nameZh(it), en:nameEn(it), brand:brandOf(it), thumb:it.thumb,
     photoId:it.photoId||"", sectionId:it.sectionId||"", lastUsed:F.serverTimestamp(), times:1 });
-  if(wasted){
-    const d=daysLeft(it.expiry);
-    await F.addDoc(F.collection(db,"waste"),{
-      zh:nameZh(it), en:nameEn(it), brand:brandOf(it), thumb:it.thumb||"",
-      sectionId:it.sectionId||"", expiry:it.expiry||"",
-      daysOver: d===null?null:Math.max(0,-d), dateType:dateTypeOf(it),
-      at:F.serverTimestamp(), by:(user&&user.email)||"" });
-  }
+  const d=daysLeft(it.expiry);
+  const snap={};
+  ["zh","en","brand","note","expiry","sectionId","thumb","photoId","libId","dateType",
+   "opened","frozenOn","cat","addedOn","createdBy","dupOk"].forEach(k=>{ if(it[k]!==undefined) snap[k]=it[k]; });
+  const rec=await F.addDoc(F.collection(db,"waste"),{
+    kind: wasted?"tossed":"eaten",
+    zh:nameZh(it), en:nameEn(it), brand:brandOf(it), thumb:it.thumb||"",
+    sectionId:it.sectionId||"", expiry:it.expiry||"",
+    daysOver: d===null?null:Math.max(0,-d), dateType:dateTypeOf(it),
+    snap, at:F.serverTimestamp(), by:(user&&user.email)||"" });
   await F.deleteDoc(F.doc(db,"items",it.id));
+  return rec.id;
+}
+/* 撳錯掣即刻還原 */
+async function undoRetire(recId){
+  const r=waste.find(x=>x.id===recId) || null;
+  if(!r || !r.snap){ toast("還原唔到","Cannot restore"); return; }
+  busy(true,"還原緊…","Restoring…");
+  try{
+    await F.addDoc(F.collection(db,"items"),{ ...r.snap,
+      createdAt:F.serverTimestamp(), updatedAt:F.serverTimestamp(),
+      updatedBy:(user&&user.email)||"" });
+    await F.deleteDoc(F.doc(db,"waste",recId));
+    busy(false); toast("還原咗","Restored");
+  }catch(e){ busy(false); toast("還原唔到："+(e.code||e.message),"Could not restore"); }
 }
 
 $("#dToss").onclick=async()=>{
@@ -1963,7 +2161,12 @@ $("#dToss").onclick=async()=>{
     yz:"掉咗", ye:"Thrown out", danger:true });
   if(!ok) return;
   busy(true,"處理緊…","Working…");
-  try{ await retire(it,true); busy(false); toast("記低咗","Recorded"); show("det",false); }
+  try{
+    const rid=await retire(it,true);
+    busy(false);
+    toast("掉咗，記低咗","Recorded as thrown out", ()=>undoRetire(rid));
+    show("det",false);
+  }
   catch(e){ busy(false); toast("失敗："+(e.code||e.message),"Failed"); }
 };
 
@@ -1977,8 +2180,10 @@ $("#dAte").onclick=async()=>{
   if(!ok) return;
   busy(true,"處理緊…","Working…");
   try{
-    await retire(it,false);
-    busy(false); toast("記低咗，下次可以直接揀返","Saved — you can add it again in one tap"); show("det",false);
+    const rid=await retire(it,false);
+    busy(false);
+    toast("食咗，記低咗","Marked as eaten", ()=>undoRetire(rid));
+    show("det",false);
   }catch(e){ busy(false); toast("失敗："+(e.code||e.message),"Failed"); }
 };
 
@@ -2207,7 +2412,7 @@ function dupCard(x){
   const nl=nameLines(x), t=fmtDT(ms(x.createdAt));
   return `<div class="card">
     ${x.thumb?`<img src="${x.thumb}" alt="">`:`<div style="aspect-ratio:1;display:grid;place-items:center;font-size:26px;background:var(--card);border-radius:8px;margin-bottom:7px">🍽</div>`}
-    <div class="nm">${nl?bi(nl.top,nl.bot):bi("未命名","Unnamed")}</div>
+    <div class="nm">${nameBI(e.o)}</div>
     <div class="meta"><b>${esc(who(x.createdBy||x.updatedBy))}</b><br>${t?esc(t.zh):esc(x.addedOn||"—")}<br>${esc(secZh(x.sectionId))}　${esc(fmtZh(x.expiry))}</div>
   </div>`;
 }
@@ -2299,45 +2504,64 @@ async function cmpPair(k){
    刻意唔顯示邊個掉、邊個買。呢度係睇規律，唔係翻舊賬。
    ═══════════════════════════════════════════════════ */
 function openWaste(){ renderWaste(); show("waste",true); }
+let wasteKind="all";
 function renderWaste(){
   const b=$("#wasteBody"); if(!b) return;
+  const F3=[["全部","All","all"],["掉咗","Thrown out","tossed"],["食咗","Eaten","eaten"]];
+  $("#wasteFilter").innerHTML=F3.map(([z,e,k])=>
+    `<button type="button" class="qb ${wasteKind===k?"on":""}" data-wk="${k}">${bi(z,e)}</button>`).join("");
+  $("#wasteFilter").querySelectorAll("[data-wk]").forEach(x=>x.onclick=()=>{ wasteKind=x.dataset.wk; renderWaste(); });
+
   if(!waste.length){
-    b.innerHTML=`<div class="empty" style="padding:36px 10px"><div class="big">🗑</div>
-      <p>一件都未掉過。<span class="e">Nothing binned yet.</span></p>
-      <p>撳入去食物度撳「掉咗佢（過咗期）」就會記低。<span class="e">Tap an item, then Thrown out — expired.</span></p></div>`;
+    b.innerHTML=`<div class="empty" style="padding:36px 10px"><div class="big">📋</div>
+      <p>仲未有記錄。<span class="e">Nothing here yet.</span></p>
+      <p>撳「食咗」或者「掉咗佢」之後就會記低。<span class="e">Marking something eaten or thrown out records it here.</span></p></div>`;
     return;
   }
-  const ls=waste.slice().sort((a,b2)=>ms(b2.at)-ms(a.at));
+  const kindOf=x=>x.kind||"tossed";                    // 舊記錄冇 kind，一律當掉咗
+  const all=waste.slice().sort((a2,b2)=>ms(b2.at)-ms(a2.at));
+  const ls=wasteKind==="all"?all:all.filter(x=>kindOf(x)===wasteKind);
+  const tossed=all.filter(x=>kindOf(x)==="tossed");
   const cut=Date.now()-30*864e5;
-  const recent=ls.filter(x=>ms(x.at)>=cut);
-  const overs=ls.filter(x=>typeof x.daysOver==="number");
-  const avg=overs.length?Math.round(overs.reduce((a,x)=>a+x.daysOver,0)/overs.length):null;
+  const overs=tossed.filter(x=>typeof x.daysOver==="number");
+  const avg=overs.length?Math.round(overs.reduce((a2,x)=>a2+x.daysOver,0)/overs.length):null;
   let h=`<div class="wsum">
-    <div><b>${ls.length}</b><span>${esc("總共 Total")}</span></div>
-    <div><b>${recent.length}</b><span>${esc("30 日內 Last 30d")}</span></div>
-    <div><b>${avg===null?"—":avg}</b><span>${esc("平均過咗幾多日 Avg days over")}</span></div>
+    <div><b>${tossed.length}</b><span>${esc("掉咗 Binned")}</span></div>
+    <div><b>${tossed.filter(x=>ms(x.at)>=cut).length}</b><span>${esc("30 日內 Last 30d")}</span></div>
+    <div><b>${avg===null?"—":avg}</b><span>${esc("平均過期日數 Avg over")}</span></div>
   </div>`;
+  if(!ls.length){ b.innerHTML=h+`<div class="empty" style="padding:24px 10px"><p>呢一類冇記錄。<span class="e">Nothing in this category.</span></p></div>`; return; }
   let curM=null;
   for(const w of ls){
     const t=ms(w.at)?new Date(ms(w.at)):null;
     const mk=t?`${t.getFullYear()} 年 ${t.getMonth()+1} 月`:"—";
     if(mk!==curM){ curM=mk; h+=`<div class="lghead">${esc(mk)}</div>`; }
-    const nl=nameLines(w);
+    const k=kindOf(w);
     h+=`<div class="wrow">
       ${w.thumb?`<img src="${w.thumb}" alt="">`:`<div class="ph">🍽</div>`}
       <div class="mid">
-        <div class="nm">${nl?bi(nl.top,nl.bot):bi("未命名","Unnamed")}</div>
-        <div class="sub">${esc(secZh(w.sectionId))}　${t?esc(t.getMonth()+1+"月"+t.getDate()+"日掉"):""}${w.dateType==="best"?"　"+esc("此日期前最佳"):""}</div>
+        <div class="nm">${nameBI(w)}</div>
+        <div class="sub">${k==="eaten"?bi("食咗","Eaten"):bi("掉咗","Thrown out")}　${secBI(w.sectionId)}${t?"　"+esc(t.getMonth()+1+"月"+t.getDate()+"日"):""}</div>
       </div>
-      <div class="over">${typeof w.daysOver==="number"?bi("過咗 "+w.daysOver+" 日",w.daysOver+" days over"):"—"}
-        <button class="mini del" data-rmw="${esc(w.id)}" aria-label="刪走呢條記錄 Remove" style="margin-top:2px">✕</button></div>
+      <div class="over">${k==="tossed"&&typeof w.daysOver==="number"?bi("過咗 "+w.daysOver+" 日",w.daysOver+" days over"):""}
+        ${(canWrite()&&w.snap)?`<button class="mini" data-undo="${esc(w.id)}" aria-label="還原 Restore" style="color:var(--brand)">↩</button>`:""}
+        ${isAdmin()?`<button class="mini del" data-rmw="${esc(w.id)}" aria-label="刪走記錄 Remove">✕</button>`:""}
+      </div>
     </div>`;
   }
   b.innerHTML=h;
+  b.querySelectorAll("[data-undo]").forEach(x=>x.onclick=async()=>{
+    const ok=await ask({ tz:"還原返落清單？", te:"Put it back on the list?",
+      mz:"會原封不動放返去，連相、日期、分區都一樣。呢條記錄會刪走。",
+      me:"It goes back exactly as it was — photo, date and area. This record is removed.",
+      yz:"還原", ye:"Restore" });
+    if(ok) undoRetire(x.dataset.undo);
+  });
   b.querySelectorAll("[data-rmw]").forEach(x=>x.onclick=async()=>{
-    const ok=await ask({ tz:"刪走呢條記錄？", te:"Remove this record?",
-      mz:"撳錯咗先用。啲統計會變返。", me:"Only if it was logged by mistake. The stats will change.",
-      yz:"刪走", ye:"Remove", danger:true });
+    const ok=await ask({ tz:"永久刪走呢條記錄？", te:"Delete this record for good?",
+      mz:"之後就還原唔返，統計亦都會變。只有管理員做得到呢一步。",
+      me:"It cannot be restored afterwards and the stats will change. Admin only.",
+      yz:"刪走", ye:"Delete", danger:true });
     if(!ok) return;
     try{ await F.deleteDoc(F.doc(db,"waste",x.dataset.rmw)); toast("刪咗","Removed"); }
     catch(e){ toast("刪唔到："+(e.code||e.message),"Could not remove"); }
@@ -2370,8 +2594,8 @@ function vLine(e){
 }
 function renderPlan(){
   const sec = filterSection==="all" ? null : sections.find(x=>x.id===filterSection);
-  $("#planTitle").innerHTML = sec ? bi("煮嘢食計劃　"+(sec.zh||sec.name||""),"Cooking plan — "+(sec.en||""))
-                                  : bi("煮嘢食計劃　全部","Cooking plan — everything");
+  $("#planTitle").innerHTML = sec ? bi("今餐點算　"+(sec.zh||sec.name||""),"What to use up — "+(sec.en||""))
+                                  : bi("今餐點算　全部","What to use up — everything");
   const all=planItems();
   const grp=k=>all.filter(e=>e.v.key===k);
   const st = storageOf(sec || {zh:"雪櫃"});
@@ -2412,7 +2636,7 @@ function renderPlan(){
   if(wk.n) h+=`<div class="vnote" style="margin-top:18px;background:var(--soon-bg);color:var(--soon)">
     <div class="ttl">${bi("最近 30 日掉咗 "+wk.n+" 樣", wk.n+" items thrown out in the last 30 days")}</div>
     <div style="margin-top:6px">${bi(wk.zh,wk.en)}</div>
-    <button id="planWaste" style="margin-top:9px;font-size:12.5px;text-decoration:underline;color:inherit">${bi("睇晒掉咗啲乜","See everything that was binned")}</button></div>`;
+    <button id="planWaste" style="margin-top:9px;font-size:12.5px;text-decoration:underline;color:inherit">${bi("睇晒處理記錄","See the full history")}</button></div>`;
 
   $("#planBody").innerHTML=h;
   const b=$("#planAI"); if(b) b.onclick=()=>askDishes(safe);
@@ -2454,7 +2678,7 @@ const DISH_PROMPT =
 
 function wasteStats(){
   const cut=Date.now()-30*864e5;
-  const w=waste.filter(x=>ms(x.at)>=cut);
+  const w=waste.filter(x=>ms(x.at)>=cut && (x.kind||"tossed")==="tossed");
   if(!w.length) return {n:0};
   const by={};
   w.forEach(x=>{ const k=nameEn(x)||nameZh(x)||"未命名"; by[k]=(by[k]||0)+1; });
@@ -2466,7 +2690,23 @@ function wasteStats(){
 }
 
 /* ═══ 設定 settings ══════════════════════════════════ */
-$("#openSet").onclick=()=>{ loadAiForm(); renderSecList(); paintSecurity(); show("set",true); };
+function paintLang(){
+  $("#langPick").innerHTML=LANGS.map(([z,e,k])=>
+    `<button type="button" class="pk" data-lang="${k}" aria-pressed="${LANG===k}">${bi(z,e)}</button>`).join("");
+  $("#langPick").querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{
+    LANG=b.dataset.lang;
+    try{ localStorage.setItem(LANG_KEY,LANG); }catch(_){}
+    document.body.dataset.lang=LANG;
+    paintLang(); render();
+  });
+  $("#spkToggle").setAttribute("aria-pressed",String(SPEAK));
+}
+$("#spkToggle").onclick=()=>{
+  SPEAK=!SPEAK;
+  try{ localStorage.setItem(SPK_KEY,SPEAK?"1":"0"); }catch(_){}
+  paintLang(); render();
+};
+$("#openSet").onclick=()=>{ loadAiForm(); paintLang(); renderSecList(); paintSecurity(); applyRole(); show("set",true); };
 function renderSecList(){
   const b=$("#secList"); if(!b) return;
   if(b.contains(document.activeElement)) return;   // 唔好喺打緊字嗰陣重畫
@@ -2486,7 +2726,7 @@ function renderSecList(){
       <span class="n">${n}</span>
       <button class="mini" data-up ${i===0?"disabled":""} aria-label="向上 Up">↑</button>
       <button class="mini" data-down ${i===sections.length-1?"disabled":""} aria-label="向下 Down">↓</button>
-      <button class="mini del" data-del aria-label="刪除 Delete">✕</button>
+      ${isAdmin()?`<button class="mini del" data-del aria-label="刪除 Delete">✕</button>`:""}
     </div>`;
   }).join("");
   b.querySelectorAll(".srow").forEach(row=>{
@@ -2497,7 +2737,8 @@ function renderSecList(){
     row.querySelector("[data-store]").onchange=e=>upd({storage:e.target.value});
     row.querySelector("[data-up]").onclick=()=>moveSec(id,-1);
     row.querySelector("[data-down]").onclick=()=>moveSec(id,1);
-    row.querySelector("[data-del]").onclick=async()=>{
+    const delBtn=row.querySelector("[data-del]");
+    if(delBtn) delBtn.onclick=async()=>{
       const n=items.filter(x=>x.sectionId===id).length;
       if(n){ toast(`呢格仲有 ${n} 樣嘢，搬走咗先刪得`,`${n} items are still here — move them first`); return; }
       const ok=await ask({ tz:"刪咗呢個分區？", te:"Delete this area?", mz:"入面冇嘢，刪咗唔會影響任何食物。", me:"It is empty, so no food will be affected.", yz:"刪除", ye:"Delete", danger:true });
@@ -2588,8 +2829,8 @@ function boardText(){
   const grp=(t,arr,extra)=>arr.length ? t+"\n"+arr.map(e=>"• "+nm(e)+(extra?extra(e):"")).join("\n")+"\n\n" : "";
   let t="🍳 今日要做  TODAY'S JOBS — "+fmtZh(todayISO())+" / "+fmtEn(todayISO())+"\n\n";
   t+=grp("❌ 掉咗佢  THROW OUT", all.filter(e=>e.v.rank<=1), e=>e.v.d!==null&&e.v.d<0?`（過咗 ${-e.v.d} 日 / ${-e.v.d} days over）`:"");
-  t+=grp("🔥 今日要煮  COOK TODAY", all.filter(e=>e.v.key==="today"));
-  t+=grp("⏳ 三日內  WITHIN 3 DAYS", all.filter(e=>e.v.key==="soon"), e=>`（${e.v.d} 日 / ${e.v.d}d）`);
+  t+=grp("🔥 今日要清晒  USE UP TODAY", all.filter(e=>e.v.key==="today"));
+  t+=grp("⏳ 三日內要清  USE UP WITHIN 3 DAYS", all.filter(e=>e.v.key==="soon"), e=>`（${e.v.d} 日 / ${e.v.d}d）`);
   const p=board.plan||planPlan;
   if(p&&p.plan&&p.plan.length){
     t+="🍲 今餐煮咩  WHAT TO COOK\n"+p.plan.map((x,i)=>`${i+1}. ${x.zh||""}\n   ${x.en||""}`+((x.uses&&x.uses.length)?`\n   → ${x.uses.join(", ")}`:"")).join("\n")+"\n\n";
@@ -2636,6 +2877,20 @@ $("#signout").onclick=async()=>{
   if(ok && A) A.signOut(auth);
 };
 
+/* ═══ 角色上鎖 ═══════════════════════════════════════
+   淨係遮介面。真正把關嘅係 Firestore rules —— 就算有人改咗
+   呢度嘅 JS，寫入一樣會被伺服器拒絕。
+   ═══════════════════════════════════════════════════ */
+function applyRole(){
+  const w=canWrite(), a=isAdmin();
+  $("#fab").classList.toggle("hide", !w);
+  $("#secAdd").classList.toggle("hide", !a);
+  $("#secHead").classList.toggle("hide", !a);
+  $("#secList").classList.toggle("hide", !a);
+  const v=$("#viewerBar");
+  if(v) v.classList.toggle("hide", w);
+  $("#spkToggle").setAttribute("aria-pressed",String(SPEAK));
+}
 /* ═══ sheet 開關 ═════════════════════════════════════ */
 const SHEETS=["form","det","lib","again","set","plan","waste","dup"];
 function show(k,on){
