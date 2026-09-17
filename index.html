@@ -1,4 +1,41 @@
 <!doctype html>
+<!--
+╔══════════════════════════════════════════════════════════════════════╗
+║  改呢個檔案之前，一定要讀呢一段。                                      ║
+║  READ THIS BEFORE EDITING THIS FILE — THIS APPLIES TO AI ASSISTANTS. ║
+╠══════════════════════════════════════════════════════════════════════╣
+║                                                                      ║
+║  呢個 app 有三個語言模式：純中文 / 中英對照 / 純英文。                  ║
+║  純英文模式係俾一位只讀得英文嘅工人姐姐用嘅。佢要靠英文做事，           ║
+║  唔係靠英文估。                                                       ║
+║                                                                      ║
+║  規則一：任何會出現喺畫面嘅文字，都必須成對。                          ║
+║      HTML  →  <span class="z">中文</span><span class="e">English</span>
+║      JS    →  bi("中文", "English")                                   ║
+║      永遠唔好寫 esc("中文 English") 或者裸中文。                       ║
+║      CSS 靠 .z / .e 嚟隱藏，冇包住就隱藏唔到。                         ║
+║                                                                      ║
+║  規則二：英文要同中文講齊同一件事，唔准縮水。                          ║
+║      中文講咗三個步驟，英文就要有三個步驟。                            ║
+║      中文提到「撳兩下會變紅」，英文亦都要提到。                        ║
+║      簡短嘅英文 = 姐姐做少咗一步 = bug。                               ║
+║                                                                      ║
+║  規則三：placeholder 放唔到 HTML 標籤，                                ║
+║      所以要加入 PH_TEXT 呢個對照表，唔好寫死喺 markup 度。             ║
+║                                                                      ║
+║  規則四：任何 position:absolute / fixed 嘅 CSS class，                 ║
+║      一定要有祖先限定（例如 #cropBox .hd），唔好寫裸 class。           ║
+║      彈出面板唔好靠 HTML 排序決定層次，加入 SHEETS 就會自動排好。       ║
+║                                                                      ║
+║  規則五：食物安全嘅判斷永遠由 verdict() 呢個寫死嘅函數決定，            ║
+║      AI 唔准參與。AI 只負責認相、改名、諗餸。                          ║
+║      過期嘅嘢唔會傳去 AI，佢想開綠燈都冇機會。                         ║
+║                                                                      ║
+║  點檢查：⚙ 設定 → 版本同保安 → 「檢查中英對照」，                      ║
+║      會即場掃描畫面上所有文字。出面有 audit.mjs 做同一件事。           ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+-->
 <html lang="zh-HK">
 <head>
 <meta charset="utf-8">
@@ -170,6 +207,8 @@ main{padding:8px 16px calc(112px + var(--safe-b))}
 .actbar .left{flex:0 0 36%}
 .actbar .right{flex:1}
 .actbar .right .z{font-size:15px}
+#takeBtn.nag{background:var(--soon-bg);color:var(--soon);position:relative}
+#takeBtn.nag::after{content:"";position:absolute;top:6px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--soon)}
 
 #monthPick{position:fixed;inset:0;z-index:55;background:var(--card);display:flex;flex-direction:column;padding:calc(var(--safe-t) + 14px) 14px calc(14px + var(--safe-b))}
 #monthPick .bhd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
@@ -406,6 +445,17 @@ details.more .inner{padding-top:14px}
 .rev .side b{display:inline-block;min-width:54px;font-size:11px;color:var(--mute);font-weight:600}
 .rev .side.new{color:var(--brand);font-weight:600}
 .rev .raw{font-size:11px;color:var(--mute);margin-top:2px}
+.rev .frow{margin-bottom:9px}
+.rev .flab2{font-size:10.5px;color:var(--mute);font-weight:600;margin-bottom:4px}
+.rev .flab2 .e{font-size:9.5px}
+.rev .opt{display:block;width:100%;text-align:left;padding:7px 9px;border-radius:8px;
+  border:1px solid var(--rule);background:var(--card);font-size:12.5px;line-height:1.3;margin-bottom:4px;word-break:break-word}
+.rev .opt[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-tint);color:var(--brand);font-weight:600}
+.rev .tag2{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.04em;
+  background:var(--chill);color:var(--mute);padding:1px 6px;border-radius:4px;margin-right:6px}
+.rev .opt[aria-pressed="true"] .tag2{background:var(--brand);color:#fff}
+.rev .pickhint{font-size:11px;color:var(--mute);line-height:1.45;margin:0 0 9px}
+.rev .pickhint .e{font-size:10.5px}
 .rev .acts{display:flex;gap:8px;margin-top:10px}
 .rev .acts .btn{padding:9px 6px;font-size:12.5px}
 .rev .acts .btn .e{font-size:9px}
@@ -531,7 +581,7 @@ details.more .inner{padding-top:14px}
       <h1><span class="z">食物管理</span><span class="e">FOOD MANAGEMENT</span></h1>
       <button id="openSet" class="gear" aria-label="設定 Settings"><i>⚙</i><span><span class="z">設定</span><span class="e">Settings</span></span></button>
     </div>
-    <input id="search" type="text" placeholder="搵嘢食　Search food" autocomplete="off">
+    <input id="search" type="text" autocomplete="off">
     <div class="signals" id="signals"></div>
     <div class="chips" id="chips"></div>
   </header>
@@ -556,12 +606,12 @@ details.more .inner{padding-top:14px}
 
   <div class="ftop">
     <button type="button" id="shotBtn" class="shotpad" aria-label="影相 Take photo">
-      <img id="fPreview" alt="" class="hide"><span class="ic" id="shotIcon">📷</span><span class="re hide" id="shotRe">重影</span>
+      <img id="fPreview" alt="" class="hide"><span class="ic" id="shotIcon">📷</span><span class="re hide" id="shotRe"><span class="z">重影</span><span class="e">Retake</span></span>
     </button>
     <div class="right">
       <div class="flab" style="margin-bottom:2px"><span class="z">放喺邊</span><span class="e">Where it is kept</span></div>
       <div class="picker" id="fSections"></div>
-      <button type="button" id="pickLib">🖼 揀相簿嘅相　Choose from photos</button>
+      <button type="button" id="pickLib">🖼 <span class="z">揀相簿嘅相</span><span class="e">Choose from photos</span></button>
     </div>
   </div>
 
@@ -597,24 +647,24 @@ details.more .inner{padding-top:14px}
       </div>
       <div class="fld">
         <div class="flab"><span class="z">中文名</span><span class="e">Chinese name</span></div>
-        <input id="fZh" type="text" list="zhHints" placeholder="西蘭花" autocomplete="off">
+        <input id="fZh" type="text" list="zhHints" autocomplete="off">
       </div>
       <datalist id="zhHints"></datalist>
       <div class="fld">
         <div class="flab"><span class="z">英文名</span><span class="e">English name</span></div>
-        <input id="fEn" type="text" placeholder="Broccoli" autocomplete="off">
+        <input id="fEn" type="text" autocomplete="off">
       </div>
       <button type="button" id="fTranslate" class="btn plain" style="margin:-4px 0 16px">
         <span class="z">AI 譯返另一種語言</span><span class="e">Translate to the other language</span>
       </button>
-      <p class="hintline" style="margin:-10px 0 16px">AI 認錯字嘅話，自己改返啱嗰邊，另一邊清空，再撳呢個掣。<span class="e">If the AI got it wrong, fix the correct side by hand, clear the other, then tap this.</span></p>
+      <p class="hintline" style="margin:-10px 0 16px"><span class="z">AI 認錯字嘅話，自己改返啱嗰邊，另一邊清空，再撳呢個掣。</span><span class="e">If the AI got a name wrong: type the correct side yourself, clear the other side so it is empty, then tap this button to translate it back.</span></p>
       <div class="fld">
         <div class="flab"><span class="z">牌子</span><span class="e">Brand</span></div>
-        <input id="fBrand" type="text" placeholder="Kirkland" autocomplete="off">
+        <input id="fBrand" type="text" autocomplete="off">
       </div>
       <div class="fld">
         <div class="flab"><span class="z">備註</span><span class="e">Notes</span></div>
-        <textarea id="fNote" rows="1" placeholder="2 盒　2 boxes"></textarea>
+        <textarea id="fNote" rows="1" ></textarea>
       </div>
       <button type="button" id="fDelete" class="btn danger hide"><span class="z">刪除（入錯咗）</span><span class="e">Delete — entered by mistake</span></button>
     </div>
@@ -667,7 +717,7 @@ details.more .inner{padding-top:14px}
   <div id="dWho"></div>
   <button id="dAte" class="btn"><span class="z">食咗 / 用完</span><span class="e">Eaten or used up</span></button>
   <div class="brow"><button id="dToss" class="btn danger"><span class="z">掉咗佢（過咗期）</span><span class="e">Thrown out — expired</span></button></div>
-  <p class="hintline hide" id="dNoEdit" style="margin:10px 0 0">呢件嘢係第二個人入嘅，你改唔到詳情。但你照樣可以撳「食咗」或者「掉咗佢」。<span class="e">Someone else logged this, so you cannot edit the details — but you can still mark it eaten or thrown out.</span></p>
+  <p class="hintline hide" id="dNoEdit" style="margin:10px 0 0"><span class="z">呢件嘢係第二個人入嘅，你改唔到詳情。但你照樣可以撳「食咗」或者「掉咗佢」。</span><span class="e">Someone else in the household logged this item, so you cannot change its details. You can still mark it as eaten or as thrown out.</span></p>
   <div class="brow"><button id="dSwap" class="btn ghost"><span class="z">換新一件（同款，新日期）</span><span class="e">Replace with a new pack of the same thing</span></button></div>
   <div class="brow"><button id="dEdit" class="btn ghost"><span class="z">改資料</span><span class="e">Edit details</span></button></div>
 </section>
@@ -680,7 +730,7 @@ details.more .inner{padding-top:14px}
     <h2><span class="z">買開嘅嘢</span><span class="e">Things you buy again</span></h2>
     <button class="x" data-close="lib" aria-label="閂 Close">✕</button>
   </div>
-  <input id="libSearch" type="text" placeholder="搵返樣嘢　Search saved items" autocomplete="off">
+  <input id="libSearch" type="text" autocomplete="off">
   <div class="quick" id="libSort" style="margin:10px 0 0"></div>
   <p class="hintline" id="libHint" style="margin:10px 0 16px"></p>
   <div id="libGrid"></div>
@@ -702,7 +752,7 @@ details.more .inner{padding-top:14px}
     </div>
   </div>
   <div class="quick" id="agQuick"></div>
-  <p class="hintline hide" id="agNote" style="margin-top:12px">舊嗰件會當「食咗」入咗處理記錄（還原得返），新嗰件會用返同一張相同個名，但**入貨日重新由今日計** —— 急凍嘅品質期先至計得啱。<span class="e">The old one is filed under History as eaten (restorable). The new one reuses the same photo and name but its logging date restarts today, so the freezer quality window stays correct.</span></p>
+  <p class="hintline hide" id="agNote" style="margin-top:12px"><span class="z">舊嗰件會當「食咗」入咗處理記錄（還原得返），新嗰件會用返同一張相同個名，但<b>入貨日重新由今日計</b> —— 急凍嘅品質期先至計得啱。</span><span class="e">The old pack is filed under History as eaten, and you can restore it if you tap this by mistake. The new pack reuses the same photo, name and brand, but <b>its logging date starts again from today</b>, which keeps the freezer quality window correct.</span></p>
   <div class="fld" style="margin-top:18px">
     <div class="flab"><span class="z">放喺邊</span><span class="e">Where it is kept</span></div>
     <div class="picker" id="agSections"></div>
@@ -718,7 +768,7 @@ details.more .inner{padding-top:14px}
     <h2><span class="z">AI 有嘢想改</span><span class="e">AI suggestions</span></h2>
     <button class="x" data-close="rev" aria-label="閂 Close">✕</button>
   </div>
-  <p class="hintline" style="margin:-6px 0 14px"><b>撳張相可以全屏放大</b>睇清楚。AI 唔會自己改你啲嘢。你揀完之後佢會記低，下次再掃都唔會再問同一條 —— 除非佢俾到一個新答案。<span class="e">The AI never overwrites your data. Once you decide, it remembers and will not ask again unless it comes back with a different answer.</span></p>
+  <p class="hintline" style="margin:-6px 0 14px"><span class="z"><b>撳張相可以全屏放大</b>睇清楚。AI 唔會自己改你啲嘢。你揀完之後佢會記低，下次再掃都唔會再問同一條 —— 除非佢俾到一個新答案。</span><span class="e"><b>Tap a photo to see it full screen.</b> The AI never changes your data by itself. Once you decide, it remembers your answer and will not ask the same question again — unless it comes back with a different answer next time.</span></p>
   <div id="revBody"></div>
 </section>
 
@@ -730,13 +780,13 @@ details.more .inner{padding-top:14px}
     <h2 id="takeTitle"><span class="z">盤點</span><span class="e">Stocktake</span></h2>
     <button class="x" data-close="take" aria-label="閂 Close">✕</button>
   </div>
-  <p class="hintline" style="margin:-6px 0 12px">企喺雪櫃前面，見到樣嘢仲喺度就撳一下（變綠 ✓）；搵唔到就撳兩下（變紅 ✗）。唔記得就唔好撳，留空最安全。<b>撳格仔下面嗰個日期</b>，就可以核對返實物上面嘅日期；如果係新買嘅同款嘢，即場換新一件。<span class="e">Tap once if it is still there, twice if it is gone. Leave anything you are unsure about untouched.</span></p>
+  <p class="hintline" style="margin:-6px 0 12px"><span class="z">企喺雪櫃前面，見到樣嘢仲喺度就撳一下（變綠 ✓）；搵唔到就撳兩下（變紅 ✗）。唔記得就唔好撳，留空最安全。<b>撳格仔下面嗰個日期</b>，就可以核對返實物上面嘅日期；如果係新買嘅同款嘢，即場換新一件。做到一半可以閂咗佢，下次開返會問你要唔要繼續。</span><span class="e">Stand at the fridge and go through the pictures. <b>Tap a picture once</b> if that food is still there — it turns green with a ✓. <b>Tap it twice</b> if you cannot find it — it turns red with a ✗. If you are not sure, leave it alone: anything untouched is kept exactly as it is. <b>Tap the date underneath a picture</b> to check it against the date printed on the real package. If it is a new pack of the same food, that button replaces it with a new one for you. You can close this halfway — next time it will offer to carry on where you stopped.</span></p>
   <div class="tsum" id="takeSum"></div>
   <div id="takeBody"></div>
 </section>
 <div id="takeBar" class="actbar hide">
-  <button id="takeAdd" class="btn plain left"><span class="z">＋ 入貨</span><span class="e">Add food</span></button>
-  <button id="takeDone" class="btn right"><span class="z">完成盤點</span><span class="e">Finish stocktake</span></button>
+  <button id="takeDone" class="btn plain left"><span class="z">完成盤點</span><span class="e">Finish</span></button>
+  <button id="takeAdd" class="btn right"><span class="z">＋ 入貨（見到新嘢就影）</span><span class="e">＋ Add food you have just found</span></button>
 </div>
 
 <!-- 可能重複咗 -->
@@ -747,7 +797,7 @@ details.more .inner{padding-top:14px}
     <h2><span class="z">可能重複咗</span><span class="e">Possible duplicates</span></h2>
     <button class="x" data-close="dup" aria-label="閂 Close">✕</button>
   </div>
-  <p class="hintline" style="margin:-6px 0 14px"><b>撳張相可以全屏放大</b>，睇清楚價錢／重量貼紙上面嘅數字 —— 兩底貨嘅貼紙一定唔同，呢個先至分得開。名一樣、到期日差三日之內就會攞出嚟問你，睇埋邊個影、幾時影，通常一眼就知。<span class="e">Same name and expiry dates within three days. Look at who logged each and when — that usually settles it.</span></p>
+  <p class="hintline" style="margin:-6px 0 14px"><span class="z"><b>撳張相可以全屏放大</b>，睇清楚價錢／重量貼紙上面嘅數字 —— 兩底貨嘅貼紙一定唔同，呢個先至分得開。名一樣、到期日差三日之內就會攞出嚟問你，睇埋邊個影、幾時影，通常一眼就知。</span><span class="e"><b>Tap a photo to see it full screen</b> and read the numbers on the price or weight sticker — two separate packs always carry different stickers, and that is what really tells them apart. Items are listed here when they share a name and their expiry dates are within three days of each other. Also look at who logged each one and when; that usually settles it at a glance.</span></p>
   <div id="dupBody"></div>
 </section>
 
@@ -760,7 +810,7 @@ details.more .inner{padding-top:14px}
     <button class="x" data-close="waste" aria-label="閂 Close">✕</button>
   </div>
   <div class="quick" id="wasteFilter" style="margin:-4px 0 12px"></div>
-  <p class="hintline" style="margin:0 0 14px">撳錯咗掣？撳「還原」就會原封不動放返落清單。呢度**冇記邊個掉**，亦都唔會記邊個買。撳「掉咗佢」嗰個人係做緊家務，唔係做錯嘢。要睇嘅係買嘢嘅規律，唔係人。<span class="e">This record does not name who binned it or who bought it. Whoever taps the button is doing the chore, not the wrong thing. What matters is the buying pattern.</span></p>
+  <p class="hintline" style="margin:0 0 14px"><span class="z">撳錯咗掣？撳「還原」就會原封不動放返落清單。呢度<b>冇記邊個掉</b>，亦都唔會記邊個買。撳「掉咗佢」嗰個人係做緊家務，唔係做錯嘢。要睇嘅係買嘢嘅規律，唔係人。</span><span class="e">Tapped the wrong button? Tap Restore and it goes back on the list exactly as it was. This record <b>does not say who binned it</b>, and it does not say who bought it either. Whoever taps Thrown out is doing a chore, not doing something wrong. What we are looking at here is the buying pattern, not the person.</span></p>
   <div id="wasteBody"></div>
 </section>
 
@@ -774,10 +824,10 @@ details.more .inner{padding-top:14px}
   </div>
   <div id="planBody"></div>
   <div class="ghead" style="margin-top:24px"><span class="z">俾全家睇</span><span class="e">Share with the household</span></div>
-  <p class="hintline">留言同 AI 諗嘅餸會即時出現喺每一部電話嘅主畫面頂部 —— 姐姐同婆婆開個 app 就見到，唔使你逐個講。<span class="e">The note and the dish plan appear at the top of everyone's screen instantly.</span></p>
+  <p class="hintline"><span class="z">留言同 AI 諗嘅餸會即時出現喺每一部電話嘅主畫面頂部 —— 姐姐同婆婆開個 app 就見到，唔使你逐個講。</span><span class="e">Your note and the dish ideas appear at the top of the main screen on every phone in the household, straight away. Everyone sees them the moment they open the app, so you do not have to tell each person yourself.</span></p>
   <div class="fld">
     <div class="flab"><span class="z">留言（例如：今晚解凍梅頭）</span><span class="e">Note for everyone — e.g. defrost the pork collar tonight</span></div>
-    <textarea id="boardNote" rows="2" placeholder="今晚解凍梅頭　Defrost the pork collar tonight"></textarea>
+    <textarea id="boardNote" rows="2" ></textarea>
   </div>
   <button id="boardSave" class="btn ghost"><span class="z">出街，全家即刻見到</span><span class="e">Post it — everyone sees it now</span></button>
   <div class="brow"><button id="boardCopy" class="btn plain"><span class="z">抄做文字（WhatsApp 用）</span><span class="e">Copy as text for WhatsApp</span></button></div>
@@ -795,16 +845,16 @@ details.more .inner{padding-top:14px}
 
   <div class="ghead"><span class="z">語言</span><span class="e">Language</span></div>
   <div class="picker" id="langPick"></div>
-  <p class="hintline" style="margin-top:10px">揀「English」就會隱藏晒中文，淨係顯示英文食物名同牌子。冇英文名嘅，會照出中文，總好過一片空白。<span class="e">Choosing English hides all Chinese. Items with no English name still show their Chinese name rather than nothing.</span></p>
+  <p class="hintline" style="margin-top:10px"><span class="z">揀「English」就會隱藏晒中文，淨係顯示英文食物名同牌子。冇英文名嘅，會照出中文，總好過一片空白。</span><span class="e">Choosing English hides every piece of Chinese in the app and shows only the English food names and brands. If an item has no English name yet, its Chinese name is shown instead of leaving a blank.</span></p>
   <button id="spkToggle" class="pk" style="width:100%;margin-top:6px"><span class="z">🔊 每件食物旁邊顯示讀音掣</span><span class="e">Show a read-aloud button beside each item</span></button>
-  <p class="hintline" style="margin-top:8px">用電話內置語音，免費、唔使上網。中文會揀廣東話，英文揀英式或美式，兩邊都優先女聲。<span class="e">Uses the phone's built-in voice — free and offline. Female voices are preferred.</span></p>
+  <p class="hintline" style="margin-top:8px"><span class="z">用電話內置語音，免費、唔使上網。中文會揀廣東話，英文揀英式或美式，兩邊都優先女聲。</span><span class="e">This uses the voice already built into your phone, so it is free and works without an internet connection. Chinese is read in Cantonese, English in a British or American voice, and a female voice is chosen where one is available.</span></p>
 
   <div class="ghead" id="secHead"><span class="z">分區</span><span class="e">Storage areas</span></div>
   <div id="secList"></div>
   <button id="secAdd" class="btn ghost" style="margin-top:14px"><span class="z">加一個分區</span><span class="e">Add an area</span></button>
 
   <div class="ghead"><span class="z">睇圖 AI</span><span class="e">Photo-reading AI</span></div>
-  <p class="hintline">填好之後，主畫面有相但未有名嘅嘢就會出現一個掣，撳一下幫你一次過填晒中英文名同牌子。<span class="e">Once set up, a button appears on the main screen to name every photo at once.</span></p>
+  <p class="hintline"><span class="z">填好之後，主畫面有相但未有名嘅嘢就會出現一個掣，撳一下幫你一次過填晒中英文名同牌子。</span><span class="e">Once these three boxes are filled in, a button appears on the main screen whenever there are photos without names. Tapping it fills in the Chinese name, the English name and the brand for all of them at once.</span></p>
   <div class="fld">
     <div class="flab"><span class="z">Base URL</span><span class="e">API endpoint</span></div>
     <input id="aiUrl" type="url" placeholder="https://open.bigmodel.cn/api/paas/v4" autocomplete="off" spellcheck="false">
@@ -821,13 +871,13 @@ details.more .inner{padding-top:14px}
   <div class="brow"><button id="aiTest" class="btn plain"><span class="z">試一次</span><span class="e">Test the connection</span></button></div>
   <div class="brow"><button id="aiRedo" class="btn plain"><span class="z">叫 AI 全部重新認過</span><span class="e">Make the AI redo every photo from scratch</span></button></div>
   <div class="brow"><button id="aiClear" class="btn danger hide"><span class="z">清除呢部電話嘅 API Key</span><span class="e">Clear the API key on this phone</span></button></div>
-  <p class="hintline" style="margin-top:14px">只需要喺**一部**電話設定。所有電話共用同一份食物清單，所以其他人影嘅相，一樣會喺你部機出現喺「AI 幫我填」入面，撳一次就全部改晒。<span class="e">Set this up on ONE phone only. Everyone shares one food list, so photos taken on other phones also get named when you tap the button here.</span></p>
+  <p class="hintline" style="margin-top:14px"><span class="z">只需要喺<b>一部</b>電話設定。所有電話共用同一份食物清單，所以其他人影嘅相，一樣會喺你部機出現喺「AI 幫我填」入面，撳一次就全部改晒。</span><span class="e">You only need to set this up on <b>one</b> phone. Everyone shares the same food list, so photos taken on other phones also show up here waiting to be named — one tap on this phone names all of them.</span></p>
 
   <div class="ghead"><span class="z">匯出資料</span><span class="e">Export your data</span></div>
-  <p class="hintline">匯出一份唔含相片嘅清單（食物、日期、分區、浪費記錄），可以拎去俾人分析。<span class="e">Exports a photo-free summary — food, dates, areas, and what got thrown out.</span></p>
+  <p class="hintline"><span class="z">匯出一份唔含相片嘅清單（食物、日期、分區、浪費記錄），可以拎去俾人分析。</span><span class="e">Exports a summary with no photos in it — the food, the dates, the storage areas and what was thrown out — so you can send it to someone to look through.</span></p>
   <div class="fld">
     <div class="flab"><span class="z">屋企情況（會寫入匯出檔）</span><span class="e">About your household — included in the export</span></div>
-    <textarea id="household" rows="3" placeholder="例如：爸爸、媽媽、6 歲女、2 歲半女、工人姐姐、婆婆"></textarea>
+    <textarea id="household" rows="3" ></textarea>
   </div>
   <button id="expCopy" class="btn ghost"><span class="z">抄落剪貼簿</span><span class="e">Copy to clipboard</span></button>
   <div class="brow"><button id="expFile" class="btn plain"><span class="z">下載做檔案</span><span class="e">Download as a file</span></button></div>
@@ -835,6 +885,8 @@ details.more .inner{padding-top:14px}
   <div class="ghead"><span class="z">版本同保安</span><span class="e">Version &amp; security</span></div>
   <div class="who" id="verBox"></div>
   <div class="who" id="ruleBox"></div>
+  <div class="who" id="langBox"></div>
+  <button id="langCheckBtn" class="btn plain" style="margin-bottom:9px"><span class="z">檢查中英對照</span><span class="e">Check Chinese / English parity</span></button>
   <button id="ruleCheck" class="btn plain"><span class="z">再檢查一次 rules</span><span class="e">Check the rules again</span></button>
 
   <div class="ghead"><span class="z">帳戶</span><span class="e">Account</span></div>
@@ -864,7 +916,7 @@ details.more .inner{padding-top:14px}
       </div>
     </div>
   </div>
-  <p id="cropHint">拉四條邊或者四個角，剪走唔要嘅位<span class="e">Drag the edges or corners to cut away what you don't need</span></p>
+  <p id="cropHint"><span class="z">拉四條邊或者四個角，剪走唔要嘅位</span><span class="e">Drag any of the four edges or four corners inwards to cut away the parts you do not need</span></p>
 </div>
 
 <div id="lightbox" class="hide">
@@ -874,7 +926,7 @@ details.more .inner{padding-top:14px}
     <button id="lbClose" class="tbtn"><span class="z">閂</span><span class="e">Close</span></button>
   </div>
   <div class="lbwrap"><img id="lbImg" alt=""></div>
-  <p class="lbhint">兩隻手指可以再放大　Pinch to zoom further</p>
+  <p class="lbhint"><span class="z">兩隻手指可以再放大</span><span class="e">Pinch with two fingers to zoom in further</span></p>
 </div>
 
 <div id="askScrim" class="hide"><div id="askBox" role="alertdialog" aria-modal="true">
@@ -897,7 +949,7 @@ details.more .inner{padding-top:14px}
 /* 版本號用日期：yyyy-mm-dd 再加一個大楷字母。
    同一日出多過一次，就 A → B → C 咁行落去。
    格式排得好，所以直接字串比大細就已經係啱嘅時序。 */
-const APP_VERSION = "2026-09-17K";
+const APP_VERSION = "2026-09-17L";
 
 /* ═══════════════════════════════════════════════════════
    FIRESTORE SECURITY RULES —— 呢度係一份副本，方便日後查閱
@@ -977,6 +1029,7 @@ const THUMB_EDGE = 360;
 const FULL_CAP   = 880000;
 const THUMB_CAP  = 110000;
 const T_SOON = 3, T_WATCH = 7;
+const STOCK_NAG = 3;   // 隔幾多日冇盤點就開始提醒。3 日 = 同「3日內」呢個最短警示窗一致
 const AI_DEFAULT_URL   = "https://open.bigmodel.cn/api/paas/v4";
 const AI_DEFAULT_MODEL = "glm-5v-turbo";
 const DEFAULT_SECTIONS = [
@@ -994,6 +1047,26 @@ try{ LANG=localStorage.getItem(LANG_KEY)||"both"; }catch(_){}
 try{ SPEAK=localStorage.getItem(SPK_KEY)!=="0"; }catch(_){}
 document.body.dataset.lang=LANG;
 const LANGS=[["中文","Chinese","zh"],["中英對照","Both","both"],["English","English","en"]];
+/* placeholder 放唔到 HTML 標籤，所以要跟住語言由呢度寫入去，
+   唔係嘅話純英文模式一樣會見到中文。 */
+const PH_TEXT={
+  search:    ["搵嘢食","Search food"],
+  fZh:       ["西蘭花",""],
+  fEn:       ["Broccoli","Broccoli"],
+  fBrand:    ["Kirkland","Kirkland"],
+  fNote:     ["2 盒","2 boxes"],
+  libSearch: ["搵返樣嘢","Search saved items"],
+  boardNote: ["今晚解凍梅頭","Defrost the pork collar tonight"],
+  household: ["例如：爸爸、媽媽、6 歲女、2 歲半女、工人姐姐、婆婆",
+              "e.g. dad, mum, 6-year-old, 2-year-old, helper, grandmother"]
+};
+function paintPH(){
+  for(const id in PH_TEXT){
+    const el=document.getElementById(id); if(!el) continue;
+    const [z,e]=PH_TEXT[id];
+    el.placeholder = LANG==="zh" ? z : LANG==="en" ? e : (z===e? z : (z&&e? z+"　"+e : z||e));
+  }
+}
 
 /* ═══ 權限 ═══════════════════════════════════════════ */
 const lc = e => String(e||"").trim().toLowerCase();
@@ -1062,6 +1135,7 @@ function ask(o){
     $("#askM").innerHTML = bi(o.mz, o.me);
     const yes=$("#askYes");
     yes.innerHTML = bi(o.yz||"確定", o.ye||"Confirm");
+    $("#askNo").innerHTML = bi(o.noZ||"取消", o.noE||"Cancel");
     yes.className = "btn" + (o.danger?" danger":"");
     $("#askScrim").classList.remove("hide");
     const done=v=>{ $("#askScrim").classList.add("hide"); yes.onclick=null; $("#askNo").onclick=null; res(v); };
@@ -1500,7 +1574,7 @@ if(!firebaseConfig.apiKey || firebaseConfig.apiKey.indexOf("PASTE")===0){
   $("#gateMsg").innerHTML=bi("仲未駁到 Firebase。喺 index.html 搵 firebaseConfig，貼返你自己個 project 嘅資料入去。","Firebase is not connected yet. Find firebaseConfig in index.html and paste your own project details in.");
   $("#signin").classList.add("hide");
   $("#gateCfg").classList.remove("hide");
-  $("#gateCfg").textContent="Firebase Console → Project settings → Your apps\n→ Config → 抄成段 firebaseConfig 貼入 index.html";
+  $("#gateCfg").textContent="Firebase Console -> Project settings -> Your apps -> Config\nCopy the whole firebaseConfig block into index.html";
 }else boot();
 
 async function boot(){
@@ -1823,6 +1897,34 @@ function paintSecurity(){
   const g=$("#openSet");
   if(g) g.classList.toggle("alert", rulesState==="open"||outdated());
 }
+/* 即場掃描畫面上所有文字，搵有冇中文冇配英文、或者裸中文冇包 .z。
+   食物名、備註呢啲係用家自己打嘅資料，唔算。 */
+const USERDATA=".rnote,#dNote,.memo,input,textarea,#gateCfg,#lbImg,script,style";
+function langCheck(){
+  const bad=[];
+  document.querySelectorAll(".z").forEach(z=>{
+    const n=z.nextElementSibling;
+    if(!n||!n.classList.contains("e")) bad.push("冇配英文：「"+(z.textContent||"").trim().slice(0,30)+"」");
+  });
+  const CJK=/[\u3400-\u9FFF]/;
+  const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  let n;
+  while((n=w.nextNode())){
+    const t=(n.nodeValue||"").trim();
+    if(!t||!CJK.test(t)) continue;
+    const pe=n.parentElement;
+    if(!pe||pe.closest(".z")||pe.closest(USERDATA)) continue;
+    if(pe.closest(".hide")) continue;
+    bad.push("裸中文：「"+t.slice(0,30)+"」");
+  }
+  return [...new Set(bad)];
+}
+$("#langCheckBtn").onclick=()=>{
+  const bad=langCheck(), b=$("#langBox");
+  b.className="who "+(bad.length?"bad":"good");
+  b.innerHTML=`<div class="ttl">${bad.length?bi("⚠ 搵到 "+bad.length+" 個位冇對齊","⚠ "+bad.length+" items are not paired up"):bi("✓ 畫面上所有文字都有中英對照","✓ Every visible string has both languages")}</div>`
+    + (bad.length?`<div style="margin-top:6px;font-size:11px;line-height:1.5">${bad.slice(0,8).map(esc).join("<br>")}${bad.length>8?"<br>…":""}</div>`:"");
+};
 $("#ruleCheck").onclick=()=>{ rulesState="pending"; paintSecurity(); checkRules(); };
 
 /* ═══ 讀資料嘅小工具 ══════════════════════════════════ */
@@ -1917,7 +2019,7 @@ function countHTML(d,id){
   return `<div${i} class="count ${d<=T_SOON?"soon":""}"><span class="cnum">${d}</span><span class="cunit">${bi("日","days")}</span></div>`;
 }
 function render(){
-  renderSignals();
+  renderSignals(); paintNag();
   /* 兩籮嘢分開處理：乜都冇名而有相 → 睇相認；得一邊有名 → 純翻譯 */
   const needEye = [...items.filter(i=>i.thumb&&!hasName(i)).map(o=>({o,col:"items"})),
                    ...library.filter(l=>l.thumb&&!hasName(l)).map(o=>({o,col:"library"}))];
@@ -2003,7 +2105,7 @@ function jobsHTML(){
   h+=line("warn","今日要清","Use up today",today);
   h+=line("","三日內要清","Use up within 3 days",soon);
   if(plan && plan.plan && plan.plan.length){
-    h+=`<div class="dishes"><b>${esc("今餐煮咩　WHAT TO COOK")}</b>`
+    h+=`<div class="dishes"><b>${bi("今餐煮咩","WHAT TO COOK")}</b>`
       + plan.plan.map((x,i)=>`<div>${i+1}. ${esc(x.zh||"")}<span class="e" style="display:block;font-size:11.5px;opacity:.7">${esc(x.en||"")}</span></div>`).join("")
       + `</div>`;
   }
@@ -2125,6 +2227,7 @@ function paintDateType(){
 }
 $("#fOpened").onclick=()=>{ formOpened=!formOpened; paintDateType(); };
 paintDateType();
+paintPH();
 
 /* 保質期長到唔似安全日期就自動當品質日期，但照樣話你知 */
 function paintFrozen(){
@@ -2714,7 +2817,7 @@ async function zoomPhoto(id){
   const g=$("#lbImg");
   g.classList.remove("zoom");
   g.src=o.thumb||"";
-  $("#lbZoom").querySelector(".z").textContent="🔍 放大";
+  $("#lbZoom").innerHTML=bi("🔍 放大","Zoom in");
   $("#lightbox").classList.remove("hide");
   document.body.style.overflow="hidden";
   try{
@@ -2730,8 +2833,7 @@ function closeZoom(){
 $("#lbClose").onclick=closeZoom;
 $("#lbZoom").onclick=()=>{
   const g=$("#lbImg"), on=g.classList.toggle("zoom");
-  $("#lbZoom").querySelector(".z").textContent = on?"🔍 縮細":"🔍 放大";
-  $("#lbZoom").querySelector(".e").textContent = on?"Zoom out":"Zoom in";
+  $("#lbZoom").innerHTML = on?bi("🔍 縮細","Zoom out"):bi("🔍 放大","Zoom in");
 };
 $("#lbImg").onclick=()=>$("#lbZoom").click();
 document.addEventListener("click",e=>{
@@ -2742,7 +2844,26 @@ document.addEventListener("click",e=>{
 },true);
 
 /* ═══ AI 建議面板 ═══════════════════════════════════ */
-function openRev(){ renderRev(); show("rev",true); }
+let revPick={};
+function openRev(){ revPick={}; renderRev(); show("rev",true); }
+/* 逐格揀完之後儲存。全部揀返「而家」就等於拒絕，會記入 nameNo 唔再問。 */
+async function saveMix(id){
+  const o=items.find(x=>x.id===id); if(!o) return;
+  const pk=revPick[id]||{zh:"old",en:"old",brand:"old"};
+  if(pk.zh==="old"&&pk.en==="old"&&pk.brand==="old") return decideName(id,false);
+  const patch={
+    zh: pk.zh==="new" ? (o.aiZh||"") : nameZh(o),
+    en: pk.en==="new" ? (o.aiEn||"") : nameEn(o),
+    brand: pk.brand==="new" ? (o.aiBrand||"") : brandOf(o),
+    aiZh:"", aiEn:"", aiBrand:"", updatedAt:F.serverTimestamp()
+  };
+  /* 被你丟低嗰個組合都記低，下次 AI 再提議同一個就唔會再問 */
+  const no=(o.nameNo||[]).slice(), sig=nameSig(o.aiZh,o.aiEn,o.aiBrand);
+  if(no.indexOf(sig)<0) no.push(sig);
+  patch.nameNo=no.slice(-12);
+  try{ await F.updateDoc(F.doc(db,"items",id),patch); toast("儲存咗你揀嘅組合","Saved your combination"); }
+  catch(e){ toast("儲存唔到："+(e.code||e.message),"Could not save"); }
+}
 function renderRev(){
   const b=$("#revBody"); if(!b) return;
   const ps=pendingAI();
@@ -2755,28 +2876,45 @@ function renderRev(){
     const o=e.o;
     const img=o.thumb?`<img src="${o.thumb}" alt="" data-zoom="${esc(o.id)}">`:`<div class="ph">🍽</div>`;
     if(e.kind==="name"){
-      const oldN=nameLines(o), nn=nameLines({zh:o.aiZh,en:o.aiEn,brand:o.aiBrand});
+      const pk=revPick[o.id]||(revPick[o.id]={zh:"old",en:"old",brand:"old"});
+      const row=(key,labZh,labEn,oldV,newV)=>{
+        if(!oldV && !newV) return "";
+        return `<div class="frow">
+          <div class="flab2">${bi(labZh,labEn)}</div>
+          <button class="opt" data-pick="${esc(o.id)}|${key}|old" aria-pressed="${pk[key]==="old"}">
+            <span class="tag2">${bi("而家","Now")}</span>${esc(oldV||"—")}</button>
+          <button class="opt" data-pick="${esc(o.id)}|${key}|new" aria-pressed="${pk[key]==="new"}">
+            <span class="tag2">${bi("AI","AI")}</span>${esc(newV||"—")}</button>
+        </div>`;
+      };
       return `<div class="rev">${img}<div class="body">
-        <div class="kind">${esc("AI 想改個名　RENAME")}</div>
-        <div class="side"><b>${esc("而家")}</b>${esc(oldN?oldN.top:"未命名")}${oldN&&oldN.bot?"　"+esc(oldN.bot):""}</div>
-        <div class="side new"><b>${esc("AI 建議")}</b>${esc(nn?nn.top:"—")}${nn&&nn.bot?"　"+esc(nn.bot):""}</div>
+        <div class="kind">${bi("AI 想改個名","AI SUGGESTS A NEW NAME")}</div>
+        <p class="pickhint">${bi("逐行揀：中文用返舊嗰個、英文用 AI 嗰個，都得。","Choose line by line — you can keep the Chinese you have and take the AI's English, or the other way round.")}</p>
+        ${row("zh","中文名","Chinese name",nameZh(o),o.aiZh)}
+        ${row("en","英文名","English name",nameEn(o),o.aiEn)}
+        ${row("brand","牌子","Brand",brandOf(o),o.aiBrand)}
         <div class="acts">
-          <button class="btn plain" data-nk="${esc(o.id)}">${bi("用返而家嗰個","Keep mine")}</button>
-          <button class="btn" data-nt="${esc(o.id)}">${bi("用 AI 嗰個","Use the AI's")}</button>
+          <button class="btn plain" data-nk="${esc(o.id)}">${bi("全部用返而家嗰個","Keep all of mine")}</button>
+          <button class="btn" data-nsave="${esc(o.id)}">${bi("就咁儲存","Save this combination")}</button>
         </div></div></div>`;
     }
     return `<div class="rev">${img}<div class="body">
-      <div class="kind">${esc("到期日唔夾　DATE MISMATCH")}</div>
-      <div class="side"><b>${esc("你入嘅")}</b>${esc(fmtZh(o.expiry))}　${esc(fmtEn(o.expiry))}</div>
-      <div class="side new"><b>${esc("AI 讀到")}</b>${esc(fmtZh(o.aiExpiry))}　${esc(fmtEn(o.aiExpiry))}</div>
+      <div class="kind">${bi("到期日唔夾","THE DATES DO NOT MATCH")}</div>
+      <div class="side"><b>${bi("你入嘅","Entered")}</b>${esc(fmtZh(o.expiry))}　${esc(fmtEn(o.expiry))}</div>
+      <div class="side new"><b>${bi("AI 讀到","AI read")}</b>${esc(fmtZh(o.aiExpiry))}　${esc(fmtEn(o.aiExpiry))}</div>
       ${o.aiRaw?`<div class="raw">${bi("相入面印住："+o.aiRaw,"Printed on the pack: "+o.aiRaw)}</div>`:""}
       <div class="acts">
         <button class="btn plain" data-dk="${esc(o.id)}">${bi("我入嘅啱","Mine is right")}</button>
         <button class="btn" data-dt2="${esc(o.id)}">${bi("用 AI 嗰個","Use the AI's")}</button>
       </div></div></div>`;
   }).join("");
+  b.querySelectorAll("[data-pick]").forEach(x=>x.onclick=()=>{
+    const [id,key,which]=x.dataset.pick.split("|");
+    (revPick[id]||(revPick[id]={zh:"old",en:"old",brand:"old"}))[key]=which;
+    renderRev();
+  });
   b.querySelectorAll("[data-nk]").forEach(x=>x.onclick=()=>decideName(x.dataset.nk,false));
-  b.querySelectorAll("[data-nt]").forEach(x=>x.onclick=()=>decideName(x.dataset.nt,true));
+  b.querySelectorAll("[data-nsave]").forEach(x=>x.onclick=()=>saveMix(x.dataset.nsave));
   b.querySelectorAll("[data-dk]").forEach(x=>x.onclick=()=>decideDate(x.dataset.dk,false));
   b.querySelectorAll("[data-dt2]").forEach(x=>x.onclick=()=>decideDate(x.dataset.dt2,true));
 }
@@ -2785,15 +2923,47 @@ function renderRev(){
    企喺雪櫃前面行一次。撳一下 = 仲喺度，撳兩下 = 冇咗。
    唔記得就唔好撳 —— 留空嘅一律當冇事發生，唔會亂咁刪。
    ═══════════════════════════════════════════════════ */
+/* 盤點做到一半可以閂咗佢。撳過嘅剔存喺呢部電話度，
+   下次開返同一格會問你要唔要接住做。 */
 let takeMark={};
+const TK_KEY="fm.take";
+function saveTake(){
+  try{
+    const has=Object.keys(takeMark).length;
+    if(!has) localStorage.removeItem(TK_KEY);
+    else localStorage.setItem(TK_KEY, JSON.stringify({sec:filterSection, at:Date.now(), marks:takeMark}));
+  }catch(_){}
+}
+function loadTake(){
+  try{
+    const r=JSON.parse(localStorage.getItem(TK_KEY)||"null");
+    if(!r || r.sec!==filterSection) return null;
+    if(Date.now()-r.at > 36*3600*1000) return null;   // 超過 36 個鐘就當上次做完咗
+    return r;
+  }catch(_){ return null; }
+}
 function takeList(){
   const r = filterSection==="all" ? items : items.filter(i=>i.sectionId===filterSection);
   return r.slice().sort((a,b)=>{ const x=daysLeft(a.expiry), y=daysLeft(b.expiry);
     if(x===null&&y===null) return 0; if(x===null) return 1; if(y===null) return -1; return x-y; });
 }
-function openTake(){
+async function openTake(){
   if(!canWrite()){ toast("你冇權改嘢","You have view-only access"); return; }
-  takeMark={}; renderTake(); show("take",true);
+  takeMark={};
+  const saved=loadTake();
+  if(saved){
+    const n=Object.keys(saved.marks).length;
+    const mins=Math.round((Date.now()-saved.at)/60000);
+    const ago = mins<60 ? `${mins} 分鐘前` : `${Math.round(mins/60)} 個鐘前`;
+    const agoEn = mins<60 ? `${mins} minutes ago` : `${Math.round(mins/60)} hours ago`;
+    const go=await ask({ tz:"上次盤點做咗一半", te:"You left a stocktake half done",
+      mz:`${ago}撳咗 ${n} 格。要唔要接住做落去？撳「重新開始」就會清走嗰 ${n} 格，由零數過。`,
+      me:`You marked ${n} items ${agoEn}. Carry on from there? Choosing Start over clears those ${n} marks and begins again.`,
+      yz:"接住做", ye:"Carry on" , noZ:"重新開始", noE:"Start over"});
+    if(go) takeMark={...saved.marks};
+    else { try{ localStorage.removeItem(TK_KEY); }catch(_){} }
+  }
+  renderTake(); show("take",true);
 }
 function renderTake(){
   const sec0 = filterSection==="all" ? null : sections.find(x=>x.id===filterSection);
@@ -2803,9 +2973,9 @@ function renderTake(){
   const here=ls.filter(i=>takeMark[i.id]==="here").length;
   const gone=ls.filter(i=>takeMark[i.id]==="gone").length;
   $("#takeSum").innerHTML=`
-    <div><b style="color:var(--fresh)">${here}</b><span>${esc("仲喺度 Here")}</span></div>
-    <div><b style="color:var(--gone)">${gone}</b><span>${esc("冇咗 Gone")}</span></div>
-    <div><b>${ls.length-here-gone}</b><span>${esc("未撳 Untouched")}</span></div>`;
+    <div><b style="color:var(--fresh)">${here}</b><span>${bi("仲喺度","Still there")}</span></div>
+    <div><b style="color:var(--gone)">${gone}</b><span>${bi("冇咗","Gone")}</span></div>
+    <div><b>${ls.length-here-gone}</b><span>${bi("未撳","Not checked")}</span></div>`;
   if(!ls.length){
     $("#takeBody").innerHTML=`<div class="empty" style="padding:30px 10px"><div class="big">🧺</div><p>呢格冇嘢。<span class="e">Nothing in this area.</span></p></div>`;
     return;
@@ -2830,10 +3000,30 @@ function renderTake(){
     const id=b.dataset.t;
     takeMark[id] = takeMark[id]==="here" ? "gone" : takeMark[id]==="gone" ? "" : "here";
     if(!takeMark[id]) delete takeMark[id];
-    renderTake();
+    saveTake(); renderTake();
   });
 }
+/* 記低幾時做過，全家共用 —— 邊個做完都算 */
+async function finishTake(){
+  takeMark={};
+  try{ localStorage.removeItem(TK_KEY); }catch(_){}
+  try{ await F.setDoc(F.doc(db,"meta","board"),{stockAt:F.serverTimestamp(),stockBy:(user&&user.email||"").split("@")[0]},{merge:true}); }
+  catch(_){}
+}
 $("#takeBtn").onclick=openTake;
+/* 提醒：隔太耐冇盤點，份清單就唔再可信 */
+const stockAge = () => {
+  const t=ms(board.stockAt);
+  return t ? Math.floor((Date.now()-t)/86400000) : null;
+};
+function paintNag(){
+  const b=$("#takeBtn"); if(!b) return;
+  const d=stockAge(), due = d===null || d>=STOCK_NAG;
+  b.classList.toggle("nag", !!due && canWrite());
+  const z=d===null ? "☑️ 盤點（未做過）" : d===0 ? "☑️ 盤點（今日做咗）" : due ? `☑️ 盤點（${d} 日冇做）` : `☑️ 盤點（${d} 日前做咗）`;
+  const e=d===null ? "Stocktake — never done" : d===0 ? "Stocktake — done today" : due ? `Stocktake — ${d} days since the last one` : `Stocktake — last done ${d} days ago`;
+  b.innerHTML=bi(z,e);
+}
 $("#takeAdd").onclick=()=>openForm(null,true);
 $("#takeDone").onclick=async()=>{
   const ls=takeList();
@@ -2841,7 +3031,8 @@ $("#takeDone").onclick=async()=>{
   const here=ls.filter(i=>takeMark[i.id]==="here").length;
   const left=ls.length-gone.length-here;
   if(!gone.length){
-    toast(`盤點完，${here} 樣仲喺度`,`Stocktake done — ${here} still there`);
+    await finishTake();
+    toast(`盤點完，${here} 樣仲喺度`,`Stocktake done — ${here} items are still there`);
     show("take",false); return;
   }
   const names=gone.map(i=>{const n=nameLines(i);return n?n.top:"未命名";}).slice(0,8).join("、");
@@ -2856,8 +3047,10 @@ $("#takeDone").onclick=async()=>{
     try{ await retire(it,false); }catch(_){}
     n++; busy(true,`處理緊 ${n} / ${gone.length}`,"Working…");
   }
+  await finishTake();
   busy(false);
-  toast(`盤點完。${here} 樣仲喺度，${gone.length} 樣清咗`,`Done — ${here} still there, ${gone.length} used up`);
+  toast(`盤點完。${here} 樣仲喺度，${gone.length} 樣清咗`,
+        `Stocktake done — ${here} items are still there and ${gone.length} have been used up`);
   show("take",false);
 };
 
@@ -3006,9 +3199,9 @@ function renderWaste(){
   const overs=tossed.filter(x=>typeof x.daysOver==="number");
   const avg=overs.length?Math.round(overs.reduce((a2,x)=>a2+x.daysOver,0)/overs.length):null;
   let h=`<div class="wsum">
-    <div><b>${tossed.length}</b><span>${esc("掉咗 Binned")}</span></div>
-    <div><b>${tossed.filter(x=>ms(x.at)>=cut).length}</b><span>${esc("30 日內 Last 30d")}</span></div>
-    <div><b>${avg===null?"—":avg}</b><span>${esc("平均過期日數 Avg over")}</span></div>
+    <div><b>${tossed.length}</b><span>${bi("掉咗","Thrown out")}</span></div>
+    <div><b>${tossed.filter(x=>ms(x.at)>=cut).length}</b><span>${bi("30 日內","Last 30 days")}</span></div>
+    <div><b>${avg===null?"—":avg}</b><span>${bi("平均過期日數","Avg days past date")}</span></div>
   </div>`;
   if(!ls.length){ b.innerHTML=h+`<div class="empty" style="padding:24px 10px"><p>呢一類冇記錄。<span class="e">Nothing in this category.</span></p></div>`; return; }
   let curM=null;
@@ -3108,7 +3301,7 @@ function renderPlan(){
   if(aiReady()){
     h+=`<button id="planAI" class="btn"${safe.length?"":" disabled"}>${bi(safe.length?"叫 AI 諗餸（"+safe.length+" 樣未過期）":"冇未過期又有名嘅嘢好諗","Ask the AI for dish ideas")}</button>`;
   }else{
-    h+=`<p class="hintline">想叫 AI 諗餸就去 ⚙ 設定填 AI 資料。<span class="e">Set up the AI in Settings for dish ideas.</span></p>`;
+    h+=`<p class="hintline">${bi("想叫 AI 諗餸，就去 ⚙ 設定入面填返 AI 嘅資料。","To get dish ideas from the AI, open Settings and fill in the AI details first.")}</p>`;
   }
   if(planPlan) h+=planHTML(planPlan);
 
@@ -3182,7 +3375,7 @@ function paintLang(){
     LANG=b.dataset.lang;
     try{ localStorage.setItem(LANG_KEY,LANG); }catch(_){}
     document.body.dataset.lang=LANG;
-    paintLang(); render();
+    paintLang(); paintPH(); render();
   });
   $("#spkToggle").setAttribute("aria-pressed",String(SPEAK));
 }
@@ -3370,6 +3563,7 @@ function applyRole(){
   const w=canWrite(), a=isAdmin();
   $("#fab").classList.toggle("hide", !w);
   $("#takeBtn").classList.toggle("hide", !w);
+  paintNag();
   $("#secAdd").classList.toggle("hide", !a);
   $("#secHead").classList.toggle("hide", !a);
   $("#secList").classList.toggle("hide", !a);
