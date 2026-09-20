@@ -31,6 +31,14 @@
 ║      AI 唔准參與。AI 只負責認相、改名、諗餸。                          ║
 ║      過期嘅嘢唔會傳去 AI，佢想開綠燈都冇機會。                         ║
 ║                                                                      ║
+║  規則六：所有 Firestore 寫入一定要用 F.addDoc / F.setDoc /             ║
+║      F.updateDoc / F.deleteDoc / F.writeBatch。                      ║
+║      F 已經包咗「改動記錄」（見 logged()），經佢寫就自動記低          ║
+║      邊個、幾時、改咗乜。唔好直接用 import 返嚟嗰個 f，               ║
+║      唔係嗰個改動就冇記錄，管理員就查唔到。                          ║
+║      有特別意思嘅寫入可以喺最尾加一個提示，例如                      ║
+║      F.deleteDoc(ref, {via:"mistake"})、{sys:true} = 自動副作用。     ║
+║                                                                      ║
 ║  點檢查：⚙ 設定 → 版本同保安 → 「檢查中英對照」，                      ║
 ║      會即場掃描畫面上所有文字。出面有 audit.mjs 做同一件事。           ║
 ║                                                                      ║
@@ -271,7 +279,7 @@ main{padding:8px 16px calc(112px + var(--safe-b))}
 #jobs .memo{background:var(--soon-bg);border-radius:9px;padding:9px 11px;margin-top:10px;font-size:13px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
 #jobs .memo .who{display:block;font-size:10.5px;color:var(--mute);margin-top:5px}
 #jobs .dishes{margin-top:10px;font-size:13px;line-height:1.5}
-#jobs .dishes b{display:block;font-size:11px;color:var(--brand);letter-spacing:.05em;margin-bottom:4px;min-width:0;text-align:left}
+#jobs .dishes .dh{font-size:11px;font-weight:700;color:var(--brand);letter-spacing:.05em;margin-bottom:4px;text-align:left}
 #jobs .go{width:100%;margin-top:12px;padding:11px;border-radius:10px;background:var(--brand);color:#fff;font-size:14px;font-weight:600;line-height:1.2}
 #jobs .go .e{font-size:9.5px;opacity:.85}
 
@@ -448,7 +456,7 @@ details.more .inner{padding-top:14px}
 .rev .body{flex:1;min-width:0}
 .rev .kind{font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--mute);margin-bottom:6px}
 .rev .side{font-size:13px;line-height:1.35;margin-bottom:4px;word-break:break-word}
-.rev .side b{display:inline-block;min-width:54px;font-size:11px;color:var(--mute);font-weight:600}
+.rev .side .k{display:inline-block;min-width:54px;font-size:11px;color:var(--mute);font-weight:600;vertical-align:top}
 .rev .side.new{color:var(--brand);font-weight:600}
 .rev .raw{font-size:11px;color:var(--mute);margin-top:2px}
 .rev .frow{margin-bottom:9px}
@@ -494,6 +502,27 @@ details.more .inner{padding-top:14px}
 .lghead{font-size:12px;font-weight:700;color:var(--brand);letter-spacing:.09em;margin:18px 0 9px;padding-bottom:5px;border-bottom:1px solid var(--rule)}
 .lghead:first-child{margin-top:0}
 .lcard .rm{position:absolute;top:5px;right:5px;width:26px;height:26px;border-radius:50%;background:rgba(10,20,26,.6);color:#fff;font-size:13px;display:grid;place-items:center}
+
+/* 改動記錄（淨係管理員）—— 全部喺文檔流入面，冇 absolute */
+.lrow{display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--rule)}
+.lrow img,.lrow .ph{width:40px;height:40px;border-radius:8px;object-fit:contain;background:var(--chill);flex:none}
+.lrow .ph{display:grid;place-items:center;font-size:18px}
+.lrow .mid{flex:1;min-width:0}
+.lrow .lmeta{display:flex;gap:9px;font-size:11.5px;color:var(--mute);font-variant-numeric:tabular-nums;margin-bottom:2px}
+.lrow .lmeta .u{font-weight:600;color:var(--ink);word-break:break-all}
+.lrow .hl{font-size:14px;font-weight:700;line-height:1.3;word-break:break-word}
+.lrow .hl .e{font-size:11.5px;font-weight:500}
+.lrow .hl.bad{color:var(--gone)} .lrow .hl.ok{color:var(--fresh)} .lrow .hl.add{color:var(--brand)}
+.lrow .lvia{font-size:11px;color:var(--mute);margin-top:3px;line-height:1.3}
+.lrow .lvia .e{font-size:10.5px}
+.lrow .lch{font-size:12.5px;margin-top:4px;line-height:1.4;word-break:break-word}
+.lrow .lch .e{font-size:11px}
+.lrow.sys{opacity:.62}
+#logSys{display:flex;gap:8px;align-items:flex-start;width:100%;margin:0 0 12px;padding:9px 12px;border-radius:10px;border:1px solid var(--rule);background:var(--card);color:var(--mute);font-size:12.5px;text-align:left;line-height:1.3}
+#logSys::before{content:"☐";font-size:15px;line-height:1.1;flex:none}
+#logSys[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-tint);color:var(--brand)}
+#logSys[aria-pressed="true"]::before{content:"☑"}
+#logSys .e{font-size:10.5px}
 
 #cropper{position:fixed;inset:0;z-index:60;background:#0C1519;color:#fff;display:flex;flex-direction:column;touch-action:none}
 .cropbar{display:flex;align-items:center;gap:6px;padding:calc(var(--safe-t) + 10px) 12px 10px;flex:none}
@@ -823,7 +852,7 @@ details.more .inner{padding-top:14px}
     <button class="x" data-close="waste" aria-label="閂 Close">✕</button>
   </div>
   <div class="quick" id="wasteFilter" style="margin:-4px 0 12px"></div>
-  <p class="hintline" style="margin:0 0 14px"><span class="z">撳錯咗掣？撳「還原」就會原封不動放返落清單。呢度<b>冇記邊個掉</b>，亦都唔會記邊個買。撳「掉咗佢」嗰個人係做緊家務，唔係做錯嘢。要睇嘅係買嘢嘅規律，唔係人。</span><span class="e">Tapped the wrong button? Tap Restore and it goes back on the list exactly as it was. This record <b>does not say who binned it</b>, and it does not say who bought it either. Whoever taps Thrown out is doing a chore, not doing something wrong. What we are looking at here is the buying pattern, not the person.</span></p>
+  <p class="hintline" style="margin:0 0 14px"><span class="z">撳錯咗掣？撳「還原」就會原封不動放返落清單。呢張清單<b>唔顯示邊個掉</b>，亦都唔顯示邊個買 —— 要睇嘅係買嘢嘅規律，唔係人。（管理員個「改動記錄」會記低每個改動係邊個做，咁先查得返撳錯嘅位。）撳「掉咗佢」嗰個人係做緊家務，唔係做錯嘢：有懷疑，就掉咗佢。</span><span class="e">Tapped the wrong button? Tap Restore and it goes back on the list exactly as it was. This list <b>does not show who threw something out</b>, and it does not show who bought it either — what we are looking at here is the buying pattern, not the person. (The admin's change log does record who made each change, so a wrong tap can be traced and fixed.) Whoever taps Thrown out is doing a chore, not doing something wrong: if in doubt, throw it out.</span></p>
   <div id="wasteBody"></div>
 </section>
 
@@ -895,6 +924,11 @@ details.more .inner{padding-top:14px}
   <button id="expCopy" class="btn ghost"><span class="z">抄落剪貼簿</span><span class="e">Copy to clipboard</span></button>
   <div class="brow"><button id="expFile" class="btn plain"><span class="z">下載做檔案</span><span class="e">Download as a file</span></button></div>
 
+  <div class="ghead"><span class="z">改動記錄</span><span class="e">Change log</span></div>
+  <p class="hintline"><span class="z">每一個改動都會記低邊個做、幾時做、改咗乜：入貨、改資料、食咗、掉咗、刪除、分區、留言板。淨係管理員睇得到，而且冇人改得到或者刪得到，連管理員都唔得。</span><span class="e">Every change is recorded with who made it, when, and what changed: adding food, editing details, marking something eaten or thrown out, deleting, changing storage areas, and posting on the household board. Only the admin can see this record, and nobody can edit or delete it, not even the admin.</span></p>
+  <div class="who hide" id="logBox"></div>
+  <button id="logOpen" class="btn ghost hide"><span class="z">🕘 睇改動記錄</span><span class="e">See the change log</span></button>
+
   <div class="ghead"><span class="z">版本同保安</span><span class="e">Version &amp; security</span></div>
   <div class="who" id="verBox"></div>
   <div class="who" id="ruleBox"></div>
@@ -905,6 +939,21 @@ details.more .inner{padding-top:14px}
   <div class="ghead"><span class="z">帳戶</span><span class="e">Account</span></div>
   <div class="who" id="whoBox"></div>
   <button id="signout" class="btn danger"><span class="z">登出</span><span class="e">Sign out</span></button>
+</section>
+
+<!-- 改動記錄（淨係管理員睇得到，rules 把關） -->
+<div id="logScrim" class="scrim hide"></div>
+<section id="logSheet" class="sheet hide" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+  <div class="shead">
+    <h2><span class="z">改動記錄</span><span class="e">Change log</span></h2>
+    <button class="x" data-close="log" aria-label="閂 Close">✕</button>
+  </div>
+  <p class="hintline" style="margin:-6px 0 12px"><span class="z">最新嘅排最頂。每條都寫住邊個、幾時、改咗乜。撳上面個名就淨係睇嗰個人做過嘅嘢。</span><span class="e">The newest change is at the top. Each entry shows who made the change, when, and what changed. Tap a name above the list to see only what that person did.</span></p>
+  <div class="quick" id="logWho" style="margin:0 0 10px"></div>
+  <button id="logSys" type="button" aria-pressed="false"><span><span class="z">顯示埋自動嘅改動（例如 AI 收埋咗個提議、食咗之後自動拎走）</span><span class="e">Also show automatic changes, for example an AI suggestion being stored, or an item leaving the list after it was marked eaten</span></span></button>
+  <div id="logBody"></div>
+  <button id="logMore" class="btn plain hide" style="margin-top:14px"><span class="z">載入更早嘅記錄</span><span class="e">Load older entries</span></button>
 </section>
 
 <!-- 裁相 -->
@@ -962,7 +1011,7 @@ details.more .inner{padding-top:14px}
 /* 版本號用日期：yyyy-mm-dd 再加一個大楷字母。
    同一日出多過一次，就 A → B → C 咁行落去。
    格式排得好，所以直接字串比大細就已經係啱嘅時序。 */
-const APP_VERSION = "2026-09-17M";
+const APP_VERSION = "2026-09-20A";
 
 /* ═══════════════════════════════════════════════════════
    FIRESTORE SECURITY RULES —— 呢度係一份副本，方便日後查閱
@@ -970,7 +1019,7 @@ const APP_VERSION = "2026-09-17M";
    → Firestore Database → Rules。改咗嗰邊記得返嚟改埋呢度同
    RULES_COPY_DATE，否則呢段註釋會變成誤導。
 
-   RULES_COPY_DATE: 2026-09-17 (H)
+   RULES_COPY_DATE: 2026-09-20 (A) —— 加咗 match /log（改動記錄）
 
    rules_version = '2';
    service cloud.firestore {
@@ -1000,6 +1049,13 @@ const APP_VERSION = "2026-09-17M";
        match /library/{id}  { allow read: if isMember(); allow write: if canWrite(); }
        match /waste/{id}    { allow read: if isMember(); allow write: if canWrite(); }
        match /meta/{id}     { allow read: if isMember(); allow write: if canWrite(); }
+       match /log/{id} {
+         allow read:   if isAdmin();
+         allow create: if canWrite()
+                       && request.resource.data.by == me()
+                       && request.resource.data.at == request.time;
+         allow update, delete: if false;
+       }
      }
    }
 
@@ -1431,7 +1487,7 @@ async function decideName(id, take){
     if(no.indexOf(sig)<0) no.push(sig);
     patch.nameNo=no.slice(-12);                 // 只留最近 12 個，唔好無限膨脹
   }
-  try{ await F.updateDoc(F.doc(db,"items",id),patch); toast(take?"改咗名":"知道喇，以後唔會再問", take?"Renamed":"Noted — it will not ask again"); }
+  try{ await F.updateDoc(F.doc(db,"items",id),patch,take?{via:"aiyes"}:null); toast(take?"改咗名":"知道喇，以後唔會再問", take?"Renamed":"Noted — it will not ask again"); }
   catch(e){ toast("改唔到："+(e.code||e.message),"Could not update"); }
 }
 async function decideDate(id, take){
@@ -1443,7 +1499,7 @@ async function decideDate(id, take){
     if(no.indexOf(o.aiExpiry)<0) no.push(o.aiExpiry);
     patch.dateNo=no.slice(-12);
   }
-  try{ await F.updateDoc(F.doc(db,"items",id),patch); toast(take?"改咗日期":"知道喇，以後唔會再問", take?"Date updated":"Noted — it will not ask again"); }
+  try{ await F.updateDoc(F.doc(db,"items",id),patch,take?{via:"aiyes"}:null); toast(take?"改咗日期":"知道喇，以後唔會再問", take?"Date updated":"Noted — it will not ask again"); }
   catch(e){ toast("改唔到："+(e.code||e.message),"Could not update"); }
 }
 
@@ -1596,7 +1652,8 @@ async function boot(){
     import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`),
     import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`)
   ]);
-  A=a; F=f;
+  A=a;
+  F=logged(f);       // 所有寫入由呢刻起自動記低（見「改動記錄」）。唔好改返做 F=f。
   const app=initializeApp(firebaseConfig);
   auth=A.getAuth(app);
   try{ db=F.initializeFirestore(app,{localCache:F.persistentLocalCache({tabManager:F.persistentMultipleTabManager()})}); }
@@ -1695,6 +1752,202 @@ async function seedSections(){
   const b=F.writeBatch(db);
   DEFAULT_SECTIONS.forEach(([z,e],i)=>b.set(F.doc(F.collection(db,"sections")),{zh:z,en:e,order:i}));
   try{ await b.commit(); }catch(e){ toast("建立唔到預設分區："+e.code,"Could not create default areas"); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   改動記錄 CHANGE LOG —— 管理員睇到邊個、幾時、改咗乜
+   ───────────────────────────────────────────────────────
+   做法：boot() 攞到 Firestore 之後，F 唔再係原本個 module，而係
+   logged(f) 包過嘅版本 —— addDoc / setDoc / updateDoc / deleteDoc /
+   writeBatch 五個寫入函數全部換咗做「寫嘢 + 寫一條記錄」。
+   成個 app 所有寫入都經 F，所以唔使逐個位記住要 log，
+   日後加新功能都自動有記錄（見最頂規則六）。
+
+   ‧記錄同改動喺同一個 batch 一齊寫：兩樣一齊成功或者一齊唔成功。
+     唔會有「記咗但冇改到」，亦都唔會有「改咗但冇記」。
+   ‧如果寫記錄被拒（多數係 Firebase Console 未 Publish 新 rules），
+     就唔記錄照做一次。掉一舊過期肉永遠比記錄重要 ——
+     唔可以因為記唔到，就令人掉唔到嘢。
+   ‧記錄入面冇相（相太大）。名、日期、分區全部當時抄低做文字，
+     之後件嘢刪咗、分區改咗名，都睇得返當時係乜。
+   ‧by 一定係自己個 email、at 一定係伺服器時間 ——
+     Firestore rules 會驗，冒認唔到人、改唔到時間。
+   ‧rules 唔准任何人改或者刪記錄，連管理員都唔得。淨係管理員讀得到。
+   ═══════════════════════════════════════════════════════ */
+const LOG_COL="log";
+/* photos：件嘢嗰條記錄已經寫咗「換咗相」，唔使再記一次（而且相太大）。 */
+const LOG_SKIP=new Set(["photos",LOG_COL,"zz_rules_probe"]);
+/* 呢啲係內部記帳欄位，唔係人改嘅嘢，唔好列出嚟嘈住 */
+const LOG_HIDE=new Set(["updatedAt","updatedBy","createdAt","createdBy","addedOn","at","by","lastUsed","times",
+  "photoId","libId","reused","aiZh","aiEn","aiBrand","aiExpiry","aiRaw","noteAt","noteBy","planAt","planBy",
+  "stockAt","stockBy","snap","name","kind","daysOver","full"]);
+let RAW=null, logBroken=false, logState="pending";   // logState：管理員部機檢查 rules 有冇 log 嗰段
+
+function logged(f){
+  RAW=f;
+  const out={...f};
+  out.addDoc=async(col,data,hint)=>{
+    const ref=f.doc(col);                       // 自己攞 id，咁記錄先寫得低係邊件
+    await commitLogged([{kind:"set",ref,data}],[safeEntry("add",ref,data,hint)]);
+    return ref;
+  };
+  out.setDoc=(ref,data,opt,hint)=>{
+    const op=cached(ref)?"edit":"add", merge=!!(opt&&opt.merge);
+    return commitLogged([{kind:"set",ref,data,opt}],[safeEntry(op,ref,data,hint,merge)]);
+  };
+  out.updateDoc=(ref,data,hint)=>commitLogged([{kind:"update",ref,data}],[safeEntry("edit",ref,data,hint)]);
+  out.deleteDoc=(ref,hint)=>commitLogged([{kind:"delete",ref}],[safeEntry("del",ref,null,hint)]);
+  out.writeBatch=()=>{
+    const ops=[], ents=[];
+    const bat={
+      set:(ref,data,opt)=>{ ops.push({kind:"set",ref,data,opt});
+        ents.push(safeEntry(cached(ref)?"edit":"add",ref,data,null,!!(opt&&opt.merge))); return bat; },
+      update:(ref,data)=>{ ops.push({kind:"update",ref,data}); ents.push(safeEntry("edit",ref,data)); return bat; },
+      delete:(ref)=>{ ops.push({kind:"delete",ref}); ents.push(safeEntry("del",ref,null)); return bat; },
+      commit:()=>commitLogged(ops,ents)
+    };
+    return bat;
+  };
+  return out;
+}
+async function commitLogged(ops, ents){
+  const recs=ents.filter(Boolean);
+  const run=withLog=>{
+    const b=RAW.writeBatch(db);
+    for(const o of ops){
+      if(o.kind==="set"){ if(o.opt) b.set(o.ref,o.data,o.opt); else b.set(o.ref,o.data); }
+      else if(o.kind==="update") b.update(o.ref,o.data);
+      else b.delete(o.ref);
+    }
+    if(withLog) for(const r of recs)
+      b.set(RAW.doc(RAW.collection(db,LOG_COL)),{...r, by:myEmail(), at:RAW.serverTimestamp()});
+    return b.commit();
+  };
+  if(!recs.length || !user) return run(false);
+  let p;
+  try{ p=run(true); }
+  catch(_){ logBroken=true; paintLogState(); return run(false); }   // 記錄本身砌唔到：唔記錄照做
+  try{ await p; }
+  catch(err){
+    if(String(err&&err.code)!=="permission-denied") throw err;
+    /* 多數係 rules 未有 log 嗰段：唔記錄照做。
+       呢次再被拒就係真係冇權改嗰件嘢，照樣彈返個錯出去。 */
+    await run(false);
+    logBroken=true; paintLogState();
+  }
+}
+/* 砌記錄出錯都唔可以阻住寫入 —— 退而求其次記低最少嘅資料 */
+function safeEntry(op,ref,data,hint,merge){
+  try{ return logEntry(op,ref,data,hint,merge); }
+  catch(_){
+    const col=ref&&ref.parent?ref.parent.id:"";
+    return (!col||LOG_SKIP.has(col)) ? null : {op, col, ref:String(ref&&ref.id||""), v:APP_VERSION, bad:true};
+  }
+}
+/* 改之前嗰個樣：直接由本機即時快照攞，唔使多讀一次 */
+function cached(ref){
+  const col=ref&&ref.parent?ref.parent.id:"", id=ref&&ref.id;
+  const pool = col==="items"?items : col==="sections"?sections : col==="library"?library : col==="waste"?waste : null;
+  if(pool) return pool.find(x=>x.id===id)||null;
+  if(col==="meta" && id==="board") return (board&&Object.keys(board).length)?board:null;
+  return null;
+}
+const isSentinel = v => !!(v && typeof v==="object" && RAW && RAW.FieldValue && v instanceof RAW.FieldValue);
+const emptyV = v => v===undefined||v===null||v===""||v===false||(Array.isArray(v)&&!v.length);
+const normV  = v => emptyV(v) ? "" : JSON.stringify(v);
+
+function logEntry(op, ref, data, hint, merge){
+  const col=ref&&ref.parent?ref.parent.id:"", id=String(ref&&ref.id||"");
+  if(!col||LOG_SKIP.has(col)) return null;
+  const h=hint||{}, d=data||{};
+  const before=cached(ref);
+  const after = op==="del" ? null : (op==="edit"||merge) ? {...(before||{}), ...d} : d;
+  const src=after||before||{};
+  const e={op, col, ref:id, v:APP_VERSION};
+  if(h.via) e.via=String(h.via);
+  if(col==="items"||col==="library"||col==="waste"){
+    e.nz=clean(src.zh||src.name).slice(0,80); e.ne=clean(src.en).slice(0,80); e.nb=clean(src.brand).slice(0,40);
+    const pid=src.photoId||(src.snap&&src.snap.photoId)||"";
+    if(pid) e.pid=String(pid);
+  }else if(col==="sections"){
+    e.nz=String(src.zh||src.name||"").slice(0,40); e.ne=String(src.en||"").slice(0,40);
+  }
+  const ch=[];
+  const push=(k,a,b)=>{ const A=fmtV(k,a), B=fmtV(k,b); ch.push({k, az:A[0], ae:A[1], bz:B[0], be:B[1]}); };
+
+  if(col==="waste" && op==="add"){                       // 食咗／掉咗
+    e.act = d.kind==="eaten" ? "eat" : "toss";
+    if(typeof d.daysOver==="number") e.over=d.daysOver;
+    if(d.expiry) push("expiry","",d.expiry);
+    if(d.sectionId) push("sectionId","",d.sectionId);
+  }else if(col==="meta" && id==="app"){                  // 開機自動記版本
+    e.sys=true; e.act="version"; push("version","",d.version);
+  }else if(col==="meta" && id==="board"){                // 留言板、盤點
+    if("stockAt" in d) e.act="stock";
+    else if(d.note==="" && d.plan===null) e.act="clear";
+    else{
+      e.act="board";
+      if("note" in d && normV(d.note)!==normV(before&&before.note)) push("note",before&&before.note,d.note);
+      if(d.plan) push("plan","",d.plan);
+    }
+  }else if(op==="add"){
+    ["expiry","sectionId","dateType","opened","pack","note","storage"].forEach(k=>{ if(!emptyV(d[k])) push(k,"",d[k]); });
+  }else if(op==="del"){
+    if(col==="items"&&before) ["expiry","sectionId"].forEach(k=>{ if(!emptyV(before[k])) push(k,before[k],""); });
+  }else{                                                  // 改：逐個欄位比對改之前同改之後
+    for(const k of Object.keys(d)){
+      if(LOG_HIDE.has(k) || isSentinel(d[k])) continue;
+      const a=before?before[k]:undefined, b=d[k];
+      if(k==="nameNo"||k==="dateNo"){
+        const al=Array.isArray(a)?a:[], nu=(Array.isArray(b)?b:[]).filter(x=>al.indexOf(x)<0);
+        if(nu.length) push(k,"",nu[nu.length-1]);
+        continue;
+      }
+      if(k==="dupOk"){ if((Array.isArray(b)?b.length:0)>(Array.isArray(a)?a.length:0)) ch.push({k}); continue; }
+      if(k==="thumb"){ if(normV(a)!==normV(b)) ch.push({k}); continue; }
+      if(normV(a)!==normV(b)) push(k,a,b);
+    }
+    if(!ch.length) e.sys=true;        // 淨係內部記帳（例如 AI 收埋咗個提議），預設收埋
+  }
+  if(h.sys) e.sys=true;
+  if(ch.length) e.ch=ch.slice(0,14);
+  return e;
+}
+
+/* 記錄入面嘅值一律當時就轉做「中文 + 英文」兩段字，
+   日期寫埋年份 —— 幾年之後翻睇都唔會搞錯。 */
+const MON_EN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fullDate(iso){
+  const m=String(iso||"").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!m) return [String(iso||""),String(iso||"")];
+  return [`${+m[1]}年${+m[2]}月${+m[3]}日`, `${+m[3]} ${MON_EN[+m[2]-1]} ${+m[1]}`];
+}
+const STORE_BI={chill:["雪櫃","Chilled"],freeze:["急凍","Frozen"],pantry:["室溫","Room temperature"]};
+function fmtV(k,v){
+  if(k==="opened") return v ? ["開咗封","Opened"] : ["未開封","Not opened"];
+  if(emptyV(v)) return ["—","—"];
+  if(k==="expiry"||k==="frozenOn"||k==="dateNo") return fullDate(v);
+  if(k==="sectionId") return [secZh(v), secEn(v)];
+  if(k==="dateType"){ const r=DT.find(x=>x[2]===v); return r ? [r[0], v==="use"?"Use by":"Best before"] : [String(v),String(v)]; }
+  if(k==="pack"){ const r=PK.find(x=>x[2]===v); return r ? [r[0],r[1]] : [String(v),String(v)]; }
+  if(k==="cat"){ const q=FREEZE_Q[v]; return q ? [q.zh,q.en] : [String(v),String(v)]; }
+  if(k==="storage"){ return STORE_BI[v] || [String(v),String(v)]; }
+  if(k==="order"&&typeof v==="number") return [`第 ${v+1} 個`, `number ${v+1}`];
+  if(k==="nameNo"){
+    const [z,e2,b]=String(v).split("|");
+    const zz=withBrand(z,b)||withBrand(e2,b), ee=withBrand(e2,b)||withBrand(z,b);
+    return [zz||"—", ee||"—"];
+  }
+  if(k==="plan"){
+    const ls=(v&&Array.isArray(v.plan))?v.plan:[];
+    return [ls.map(x=>x.zh||x.en||"").filter(Boolean).join("、").slice(0,160)||"—",
+            ls.map(x=>x.en||x.zh||"").filter(Boolean).join(", ").slice(0,200)||"—"];
+  }
+  if(typeof v==="boolean") return v ? ["係","Yes"] : ["唔係","No"];
+  if(typeof v==="number") return [String(v),String(v)];
+  if(typeof v==="string") return [v.slice(0,160), v.slice(0,160)];
+  if(Array.isArray(v)) return [`${v.length} 項`, `${v.length} entries`];
+  return ["（資料）","(data)"];
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1879,6 +2132,7 @@ async function checkRules(){
                : (c.indexOf("unavailable")>-1||c.indexOf("offline")>-1||c.indexOf("client is offline")>-1) ? "offline" : "unknown";
   }
   paintSecurity(); render();
+  checkLog();
 }
 const RULE_TXT={
   tight:["把鎖鎖住咗。啱啱試過去讀一個唔喺名單嘅位置，Firestore 拒絕咗 —— 正確。",
@@ -1908,7 +2162,7 @@ function paintSecurity(){
       + ((rulesState==="unknown"&&rulesErr)?`<div style="margin-top:6px;font-size:10.5px;opacity:.75;word-break:break-all">${esc(rulesErr)}</div>`:"");
   }
   const g=$("#openSet");
-  if(g) g.classList.toggle("alert", rulesState==="open"||outdated());
+  if(g) g.classList.toggle("alert", rulesState==="open"||outdated()||(isAdmin()&&logState==="missing"));
 }
 /* 即場掃描畫面上所有文字，搵有冇中文冇配英文、或者裸中文冇包 .z。
    食物名、備註呢啲係用家自己打嘅資料，唔算。 */
@@ -2122,7 +2376,7 @@ function jobsHTML(){
   h+=line("warn","今日要清","Use up today",today);
   h+=line("","三日內要清","Use up within 3 days",soon);
   if(plan && plan.plan && plan.plan.length){
-    h+=`<div class="dishes"><b>${bi("今餐煮咩","WHAT TO COOK")}</b>`
+    h+=`<div class="dishes"><div class="dh">${bi("今餐煮咩","WHAT TO COOK")}</div>`
       + plan.plan.map((x,i)=>`<div style="margin-bottom:4px">${bi((i+1)+". "+(x.zh||""), (i+1)+". "+(x.en||""))}</div>`).join("")
       + `</div>`;
   }
@@ -2424,12 +2678,13 @@ $("#fab").onclick=()=>openForm(null, true);   // 撳入貨即刻開相機
 $("#fDelete").onclick=async()=>{
   const it=items.find(i=>i.id===editingId); if(!it) return;
   const ok=await ask({ tz:"刪除呢樣嘢？", te:"Delete this item?",
-    mz:"入錯咗先用呢個。咁樣唔會留低任何記錄。", me:"Use this only if it was entered by mistake. Nothing will be kept.",
+    mz:"入錯咗先用呢個。唔會入處理記錄，亦都還原唔到。（改動記錄會記低係邊個刪咗。）",
+    me:"Use this only if it was entered by mistake. It will not go into History and it cannot be restored. (The change log still notes who deleted it.)",
     yz:"刪除", ye:"Delete", danger:true });
   if(!ok) return;
   busy(true,"刪緊…","Deleting…");
   try{
-    await F.deleteDoc(F.doc(db,"items",it.id));
+    await F.deleteDoc(F.doc(db,"items",it.id),{via:"mistake"});
     if(it.photoId && !it.libId){ try{ await F.deleteDoc(F.doc(db,"photos",it.photoId)); }catch(_){} }
     busy(false); toast("刪咗","Deleted"); show("form",false);
   }catch(e){ busy(false); toast("刪唔到："+(e.code||e.message),"Could not delete"); }
@@ -2534,12 +2789,12 @@ $("#dEdit").onclick=()=>{ const it=items.find(i=>i.id===detailId); show("det",fa
 
 /* 食咗同掉咗都會留低一條完整快照，所以撳錯咗還原得返。
    kind: "eaten" | "tossed" */
-async function retire(it, wasted){
+async function retire(it, wasted, via){     // via：改動記錄用，例如 "stock"（盤點）、"swap"（換新一件）
   const lib = it.libId ? library.find(l=>l.id===it.libId) : null;
-  if(lib) await F.updateDoc(F.doc(db,"library",lib.id),{ lastUsed:F.serverTimestamp(), times:(lib.times||1)+1 });
+  if(lib) await F.updateDoc(F.doc(db,"library",lib.id),{ lastUsed:F.serverTimestamp(), times:(lib.times||1)+1 },{sys:true});
   else if(it.thumb) await F.addDoc(F.collection(db,"library"),{
     zh:nameZh(it), en:nameEn(it), brand:brandOf(it), thumb:it.thumb,
-    photoId:it.photoId||"", sectionId:it.sectionId||"", lastUsed:F.serverTimestamp(), times:1 });
+    photoId:it.photoId||"", sectionId:it.sectionId||"", lastUsed:F.serverTimestamp(), times:1 },{sys:true});
   const d=daysLeft(it.expiry);
   const snap={};
   ["zh","en","brand","note","expiry","sectionId","thumb","photoId","libId","dateType",
@@ -2549,8 +2804,8 @@ async function retire(it, wasted){
     zh:nameZh(it), en:nameEn(it), brand:brandOf(it), thumb:it.thumb||"",
     sectionId:it.sectionId||"", expiry:it.expiry||"",
     daysOver: d===null?null:Math.max(0,-d), dateType:dateTypeOf(it),
-    snap, at:F.serverTimestamp(), by:(user&&user.email)||"" });
-  await F.deleteDoc(F.doc(db,"items",it.id));
+    snap, at:F.serverTimestamp(), by:(user&&user.email)||"" },{via:via||""});
+  await F.deleteDoc(F.doc(db,"items",it.id),{sys:true});   // 上面嗰條「食咗／掉咗」已經記咗
   return rec.id;
 }
 /* 撳錯掣即刻還原 */
@@ -2561,8 +2816,8 @@ async function undoRetire(recId){
   try{
     await F.addDoc(F.collection(db,"items"),{ ...r.snap,
       createdAt:F.serverTimestamp(), updatedAt:F.serverTimestamp(),
-      updatedBy:(user&&user.email)||"" });
-    await F.deleteDoc(F.doc(db,"waste",recId));
+      updatedBy:(user&&user.email)||"" },{via:"restore"});
+    await F.deleteDoc(F.doc(db,"waste",recId),{sys:true});
     busy(false); toast("還原咗","Restored");
   }catch(e){ busy(false); toast("還原唔到："+(e.code||e.message),"Could not restore"); }
 }
@@ -2710,8 +2965,9 @@ $("#agSave").onclick=async()=>{
       dateType:src.dateType||"", pack:src.pack||"", cat:src.cat||"",
       reused:true,                                   // 張相係舊嗰件嘅，唔好攞佢嚟核對日期
       addedOn:todayISO(), createdBy:(user&&user.email)||"",
-      createdAt:F.serverTimestamp(), updatedAt:F.serverTimestamp(), updatedBy:(user&&user.email)||"" });
-    if(againFrom==="item") await retire(src,false);   // 舊嗰件正正式式入處理記錄
+      createdAt:F.serverTimestamp(), updatedAt:F.serverTimestamp(), updatedBy:(user&&user.email)||"" },
+      {via: againFrom==="item" ? "swap" : "rebuy"});
+    if(againFrom==="item") await retire(src,false,"swap");   // 舊嗰件正正式式入處理記錄
     busy(false);
     toast(againFrom==="item"?"換咗新一件，舊嗰件入咗處理記錄":"入咗貨",
           againFrom==="item"?"Replaced — the old one is in History":"Added");
@@ -2780,7 +3036,7 @@ async function runAI(list, redo){
             patch.aiExpiry=r.expiry; patch.aiRaw=r.raw; mismatch++;
           }
         }
-        await F.updateDoc(colRef(e), patch);
+        await F.updateDoc(colRef(e), patch, {via:"ai"});
         ok++;
       } else fail++;
     }catch(err){
@@ -2812,7 +3068,7 @@ async function runTranslate(list){
       if(en && !z && r.zh) patch.zh=r.zh;      // 英文係人手寫，唔郁
       if(Object.keys(patch).length){
         patch.updatedAt=F.serverTimestamp();
-        await F.updateDoc(colRef(e), patch); ok++;
+        await F.updateDoc(colRef(e), patch, {via:"ai"}); ok++;
       } else fail++;
     }catch(err){
       fail++;
@@ -2892,7 +3148,7 @@ async function saveMix(id){
   const no=(o.nameNo||[]).slice(), sig=nameSig(o.aiZh,o.aiEn,o.aiBrand);
   if(no.indexOf(sig)<0) no.push(sig);
   patch.nameNo=no.slice(-12);
-  try{ await F.updateDoc(F.doc(db,"items",id),patch); toast("儲存咗你揀嘅組合","Saved your combination"); }
+  try{ await F.updateDoc(F.doc(db,"items",id),patch,{via:"aiyes"}); toast("儲存咗你揀嘅組合","Saved your combination"); }
   catch(e){ toast("儲存唔到："+(e.code||e.message),"Could not save"); }
 }
 function renderRev(){
@@ -2931,8 +3187,8 @@ function renderRev(){
     }
     return `<div class="rev">${img}<div class="body">
       <div class="kind">${bi("到期日唔夾","THE DATES DO NOT MATCH")}</div>
-      <div class="side"><b>${bi("你入嘅","Entered")}</b>${esc(fmtZh(o.expiry))}　${esc(fmtEn(o.expiry))}</div>
-      <div class="side new"><b>${bi("AI 讀到","AI read")}</b>${esc(fmtZh(o.aiExpiry))}　${esc(fmtEn(o.aiExpiry))}</div>
+      <div class="side"><span class="k">${bi("你入嘅","Entered")}</span>${esc(fmtZh(o.expiry))}　${esc(fmtEn(o.expiry))}</div>
+      <div class="side new"><span class="k">${bi("AI 讀到","AI read")}</span>${esc(fmtZh(o.aiExpiry))}　${esc(fmtEn(o.aiExpiry))}</div>
       ${o.aiRaw?`<div class="raw">${bi("相入面印住："+o.aiRaw,"Printed on the pack: "+o.aiRaw)}</div>`:""}
       <div class="acts">
         <button class="btn plain" data-dk="${esc(o.id)}">${bi("我入嘅啱","Mine is right")}</button>
@@ -3076,7 +3332,7 @@ $("#takeDone").onclick=async()=>{
   busy(true,`處理緊 0 / ${gone.length}`,"Working…");
   let n=0;
   for(const it of gone){
-    try{ await retire(it,false); }catch(_){}
+    try{ await retire(it,false,"stock"); }catch(_){}
     n++; busy(true,`處理緊 ${n} / ${gone.length}`,"Working…");
   }
   await finishTake();
@@ -3169,7 +3425,7 @@ async function delDup(id){
     yz:"刪咗", ye:"Delete", danger:true });
   if(!ok) return;
   try{
-    await F.deleteDoc(F.doc(db,"items",id));
+    await F.deleteDoc(F.doc(db,"items",id),{via:"dup"});
     if(it.photoId && !it.libId){ try{ await F.deleteDoc(F.doc(db,"photos",it.photoId)); }catch(_){} }
     toast("刪咗","Deleted");
   }catch(e){ toast("刪唔到："+(e.code||e.message),"Could not delete"); }
@@ -3271,6 +3527,230 @@ function renderWaste(){
     try{ await F.deleteDoc(F.doc(db,"waste",x.dataset.rmw)); toast("刪咗","Removed"); }
     catch(e){ toast("刪唔到："+(e.code||e.message),"Could not remove"); }
   });
+}
+
+/* ═══ 改動記錄面板（淨係管理員）═════════════════════════
+   讀嘅權限由 Firestore rules 把關：唔係管理員，伺服器根本唔會俾佢讀，
+   呢度遮住個掣只係介面。唔用即時監聽 —— 開面板先讀，一次 60 條，
+   唔夠再撳「載入更早嘅記錄」，慳返讀取額度。
+   ═══════════════════════════════════════════════════ */
+const LOG_PAGE=60;
+let logList=[], logLast=null, logEnd=false, logWhoSel="all", logShowSys=false, logErr="", logLoading=false;
+
+const LOG_FIELD={
+  zh:["中文名","Chinese name"], en:["英文名","English name"], brand:["牌子","Brand"], note:["備註","Note"],
+  expiry:["到期日","Expiry date"], sectionId:["分區","Storage area"], dateType:["日期種類","Type of date"],
+  opened:["開封","Opened or not"], pack:["包裝","Packaging"], cat:["類別","Food type"],
+  frozenOn:["入冰格日","Date it went into the freezer"], storage:["存放方式","Storage"],
+  order:["排第幾","Position in the list"], version:["版本","Version"], plan:["AI 諗嘅餸","Dish ideas from the AI"]
+};
+const LOG_TXT={
+  ok:     ["✓ 記錄緊。Firestore rules 已經有 log 嗰段，淨係你讀得到。",
+           "Recording. The Firestore rules already have the log section, and only you can read it."],
+  missing:["⚠ 仲未開始記錄：Firestore rules 未加 log 嗰段。去 Firebase Console → Firestore → Rules，貼入新嘅 Rule.txt，撳 Publish。",
+           "Not recording yet: the Firestore rules do not have the log section. Go to Firebase Console → Firestore → Rules, paste in the new Rule.txt, then tap Publish."],
+  broken: ["⚠ 呢部電話有改動記唔到（rules 拒絕咗寫記錄），不過改動本身已經照做。多數係新 rules 未 Publish。",
+           "A change made on this phone could not be logged because the rules refused it, but the change itself still went through. Usually the new rules have not been published yet."],
+  offline:["而家離線，檢查唔到改動記錄。","Offline, so the change log cannot be checked right now."],
+  unknown:["檢查唔到改動記錄。","Could not check the change log."],
+  pending:["檢查緊改動記錄…","Checking the change log…"]
+};
+function paintLogState(){
+  const a=isAdmin(), box=$("#logBox");
+  if(box){
+    const k = logState==="ok" ? "ok" : (logBroken && logState!=="missing") ? "broken" : logState;
+    const t=LOG_TXT[k]||LOG_TXT.unknown;
+    box.className="who"+(!a?" hide":k==="ok"?" good":(k==="missing"||k==="broken")?" bad":"");
+    box.innerHTML=bi(t[0],t[1]);
+  }
+  const g=$("#openSet");
+  if(g) g.classList.toggle("alert", rulesState==="open"||outdated()||(a&&logState==="missing"));
+}
+/* 管理員部機開機時試讀一條：讀到 = rules 有 log 嗰段 */
+async function checkLog(){
+  if(!isAdmin()||!db||!F) return;
+  logState="pending"; paintLogState();
+  try{
+    const q=F.query(F.collection(db,LOG_COL),F.limit(1));
+    if(F.getDocsFromServer) await F.getDocsFromServer(q); else await F.getDocs(q);
+    logState="ok";
+  }catch(e){
+    const c=String(e.code||"")+" "+String(e.message||"");
+    logState = c.indexOf("permission-denied")>-1 ? "missing"
+             : (c.indexOf("unavailable")>-1||c.indexOf("offline")>-1) ? "offline" : "unknown";
+  }
+  paintLogState();
+}
+
+async function openLog(){
+  if(!isAdmin()) return;
+  logList=[]; logLast=null; logEnd=false; logErr=""; logWhoSel="all";
+  show("log",true);
+  await loadLog();
+}
+async function loadLog(){
+  if(logLoading||logEnd) return;
+  logLoading=true; renderLog();
+  try{
+    const parts=[F.collection(db,LOG_COL), F.orderBy("at","desc")];
+    if(logLast) parts.push(F.startAfter(logLast));
+    parts.push(F.limit(LOG_PAGE));
+    const snap=await F.getDocs(F.query(...parts));
+    snap.docs.forEach(x=>logList.push({id:x.id, ...x.data({serverTimestamps:"estimate"})}));
+    if(snap.docs.length) logLast=snap.docs[snap.docs.length-1];
+    if(snap.docs.length<LOG_PAGE) logEnd=true;
+    logErr=""; logState="ok";
+  }catch(e){
+    logErr=String(e.code||e.message||"error");
+    if(logErr.indexOf("permission-denied")>-1) logState="missing";
+  }
+  logLoading=false; renderLog(); paintLogState();
+}
+$("#logOpen").onclick=()=>{ show("set",false); openLog(); };
+$("#logMore").onclick=()=>loadLog();
+$("#logSys").onclick=()=>{ logShowSys=!logShowSys; renderLog(); };
+
+/* list 有傳入就用佢（自我測試用），冇就用讀返嚟嗰批 */
+function renderLog(list){
+  const b=$("#logBody"); if(!b) return;
+  const src=list||logList;
+  const people=[...new Set(src.map(g=>g.by).filter(Boolean))];
+  if(logWhoSel!=="all" && people.indexOf(logWhoSel)<0) logWhoSel="all";
+  $("#logWho").innerHTML=`<button type="button" class="qb ${logWhoSel==="all"?"on":""}" data-lw="all">${bi("全部人","Everyone")}</button>`
+    + people.map(p=>`<button type="button" class="qb ${logWhoSel===p?"on":""}" data-lw="${esc(p)}">${esc(who(p))}</button>`).join("");
+  $("#logWho").querySelectorAll("[data-lw]").forEach(x=>x.onclick=()=>{ logWhoSel=x.dataset.lw; renderLog(list); });
+  $("#logSys").setAttribute("aria-pressed",String(logShowSys));
+  $("#logMore").classList.toggle("hide", !!list || logEnd || !!logErr || !src.length);
+
+  if(logErr && !src.length){
+    const miss=logErr.indexOf("permission-denied")>-1, t=LOG_TXT.missing;
+    b.innerHTML=`<div class="who bad">${miss ? bi(t[0],t[1])
+      : bi("讀唔到改動記錄。下面係實際錯誤訊息。","The change log could not be read. The raw error is below.")+`<div style="margin-top:6px;font-size:10.5px;opacity:.75">${esc(logErr)}</div>`}</div>`;
+    return;
+  }
+  if(logLoading && !src.length){ b.innerHTML=`<div class="empty" style="padding:30px 10px">${bi("載入緊…","Loading…")}</div>`; return; }
+  const shown=src.filter(g=>(logWhoSel==="all"||g.by===logWhoSel) && (logShowSys||!g.sys));
+  if(!shown.length){
+    b.innerHTML=`<div class="empty" style="padding:30px 10px"><div class="big">🕘</div>${src.length
+      ? bi("呢個篩選之下冇記錄。","Nothing matches this filter.")
+      : bi("仲未有記錄。有人改嘢之後就會出現喺度。","Nothing recorded yet. Entries appear here as soon as someone changes something.")}</div>`;
+    return;
+  }
+  b.innerHTML=logRows(shown);
+}
+function logRows(arr){
+  let h="", cur=null;
+  for(const g of arr){
+    const t=ms(g.at);
+    const dk=t?new Date(t).toDateString():"—";
+    if(dk!==cur){ cur=dk; h+=`<div class="lghead">${t?dayBI(t):bi("時間未定","Time not known yet")}</div>`; }
+    h+=logRow(g,t);
+  }
+  return h;
+}
+function dayBI(t){
+  const d=new Date(t), n=new Date();
+  const diff=Math.round((new Date(n.getFullYear(),n.getMonth(),n.getDate())-new Date(d.getFullYear(),d.getMonth(),d.getDate()))/864e5);
+  if(diff===0) return bi("今日","Today");
+  if(diff===1) return bi("尋日","Yesterday");
+  const same=d.getFullYear()===n.getFullYear();
+  const wz="日一二三四五六", we=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const z=(same?"":d.getFullYear()+"年")+(d.getMonth()+1)+"月"+d.getDate()+"日（星期"+wz[d.getDay()]+"）";
+  const e=we[d.getDay()]+" "+d.getDate()+" "+MON_EN[d.getMonth()]+(same?"":" "+d.getFullYear());
+  return bi(z,e);
+}
+function logHead(g){
+  const V=g.via||"";
+  if(g.col==="items"){
+    if(g.op==="add") return V==="restore" ? {z:"還原返落清單",e:"Put back on the list",c:"add"}
+      : V==="swap" ? {z:"換新一件",e:"Swapped for a new pack",c:"add"}
+      : V==="rebuy" ? {z:"由「買開嘅嘢」再入貨",e:"Added again from Buy again",c:"add"}
+      : {z:"入咗貨",e:"Added",c:"add"};
+    if(g.op==="del") return V==="mistake" ? {z:"刪咗（入錯咗）",e:"Deleted because it was entered by mistake",c:"bad"}
+      : V==="dup" ? {z:"刪咗（重複咗）",e:"Deleted because it was a duplicate",c:"bad"}
+      : {z:"刪咗",e:"Deleted",c:"bad"};
+    return {z:"改咗",e:"Changed"};
+  }
+  if(g.col==="waste"){
+    if(g.op==="add") return g.act==="eat" ? {z:"食咗",e:"Eaten",c:"ok"} : {z:"掉咗",e:"Thrown out",c:"bad"};
+    if(g.op==="del") return {z:"永久刪走一條處理記錄",e:"Deleted a History record for good",c:"bad"};
+    return {z:"改咗處理記錄",e:"Changed a History record"};
+  }
+  if(g.col==="library"){
+    if(g.op==="add") return {z:"加入「買開嘅嘢」",e:"Added to Buy again",c:"add"};
+    if(g.op==="del") return {z:"由「買開嘅嘢」刪走",e:"Removed from Buy again",c:"bad"};
+    return {z:"改咗「買開嘅嘢」",e:"Changed an entry in Buy again"};
+  }
+  if(g.col==="sections"){
+    if(g.op==="add") return {z:"加咗分區",e:"Added a storage area",c:"add"};
+    if(g.op==="del") return {z:"刪咗分區",e:"Deleted a storage area",c:"bad"};
+    return {z:"改咗分區",e:"Changed a storage area"};
+  }
+  if(g.col==="meta"){
+    if(g.act==="stock")   return {z:"完成盤點",e:"Finished a stock check",c:"ok"};
+    if(g.act==="clear")   return {z:"清走留言板",e:"Cleared the household board"};
+    if(g.act==="board")   return {z:"喺留言板出街",e:"Posted on the household board",c:"add"};
+    if(g.act==="version") return {z:"App 轉咗新版本",e:"The app moved to a new version"};
+  }
+  return {z:"改咗資料（"+(g.col||"?")+"）", e:"Changed some data ("+(g.col||"?")+")"};
+}
+/* 標題已經講咗嘅就唔再重複 */
+function viaOf(g){
+  if(g.via==="ai")    return ["AI 做嘅（喺呢個人部電話度撳咗 AI 掣）","Done by the AI, after this person tapped an AI button on their phone"];
+  if(g.via==="aiyes") return ["接受咗 AI 嘅提議","Accepted the AI's suggestion"];
+  if(g.via==="stock") return ["盤點嗰陣搵唔到，當咗食咗","Could not be found during a stock check, so it counts as eaten"];
+  if(g.via==="swap" && g.col==="waste") return ["換新一件：舊嗰件當咗食咗","Swapped for a new pack, so the old one counts as eaten"];
+  return null;
+}
+function chLine(g,c){
+  if(c.k==="thumb")  return bi("換咗相","Changed the photo");
+  if(c.k==="dupOk")  return bi("標記咗兩件唔係重複","Marked the two as separate items, not a duplicate");
+  if(c.k==="nameNo") return bi("唔要 AI 提議嘅名："+c.bz, "Turned down the name the AI suggested: "+c.be);
+  if(c.k==="dateNo") return bi("唔要 AI 讀到嘅日期："+c.bz, "Turned down the date the AI read: "+c.be);
+  const L=(g.col==="meta"&&c.k==="note") ? ["留言","Note for everyone"] : (LOG_FIELD[c.k]||[c.k,c.k]);
+  if(g.op==="edit" && c.k!=="plan" && g.col!=="waste") return bi(`${L[0]}：${c.az} → ${c.bz}`, `${L[1]}: ${c.ae} → ${c.be}`);
+  const z = g.op==="del" ? c.az : c.bz, e = g.op==="del" ? c.ae : c.be;
+  return bi(L[0]+"："+z, L[1]+": "+e);
+}
+function logThumb(g){
+  const pool = g.col==="items"?items : g.col==="waste"?waste : g.col==="library"?library : null;
+  const own = pool ? pool.find(x=>x.id===g.ref) : null;
+  if(own && own.thumb) return {src:own.thumb, id:own.id};
+  if(!g.pid) return null;
+  const hit=items.find(x=>x.photoId===g.pid) || library.find(x=>x.photoId===g.pid)
+         || waste.find(x=>x.snap && x.snap.photoId===g.pid);
+  return hit && hit.thumb ? {src:hit.thumb, id:hit.id} : null;
+}
+function logIcon(g){
+  if(g.col==="waste") return g.act==="eat" ? "🍽" : "🗑";
+  if(g.col==="items") return "🍽";
+  if(g.col==="library") return "🗂";
+  if(g.col==="sections") return "🗄";
+  if(g.act==="stock") return "☑️";
+  if(g.act==="version") return "⬆️";
+  return "📝";
+}
+function logRow(g,t){
+  const hd=logHead(g);
+  const nz=withBrand(g.nz||g.ne||"", g.nb||""), ne=withBrand(g.ne||g.nz||"", g.nb||"");
+  const title = (nz||ne) ? bi(hd.z+"："+nz, hd.e+": "+ne) : bi(hd.z, hd.e);
+  const th=logThumb(g), via=viaOf(g);
+  const hm = t ? String(new Date(t).getHours()).padStart(2,"0")+":"+String(new Date(t).getMinutes()).padStart(2,"0") : "—";
+  const lines=[];
+  if(g.act==="toss" && typeof g.over==="number")
+    lines.push(g.over>0 ? bi(`過咗期 ${g.over} 日`,`${g.over} days past its date`) : bi("未過期","Not past its date"));
+  (g.ch||[]).forEach(c=>lines.push(chLine(g,c)));
+  if(g.bad) lines.push(bi("（呢條記錄唔齊全）","(This entry is incomplete)"));
+  return `<div class="lrow${g.sys?" sys":""}">
+    ${th ? `<img src="${esc(th.src)}" alt="" data-zoom="${esc(th.id)}">` : `<div class="ph">${logIcon(g)}</div>`}
+    <div class="mid">
+      <div class="lmeta"><span>${esc(hm)}</span><span class="u">${esc(who(g.by))}</span></div>
+      <div class="hl ${hd.c||""}">${title}</div>
+      ${via ? `<div class="lvia">${bi(via[0],via[1])}</div>` : ""}
+      ${g.sys ? `<div class="lvia">${bi("自動做嘅","Done automatically")}</div>` : ""}
+      ${lines.map(x=>`<div class="lch">${x}</div>`).join("")}
+    </div>
+  </div>`;
 }
 
 /* ═══ 煮嘢食計劃 ═══════════════════════════════════════
@@ -3606,12 +4086,14 @@ function applyRole(){
   $("#secAdd").classList.toggle("hide", !a);
   $("#secHead").classList.toggle("hide", !a);
   $("#secList").classList.toggle("hide", !a);
+  $("#logOpen").classList.toggle("hide", !a);         // 改動記錄：淨係管理員（真正把關喺 rules）
+  paintLogState();
   const v=$("#viewerBar");
   if(v) v.classList.toggle("hide", w);
   $("#spkToggle").setAttribute("aria-pressed",String(SPEAK));
 }
 /* ═══ sheet 開關 ═════════════════════════════════════ */
-const SHEETS=["form","det","lib","again","set","plan","waste","dup","take","rev"];
+const SHEETS=["form","det","lib","again","set","plan","waste","dup","take","rev","log"];
 /* 面板層次管理。
    之前所有面板都係同一個 z-index，邊個喺 HTML 排得後就蓋住邊個 ——
    由盤點度撳「換新一件」，個面板其實開咗，但俾盤點嗰版完全遮住。
