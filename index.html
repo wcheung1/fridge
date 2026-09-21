@@ -329,6 +329,9 @@ details.more.vrest{margin-top:18px}
 .count.gone .cnum,.count.gone .cword{color:var(--gone)}
 .count.soon .cnum,.count.soon .cword{color:var(--soon)}
 .count.na .cword{color:var(--mute);font-size:13px;font-weight:600}
+.count.frz .cnum{color:var(--brand)}
+.rfz{font-size:11.5px;color:var(--brand);margin-top:4px;line-height:1.35}
+.rfz .e{font-size:10.5px}
 
 .empty{text-align:center;padding:60px 24px;color:var(--mute)}
 .empty .big{font-size:40px;margin-bottom:12px}
@@ -704,7 +707,7 @@ details.more .inner{padding-top:14px}
         <div class="picker" id="fPack"></div>
       </div>
       <div class="fld hide" id="frozenBox">
-        <div class="flab"><span class="z">真正入急凍嘅日期</span><span class="e">Actual freeze date — leave blank and the logging date is used</span></div>
+        <div class="flab"><span class="z">真正入急凍嘅日期（留空就用入貨日；由雪櫃搬入冰格會自動填今日）</span><span class="e">Actual freeze date. Leave it blank to use the logging date. Moving an item into the freezer from the fridge fills in today automatically.</span></div>
         <input id="fFrozen" type="date">
       </div>
       <div class="fld">
@@ -779,7 +782,9 @@ details.more .inner{padding-top:14px}
   <div id="dWho"></div>
   <button id="dAte" class="btn"><span class="z">食咗 / 用完</span><span class="e">Eaten or used up</span></button>
   <div class="brow"><button id="dToss" class="btn danger"><span class="z">掉咗佢（過咗期）</span><span class="e">Thrown out — expired</span></button></div>
-  <p class="hintline hide" id="dNoEdit" style="margin:10px 0 0"><span class="z">呢件嘢係第二個人入嘅，你改唔到詳情。但你照樣可以撳「食咗」或者「掉咗佢」。</span><span class="e">Someone else in the household logged this item, so you cannot change its details. You can still mark it as eaten or as thrown out.</span></p>
+  <p class="hintline hide" id="dNoEdit" style="margin:10px 0 0"><span class="z">呢件嘢係第二個人入嘅，你改唔到詳情。但你照樣可以撳「食咗」、「掉咗佢」，或者記低拎咗出嚟解凍。</span><span class="e">Someone else in the household logged this item, so you cannot change its details. You can still mark it as eaten or as thrown out, or record that you took it out of the freezer to thaw.</span></p>
+  <div class="brow hide" id="dThawRow"><button id="dThaw" class="btn ghost"><span class="z">🧊 拎咗出嚟解凍</span><span class="e">Taken out of the freezer to thaw</span></button></div>
+  <div class="brow hide" id="dRefreezeRow"><button id="dRefreeze" class="btn ghost"><span class="z">🧊 放返入冰格</span><span class="e">Put it back in the freezer</span></button></div>
   <div class="brow"><button id="dSwap" class="btn ghost"><span class="z">換新一件（同款，新日期）</span><span class="e">Replace with a new pack of the same thing</span></button></div>
   <div class="brow"><button id="dEdit" class="btn ghost"><span class="z">改資料</span><span class="e">Edit details</span></button></div>
 </section>
@@ -1032,7 +1037,7 @@ details.more .inner{padding-top:14px}
 /* 版本號用日期：yyyy-mm-dd 再加一個大楷字母。
    同一日出多過一次，就 A → B → C 咁行落去。
    格式排得好，所以直接字串比大細就已經係啱嘅時序。 */
-const APP_VERSION = "2026-09-20B";
+const APP_VERSION = "2026-09-21A";
 
 /* ═══════════════════════════════════════════════════════
    FIRESTORE SECURITY RULES —— 呢度係一份副本，方便日後查閱
@@ -1040,7 +1045,7 @@ const APP_VERSION = "2026-09-20B";
    → Firestore Database → Rules。改咗嗰邊記得返嚟改埋呢度同
    RULES_COPY_DATE，否則呢段註釋會變成誤導。
 
-   RULES_COPY_DATE: 2026-09-20 (A) —— 加咗 match /log（改動記錄）
+   RULES_COPY_DATE: 2026-09-21 (A) —— 加咗 onlyMoved（任何家人都記得低解凍）
 
    rules_version = '2';
    service cloud.firestore {
@@ -1058,11 +1063,14 @@ const APP_VERSION = "2026-09-20B";
        function canWrite() { return isMember() && !isViewer(); }
        function mine()     { return resource.data.createdBy is string
                                     && resource.data.createdBy.lower() == me(); }
+       function onlyMoved(){ return request.resource.data.diff(resource.data).affectedKeys()
+                                    .hasOnly(['sectionId','frozenOn','thawedOn','thawBy','thawPrev',
+                                              'thawRoom','updatedAt','updatedBy']); }
 
        match /items/{id} {
          allow read:   if isMember();
          allow create: if canWrite();
-         allow update: if canWrite() && (mine() || isAdmin());
+         allow update: if canWrite() && (mine() || isAdmin() || onlyMoved());
          allow delete: if canWrite();
        }
        match /photos/{id}   { allow read: if isMember(); allow write: if canWrite(); }
@@ -1806,7 +1814,7 @@ const LOG_SKIP=new Set(["photos",LOG_COL,"zz_rules_probe"]);
 /* 呢啲係內部記帳欄位，唔係人改嘅嘢，唔好列出嚟嘈住 */
 const LOG_HIDE=new Set(["updatedAt","updatedBy","createdAt","createdBy","addedOn","at","by","lastUsed","times",
   "photoId","libId","reused","aiZh","aiEn","aiBrand","aiExpiry","aiRaw","noteAt","noteBy","planAt","planBy",
-  "stockAt","stockBy","snap","name","kind","daysOver","full"]);
+  "stockAt","stockBy","snap","name","kind","daysOver","full","thawPrev"]);
 let RAW=null, logBroken=false, logState="pending";   // logState：管理員部機檢查 rules 有冇 log 嗰段
 
 function logged(f){
@@ -1952,7 +1960,7 @@ const STORE_BI={chill:["雪櫃","Chilled"],freeze:["急凍","Frozen"],pantry:["�
 function fmtV(k,v){
   if(k==="opened") return v ? ["開咗封","Opened"] : ["未開封","Not opened"];
   if(emptyV(v)) return ["—","—"];
-  if(k==="expiry"||k==="frozenOn"||k==="dateNo") return fullDate(v);
+  if(k==="expiry"||k==="frozenOn"||k==="dateNo"||k==="thawedOn"||k==="thawBy") return fullDate(v);
   if(k==="sectionId") return [secZh(v), secEn(v)];
   if(k==="dateType"){ const r=DT.find(x=>x[2]===v); return r ? [r[0], v==="use"?"Use by":"Best before"] : [String(v),String(v)]; }
   if(k==="pack"){ const r=PK.find(x=>x[2]===v); return r ? [r[0],r[1]] : [String(v),String(v)]; }
@@ -2081,8 +2089,71 @@ const monthsSince = iso => {
   const t=new Date(y,m-1,dd), n=new Date();
   return Math.max(0, Math.round((n-t)/86400000/30.44));
 };
+/* ═══ 解凍 thawing ════════════════════════════════════
+   依據香港食物安全中心：
+   https://www.cfs.gov.hk/tc_chi/consumer_zone/safefood_all/5keys_defrosting.html
+   https://www.cfs.gov.hk/tc_chi/multimedia/multimedia_pub/multimedia_pub_fsf_190_02.html
+   ‧首選放雪櫃（0–4°C）解凍，通常要前一晚，第二日煮。
+   ‧流動冷水或微波爐解凍，解凍後要即刻煮。唔好喺室溫或者熱水度解凍。
+   ‧喺雪櫃正確解凍嘅可以再凍返（品質會差啲）；其他方法解凍嘅唔好再凍。
+   個 app 唔知你點解凍，所以：
+   ‧由冰格搬去雪櫃分區 = 當雪櫃解凍 → thawBy = 聽日（最遲聽日煮）
+   ‧由冰格搬去室溫分區 = thawRoom → thawBy = 今日，而且之後唔准當「停咗錶」再凍
+   ‧麵包、菜之類（唔係 use by、唔係肉、唔係熟食）解凍冇安全死線，照包裝日期
+   欄位：frozenOn 入冰格日、thawedOn 拎出嚟嗰日、thawBy 最遲煮嘅日子（之後就當佢嘅
+   到期日）、thawPrev 拎出嚟之前嘅 thawBy（同日放返入去 = 當揀錯，還原）、thawRoom。
+   ═══════════════════════════════════════════════════ */
+const THAW_NOTE=[
+  "要食嘅時候：前一晚放落雪櫃解凍，第二日煮。用流動冷水或者微波爐解凍就要即刻煮。唔好放喺室溫或者熱水度解凍。喺雪櫃解凍咗嘅可以再凍返（品質會差啲），其他方法解凍過嘅唔好再凍。",
+  "When you want to use it: move it to the fridge the night before to thaw, then cook it the next day. If you thaw it under running cold water or in the microwave, cook it straight away. Never thaw it at room temperature or in hot water. Food thawed in the fridge can go back in the freezer (the quality drops a little); food thawed any other way must not be frozen again."];
+const perishable = it => dateTypeOf(it)==="use" || isMeat(catOf(it)) || catOf(it)==="cooked";
+/* 由冰格拎出嚟：計返幾時要煮完。to = 搬去邊種分區（"chill" / "pantry"） */
+function thawPatch(it, to){
+  const room = to!=="chill";            // 唔肯定係雪櫃就當室溫：錯都錯向小心嗰邊
+  const p={thawedOn:todayISO(), thawPrev:it.thawBy||"", thawRoom:room};
+  if(!perishable(it)){ p.thawBy=""; return p; }
+  const lim = room ? todayISO() : plusDays(1);
+  const v=verdict(it), stopped = !!(v.frozen && winDays(it));      // 停咗錶：包裝日期唔再計
+  const cur = it.thawBy || it.expiry || "";
+  p.thawBy = (stopped || !cur || lim<cur) ? lim : cur;
+  return p;
+}
+/* 改資料轉分區：由冰格搬出 → 解凍；由其他地方搬入冰格 → 記入冰格日。
+   typed = 表單入面「真正入急凍嘅日期」格而家嘅值（人手改過就跟人手）。 */
+function movePatch(old, toSection, typed){
+  const was=storageOf(sec(old.sectionId)), now=storageOf(sec(toSection));
+  if(was==="freeze" && now!=="freeze") return {via:"thaw", p:thawPatch(old,now)};
+  if(was!=="freeze" && now==="freeze"){
+    const p = old.thawedOn ? refreezePatch(old)
+            : (typed||"")!==(old.frozenOn||"") ? {} : {frozenOn:todayISO()};
+    return {via:"refreeze", p};
+  }
+  return null;
+}
+/* 「由冰格拎出嚟？」確認窗。改資料轉分區同詳情個掣都用呢個 */
+function thawAsk(it,to){
+  const room=to!=="chill", x=thawPatch(it,to);
+  return { tz: room?"由冰格拎出嚟放室溫？":"由冰格拎出嚟解凍？",
+           te: room?"Take it out of the freezer to room temperature?":"Take it out of the freezer to thaw?",
+    mz:(x.thawBy?"拎出嚟就當開始解凍，包裝日期唔再作準：最遲 "+fmtZh(x.thawBy)+" 要煮完。":"拎出嚟就當開始解凍。")
+      +(room?"食安中心話唔好喺室溫解凍：要煮就即刻煮，唔好擺住。":"喺雪櫃解凍咗嘅，之後可以再放返入冰格（品質會差啲）。")
+      +"如果只係揀錯分區，撳「取消」。",
+    me:(x.thawBy?"Once it is out, it counts as thawing and the printed date no longer applies: cook it by "+fmtEn(x.thawBy)+".":"Once it is out, it counts as thawing.")
+      +(room?" Food safety guidance says never thaw at room temperature: if you are cooking it, cook it now instead of leaving it out."
+            :" If it thaws in the fridge, it can go back into the freezer later (the quality drops a little).")
+      +" If you only picked the wrong area, tap Cancel.",
+    yz:"係，拎咗出嚟", ye:"Yes, it is out" };
+}
+/* 放返入冰格。同一日拎出嚟又放返入去 = 當揀錯分區，還原返（室溫解凍過嘅除外） */
+function refreezePatch(it){
+  if(it.thawedOn===todayISO() && !it.thawRoom) return {thawedOn:"", thawBy:it.thawPrev||"", thawPrev:"", thawRoom:false};
+  return {frozenOn:todayISO()};
+}
+
 function verdict(it){
-  const d=daysLeft(it.expiry);
+  /* 解凍咗之後，「最遲煮嘅日子」代替包裝日期 */
+  const exp=it.thawBy||it.expiry;
+  const d=daysLeft(exp);
   const opened=!!it.opened, type=dateTypeOf(it);
   const notes=[];
   const st=storageOf(sec(it.sectionId));
@@ -2090,7 +2161,7 @@ function verdict(it){
      凍咗之後唔再作準。−18°C 細菌唔生長，安全上冇死線 —— 前提係
      中間一次都冇解凍過。冇記低入櫃日期，個 app 就唔知，只好當最壞。 */
   const got=loggedOn(it);
-  if(st==="freeze" && !opened && got && it.expiry && got<=it.expiry){
+  if(st==="freeze" && !opened && !it.thawRoom && got && exp && got<=exp){
     const c=catOf(it), Q=FREEZE_Q[c], pk=packOf(it), win=winDays(it), age=daysSince(got);
     if(c==="packed"){
       return {...(d!==null&&d<0?V_JUDGE:d===null?V_NONE:d<=T_SOON?V_SOON:d<=T_WATCH?V_WATCH:V_OK), d, frozen:true, notes, why:[
@@ -2099,6 +2170,9 @@ function verdict(it){
     }
     const r = win ? age/win : 0;
     const lvl = r>=1 ? V_SOON : r>=0.5 ? V_WATCH : V_OK;
+    if(it.thawBy) notes.push([`呢件解凍過一次（${it.thawedOn||"?"}），喺雪櫃解凍期限之內放返入冰格。食安中心話喺雪櫃解凍嘅可以再凍返，但品質會差啲。`,
+      `This was thawed once (${it.thawedOn||"?"}) and went back into the freezer within its thawing limit. Food thawed in the fridge can be frozen again, but the quality drops a little.`]);
+    notes.push(THAW_NOTE);
     const wrap = (pk==="tray" && isMeat(c)) ? [
       `　呢底嘢當咗係鮮肉原個膠兜加保鮮紙 —— 食安中心話要「妥為包好、排走空氣」先算數，膠兜擋唔到乾燥，${showWin(win)}之後就會起冰霜、表面發白發乾。想擺耐啲，而家就換個急凍袋、壓走空氣再封口，跟住喺袋面寫返個日期。如果本身就係原封真空包裝，去「改資料 → 其他」揀返「原封／真空包裝」，個期限會計長返。`,
       ` This is treated as fresh meat in its shop tray and cling film. Food-safety guidance says the long storage times only apply when food is wrapped airtight with the air pressed out — a tray does not do that, so after about ${showWinEn(win)} it will dry out and turn white. To keep it longer, move it into a freezer bag now, press the air out, and write the date on the bag.`] : ["",""];
@@ -2106,7 +2180,7 @@ function verdict(it){
       `${got} 入咗冰格，嗰陣仲未過期，所以印住 ${it.expiry} 嗰個係雪櫃日期，凍咗之後唔再作準 —— 食安中心：−18°C 之下細菌會被迫進入休眠狀態，安全上冇死線。剩低係品質。呢類（${Q.zh}）建議 ${showWin(win)}內食完，而家已經凍咗 ${age} 日${r>=1?"，已經過咗品質期，唔會食壞人但會乾同淡味":""}。`+wrap[0],
       `Frozen on ${got}, before its date, so the printed ${it.expiry} is a chilled date and no longer applies — at −18°C bacteria go dormant, so there is no safety deadline. What is left is quality. For ${Q.en.toLowerCase()} the window is about ${showWinEn(win)}; this has been frozen ${age} days${r>=1?", past that window — still safe, but drier and blander":""}.`+wrap[1]]};
   }
-  if(st==="freeze" && d!==null && d<0 && got && got>it.expiry){
+  if(st==="freeze" && d!==null && d<0 && got && got>exp){
     notes.push([`入貨嗰日（${got}）已經過咗期，所以凍極都救唔返 —— 細菌同毒素早就生咗，低溫只係將佢哋凍住。除非你肯定佢係過期之前已經喺急凍格（例如婆婆買咗返嚟你遲咗影相），咁就去「改資料 → 其他」填返真正入櫃日期。`,
       `It was already past its date when it was logged (${got}), so freezing cannot rescue it — the bacteria and toxins were already there. If you are sure it was in the freezer before the date, set the real freeze date under Edit.`]);
   }
@@ -2115,6 +2189,13 @@ function verdict(it){
       `This is in the freezer but the app has no record of when it went in. If it was frozen before its date and never thawed it is most likely fine — the app cannot know, so it assumes the worst. Set the freeze date under Edit and it will be recalculated.`]);
   }
   if(d===null) return {...V_NONE, d, notes, why:["冇入到期日。","No expiry date recorded."]};
+  /* 解凍咗（唔喺冰格）：跟「最遲煮嘅日子」，唔跟包裝日期 */
+  if(it.thawBy && exp===it.thawBy && st!=="freeze"){
+    const w=[`${it.thawedOn||"?"} 由冰格拎咗出嚟${it.thawRoom?"放喺室溫":"解凍"}。解凍之後細菌會再活躍，包裝日期唔再作準，最遲 ${fmtZh(it.thawBy)} 要煮。`,
+             `Taken out of the freezer ${it.thawRoom?"to room temperature ":"to thaw "}on ${it.thawedOn||"?"}. Once thawed, bacteria become active again and the printed date no longer applies, so it must be cooked by ${fmtEn(it.thawBy)}.`];
+    if(d<0) return {...(opened||type==="use"?V_TOSS:V_JUDGE), d, notes, thawed:true, why:[w[0]+`已經過咗 ${-d} 日。`, w[1]+` That was ${-d} days ago.`]};
+    return {...(d===0?V_TODAY:V_SOON), d, notes, thawed:true, why:w};
+  }
   if(d<0){
     if(opened) return {...V_TOSS, d, notes, why:["已經開咗封，而且過咗期。唔好賭。","Opened and past its date. Do not risk it."]};
     if(type==="use") return {...V_TOSS, d, notes, why:[
@@ -2272,9 +2353,9 @@ function renderSignals(){
   const n=k=>items.filter(k).length;
   const defs=[
     {k:"all",  z:"全部",   e:"All",       v:items.length, c:""},
-    {k:"gone", z:"過咗期", e:"Expired",   v:n(i=>{const d=daysLeft(i.expiry);return d!==null&&d<0;}), c:"g"},
-    {k:"soon", z:"3日內",  e:"In 3 days", v:n(i=>{const d=daysLeft(i.expiry);return d!==null&&d>=0&&d<=T_SOON;}), c:"s"},
-    {k:"watch",z:"一星期", e:"In a week", v:n(i=>{const d=daysLeft(i.expiry);return d!==null&&d>T_SOON&&d<=T_WATCH;}), c:""}
+    {k:"gone", z:"過咗期", e:"Expired",   v:n(i=>sigOf(i)==="gone"),  c:"g"},
+    {k:"soon", z:"3日內",  e:"In 3 days", v:n(i=>sigOf(i)==="soon"),  c:"s"},
+    {k:"watch",z:"一星期", e:"In a week", v:n(i=>sigOf(i)==="watch"), c:""}
   ];
   $("#signals").innerHTML=defs.map(d=>
     `<button class="sig ${d.c}" data-sig="${d.k}" aria-pressed="${filterSignal===d.k}"><b>${d.v}</b><span>${bi(d.z,d.e)}</span></button>`
@@ -2288,20 +2369,8 @@ function visible(){
   let r=items.slice();
   if(filterSection!=="all") r=r.filter(i=>i.sectionId===filterSection);
   if(term) r=r.filter(i=>(nameZh(i)+" "+nameEn(i)+" "+brandOf(i)+" "+(i.note||"")).toLowerCase().includes(term));
-  if(filterSignal!=="all") r=r.filter(i=>{
-    const d=daysLeft(i.expiry); if(d===null) return false;
-    if(filterSignal==="gone") return d<0;
-    if(filterSignal==="soon") return d>=0&&d<=T_SOON;
-    if(filterSignal==="watch") return d>T_SOON&&d<=T_WATCH;
-    return true;
-  });
-  r.sort((a,b)=>{
-    const x=daysLeft(a.expiry), y=daysLeft(b.expiry);
-    if(x===null&&y===null) return 0;
-    if(x===null) return 1; if(y===null) return -1;
-    return x-y;
-  });
-  return r;
+  if(filterSignal!=="all") r=r.filter(i=>sigOf(i)===filterSignal);
+  return bySafety(r);
 }
 function countHTML(d,id){
   const i = id ? ` id="${id}"` : "";
@@ -2310,6 +2379,36 @@ function countHTML(d,id){
   if(d===0) return `<div${i} class="count soon"><span class="cword">${bi("今日","Today")}</span></div>`;
   if(d===1) return `<div${i} class="count soon"><span class="cword">${bi("聽日","Tomorrow")}</span></div>`;
   return `<div${i} class="count ${d<=T_SOON?"soon":""}"><span class="cnum">${d}</span><span class="cunit">${bi("日","days")}</span></div>`;
+}
+/* ═══ 點樣顯示「仲有幾耐」—— 主畫面、篩選、排序、盤點格、詳情共用 ═══
+   判斷照樣係 verdict() 話事，呢度只係決定點顯示。
+   fz = 停咗錶嘅急凍嘢（入櫃時未過期、未開封、冇室溫解凍過）：
+        包裝日期唔再計，顯示「凍咗 N 日」，唔會紅底。 */
+function dview(it){
+  const v=verdict(it), fz=frozenInfo({o:it,v});
+  return {v, fz, d:v.d, bad: !fz && v.d!==null && v.d<0};
+}
+function frozenCount(fz,v,id){
+  const i = id ? ` id="${id}"` : "";
+  return `<div${i} class="count ${v.key==="soon"?"soon":"frz"}"><span class="cnum">${fz.age}</span><span class="cunit">${bi("🧊 凍咗日數","🧊 days frozen")}</span></div>`;
+}
+function dateLine(it,fz){
+  if(fz) return bi("包裝日期 "+fmtZh(it.expiry)+"（凍住唔計）", "Printed date "+fmtEn(it.expiry)+" (paused while frozen)");
+  if(it.thawBy) return bi("解凍咗，最遲 "+fmtZh(it.thawBy)+" 要煮", "Thawed, cook by "+fmtEn(it.thawBy));
+  return dateBI(it.expiry);
+}
+const FROZEN_HINT=["凍住就唔使理包裝日期；拎出嚟解凍，最遲聽日要煮","Frozen, so the printed date is paused. Once taken out to thaw, cook it by tomorrow."];
+/* 篩選掣：停咗錶嘅急凍嘢唔入「過咗期／3日內／一星期」 */
+function sigOf(it){
+  const x=dview(it);
+  if(x.fz||x.d===null) return "";
+  return x.d<0 ? "gone" : x.d<=T_SOON ? "soon" : x.d<=T_WATCH ? "watch" : "";
+}
+/* 排序：先按判斷嘅急緩（掉 → 大人判斷 → 今日 → 3 日內 → 一星期 → 仲有時間 → 冇日期），
+   同一級入面，急凍嘢按品質期仲剩幾多日，其他按日期 */
+function bySafety(arr){
+  return arr.map(o=>{ const v=verdict(o); return {o,v}; })
+    .sort((a,b)=>a.v.rank-b.v.rank || urgency(a)-urgency(b)).map(e=>e.o);
 }
 function render(){
   renderSignals(); paintNag();
@@ -2353,16 +2452,17 @@ function render(){
     </div>`;
   }else{
     html += rows.map(i=>{
-      const d=daysLeft(i.expiry);
+      const x=dview(i);
       const nl=nameLines(i);
       const nm = `<div class="rname${nl?"":" none"}">${nameBI(i)}</div>`;
-      return `<div class="row ${d!==null&&d<0?"expired":""}" data-id="${esc(i.id)}">
+      return `<div class="row ${x.bad?"expired":""}" data-id="${esc(i.id)}">
         ${i.thumb?`<img class="thumb" src="${i.thumb}" alt="">`:`<div class="thumb ph">🍽</div>`}
         <div class="rmid">${nm}
-          <div class="rmeta"><span class="tag">${secBI(i.sectionId)}</span><span>${dateBI(i.expiry)}</span></div>
+          <div class="rmeta"><span class="tag">${secBI(i.sectionId)}</span><span>${dateLine(i,x.fz)}</span></div>
+          ${x.fz?`<div class="rfz">${bi(FROZEN_HINT[0],FROZEN_HINT[1])}</div>`:""}
         </div>
         ${SPEAK?`<button class="spk" data-say="${esc(i.id)}" aria-label="讀出嚟 Read aloud">🔊</button>`:""}
-        ${countHTML(d)}
+        ${x.fz ? frozenCount(x.fz,x.v) : countHTML(x.d)}
       </div>`;
     }).join("");
   }
@@ -2660,6 +2760,15 @@ async function save(next){
       if(!go) return;
     }
   }
+  /* 改資料轉分區：由冰格搬出 = 開始解凍；搬入冰格 = 記低入冰格日（見「解凍」）。
+     之前冇記，個 app 會當佢入貨嗰日已經凍咗 —— 雪櫃放過咗期先凍都會判「安全」。 */
+  let moveP=null, moveVia="";
+  if(editingId){
+    const old=items.find(i=>i.id===editingId);
+    const mv=old ? movePatch(old, formSection, $("#fFrozen").value||"") : null;
+    if(mv && mv.via==="thaw" && !await ask(thawAsk(old, storageOf(sec(formSection))))) return;
+    if(mv){ moveP=mv.p; moveVia=mv.via; }
+  }
   busy(true,"儲存緊…","Saving…");
   try{
     const base={
@@ -2670,13 +2779,14 @@ async function save(next){
       cat: catOf({zh:$("#fZh").value,en:$("#fEn").value,brand:$("#fBrand").value}),
       updatedAt:F.serverTimestamp(), updatedBy:(user&&user.email)||""
     };
+    if(moveP) Object.assign(base, moveP);
     if(editingId){
       if(pendingPhoto){
         const pid=F.doc(F.collection(db,"photos")).id;
         await F.setDoc(F.doc(db,"photos",pid),{full:pendingPhoto.full});
         base.thumb=pendingPhoto.thumb; base.photoId=pid; base.libId="";
       }
-      await F.updateDoc(F.doc(db,"items",editingId),base);
+      await F.updateDoc(F.doc(db,"items",editingId),base,moveVia?{via:moveVia}:null);
     }else{
       base.createdAt=F.serverTimestamp(); base.libId=""; base.addedOn=todayISO();
       base.createdBy=(user&&user.email)||"";
@@ -2739,11 +2849,12 @@ let detailId=null;
 async function openDetail(id){
   const it=items.find(i=>i.id===id); if(!it) return;
   detailId=id;
-  const d=daysLeft(it.expiry);
+  const dv=dview(it), d=dv.d;
   const nl=nameLines(it);
   $("#dName").innerHTML = nl ? bi(nl.top, nl.bot) : bi("未命名","Unnamed");
-  const old=$("#dCount"); old.outerHTML=countHTML(d,"dCount");
-  $("#dWhen").innerHTML = it.expiry ? bi(fmtZh(it.expiry)+" 到期", fmtEn(it.expiry)+" expiry") : bi("冇入過期日","No expiry date");
+  const old=$("#dCount"); old.outerHTML = dv.fz ? frozenCount(dv.fz,dv.v,"dCount") : countHTML(d,"dCount");
+  $("#dWhen").innerHTML = (dv.fz||it.thawBy) ? dateLine(it,dv.fz)
+    : it.expiry ? bi(fmtZh(it.expiry)+" 到期", fmtEn(it.expiry)+" expiry") : bi("冇入過期日","No expiry date");
   $("#dWhere").innerHTML = bi(secZh(it.sectionId), secEn(it.sectionId));
   $("#dNote").textContent = it.note||"";
   $("#dDate").value = it.expiry||"";
@@ -2776,6 +2887,9 @@ async function openDetail(id){
   $("#dToss").className = (vd.rank<=1 ? "btn danger" : "btn plain") + (canWrite()?"":" hide");
   $("#dEdit").classList.toggle("hide", !canEdit(it));
   $("#dSwap").classList.toggle("hide", !canWrite());
+  const inFz=storageOf(sec(it.sectionId))==="freeze";
+  $("#dThawRow").classList.toggle("hide", !canWrite() || !inFz);
+  $("#dRefreezeRow").classList.toggle("hide", !canWrite() || inFz || !it.thawedOn);
   $("#dCrop").classList.toggle("hide", !canEdit(it) || !(it.thumb||it.photoId));
   $("#dateBox").classList.toggle("hide", !canEdit(it));
   const noEdit=$("#dNoEdit");
@@ -2828,6 +2942,48 @@ $("#dCrop").onclick=async()=>{
     busy(false); toast("裁好咗","Cropped"); show("det",false);
   }catch(e){ busy(false); toast("裁唔到："+(e.code||e.message),"Could not crop"); }
 };
+/* 解凍／放返入冰格：煮飯嗰個（多數係姐姐）一定要撳得到，所以唔使係自己入嘅。
+   rules 淨係准非擁有者改分區同呢幾個解凍日期欄位（見 Rule.txt onlyMoved）。 */
+function shelfPicker(list,pick){
+  return `<div class="flab">${bi("放去邊格？","Which area is it going to?")}</div><div class="picker" id="mvPick">`
+    + list.map(x=>`<button type="button" class="pk" data-s="${esc(x.id)}" aria-pressed="${x.id===pick}">${bi(x.zh||x.name||"",x.en||"")}</button>`).join("") + `</div>`;
+}
+async function moveOut(it, q, list, patchOf, via, okZ, okE){
+  let pick=list[0].id;
+  if(list.length>1) q.extra=shelfPicker(list,pick);
+  const pending=ask(q);
+  const mp=$("#mvPick");
+  if(mp) mp.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{ pick=b.dataset.s;
+    mp.querySelectorAll("[data-s]").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.s===pick))); });
+  if(!await pending) return;
+  busy(true,"儲存緊…","Saving…");
+  try{
+    await F.updateDoc(F.doc(db,"items",it.id),{ sectionId:pick, ...patchOf(it),
+      updatedAt:F.serverTimestamp(), updatedBy:(user&&user.email)||"" },{via});
+    busy(false); toast(okZ,okE); show("det",false);
+  }catch(e){ busy(false); toast("改唔到："+(e.code||e.message),"Could not update"); }
+}
+$("#dThaw").onclick=()=>{
+  const it=items.find(i=>i.id===detailId); if(!it) return;
+  const list=sections.filter(x=>storageOf(x)==="chill");
+  if(!list.length){ toast("冇雪櫃分區。去 ⚙ 設定加一個先。","There is no fridge area. Add one in Settings first."); return; }
+  moveOut(it, thawAsk(it,"chill"), list, o=>thawPatch(o,"chill"), "thaw", "記低咗，最遲聽日要煮", "Recorded — cook it by tomorrow");
+};
+$("#dRefreeze").onclick=()=>{
+  const it=items.find(i=>i.id===detailId); if(!it) return;
+  const list=sections.filter(x=>storageOf(x)==="freeze");
+  if(!list.length){ toast("冇冰格分區。","There is no freezer area."); return; }
+  const q = it.thawRoom
+    ? { tz:"放返入冰格？", te:"Put it back in the freezer?",
+        mz:"呢件放過喺室溫。食安中心話室溫解凍過嘅唔好再凍返，所以個 app 會照解凍計："+(it.thawBy?"最遲 "+fmtZh(it.thawBy)+" 要煮，":"")+"過咗就要掉。",
+        me:"This was left at room temperature. Food safety guidance says food thawed that way must not be frozen again, so the app keeps counting it as thawed"+(it.thawBy?": cook it by "+fmtEn(it.thawBy):"")+", and after that it must be thrown out.",
+        yz:"明白，放返入去", ye:"Understood, put it back" }
+    : { tz:"放返入冰格？", te:"Put it back in the freezer?",
+        mz:"喺雪櫃解凍咗嘅可以再凍返，品質會差啲。用流動冷水或者微波爐解凍過嘅就唔好再凍，應該即刻煮。",
+        me:"Food thawed in the fridge can go back in the freezer; the quality drops a little. Food thawed under running water or in the microwave must not be frozen again — cook it straight away.",
+        yz:"放返入去", ye:"Put it back" };
+  moveOut(it, q, list, refreezePatch, "refreeze", "放返入冰格喇", "Back in the freezer");
+};
 $("#dSwap").onclick=()=>{ const id=detailId; show("det",false); openAgain(id,"item"); };
 $("#dEdit").onclick=()=>{ const it=items.find(i=>i.id===detailId); show("det",false); if(it) openForm(it); };
 
@@ -2839,10 +2995,10 @@ async function retire(it, wasted, via){     // via：改動記錄用，例如 "s
   else if(it.thumb) await F.addDoc(F.collection(db,"library"),{
     zh:nameZh(it), en:nameEn(it), brand:brandOf(it), thumb:it.thumb,
     photoId:it.photoId||"", sectionId:it.sectionId||"", lastUsed:F.serverTimestamp(), times:1 },{sys:true});
-  const d=daysLeft(it.expiry);
+  const dv=dview(it), d = dv.fz ? null : dv.d;      // 停咗錶嘅急凍嘢唔算「過咗期先發現」
   const snap={};
   ["zh","en","brand","note","expiry","sectionId","thumb","photoId","libId","dateType",
-   "opened","frozenOn","cat","addedOn","createdBy","dupOk"].forEach(k=>{ if(it[k]!==undefined) snap[k]=it[k]; });
+   "opened","frozenOn","thawedOn","thawBy","thawPrev","thawRoom","cat","addedOn","createdBy","dupOk"].forEach(k=>{ if(it[k]!==undefined) snap[k]=it[k]; });
   const rec=await F.addDoc(F.collection(db,"waste"),{
     kind: wasted?"tossed":"eaten",
     zh:nameZh(it), en:nameEn(it), brand:brandOf(it), thumb:it.thumb||"",
@@ -3281,8 +3437,7 @@ function loadTake(){
 }
 function takeList(){
   const r = filterSection==="all" ? items : items.filter(i=>i.sectionId===filterSection);
-  return r.slice().sort((a,b)=>{ const x=daysLeft(a.expiry), y=daysLeft(b.expiry);
-    if(x===null&&y===null) return 0; if(x===null) return 1; if(y===null) return -1; return x-y; });
+  return bySafety(r);
 }
 async function openTake(){
   if(!canWrite()){ toast("你冇權改嘢","You have view-only access"); return; }
@@ -3318,8 +3473,8 @@ function renderTake(){
     return;
   }
   $("#takeBody").innerHTML=`<div class="tgrid">`+ls.map(i=>{
-    const m=takeMark[i.id]||"", d=daysLeft(i.expiry), v=verdict(i);
-    const dd = d===null?"—":d<0?"-"+(-d):String(d);
+    const m=takeMark[i.id]||"", x=dview(i), v=x.v, d=x.d;
+    const dd = x.fz ? "🧊"+x.fz.age : d===null?"—":d<0?"-"+(-d):String(d);
     return `<div class="tcard ${m}">
       <button class="tmain" data-t="${esc(i.id)}">
         ${i.thumb?`<img src="${i.thumb}" alt="">`:`<div class="ph">🍽</div>`}
@@ -3600,6 +3755,8 @@ const LOG_FIELD={
   expiry:["到期日","Expiry date"], sectionId:["分區","Storage area"], dateType:["日期種類","Type of date"],
   opened:["開封","Opened or not"], pack:["包裝","Packaging"], cat:["類別","Food type"],
   frozenOn:["入冰格日","Date it went into the freezer"], storage:["存放方式","Storage"],
+  thawedOn:["拎出嚟解凍嘅日子","Date it was taken out to thaw"], thawBy:["最遲煮嘅日子","Cook-by date after thawing"],
+  thawRoom:["放過室溫","Left at room temperature"],
   order:["排第幾","Position in the list"], version:["版本","Version"], plan:["AI 諗嘅餸","Dish ideas from the AI"]
 };
 const LOG_TXT={
@@ -3756,6 +3913,8 @@ function logHead(g){
 function viaOf(g){
   if(g.via==="ai")    return ["AI 做嘅（喺呢個人部電話度撳咗 AI 掣）","Done by the AI, after this person tapped an AI button on their phone"];
   if(g.via==="aiyes") return ["接受咗 AI 嘅提議","Accepted the AI's suggestion"];
+  if(g.via==="thaw")     return ["由冰格拎咗出嚟解凍","Taken out of the freezer to thaw"];
+  if(g.via==="refreeze") return ["放返入冰格","Put back in the freezer"];
   if(g.via==="stock") return ["盤點嗰陣搵唔到，當咗食咗","Could not be found during a stock check, so it counts as eaten"];
   if(g.via==="swap" && g.col==="waste") return ["換新一件：舊嗰件當咗食咗","Swapped for a new pack, so the old one counts as eaten"];
   return null;
