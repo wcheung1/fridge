@@ -156,6 +156,13 @@ main{padding:8px 16px calc(112px + var(--safe-b))}
 .vitem .nm{flex:1;min-width:0;font-size:14px;font-weight:600;line-height:1.25}
 .vitem .nm .e{font-size:11.5px;font-weight:500}
 .vitem .dd{font-size:11.5px;color:var(--mute);flex:none;text-align:right;font-variant-numeric:tabular-nums;line-height:1.25}
+.vitem .vsub{font-size:11px;font-weight:500;color:var(--mute);margin-top:2px;line-height:1.3}
+.vitem .vsub .e{font-size:10px}
+.vsec{display:flex;align-items:center;gap:10px}
+.vsec .txt{flex:1;min-width:0}
+.vsec button{flex:none;padding:7px 11px;border-radius:9px;background:var(--brand);color:#fff;font-size:12.5px;font-weight:600;line-height:1.2;text-align:center}
+.vsec button .e{font-size:9.5px;opacity:.85}
+details.more.vrest{margin-top:18px}
 .vnote{background:var(--brand-tint);border-radius:10px;padding:11px 13px;font-size:12.5px;color:var(--brand);line-height:1.5;margin-bottom:16px}
 .vnote .e{font-size:11.5px;opacity:.8}
 .vnote .ttl{font-size:13.5px;margin-bottom:2px}
@@ -581,9 +588,22 @@ details.more .inner{padding-top:14px}
 #askBox .m{font-size:13.5px;color:var(--mute);margin-bottom:20px;line-height:1.45}
 #askBox .m .e{font-size:12px;margin-top:3px}
 #askBox .acts{display:flex;gap:10px}
+/* 確認窗入面嘅相片比較（例如「係咪重複咗？」）。自己捲動，唔好令成個確認窗高過畫面 */
+#askX{max-height:48vh;max-height:48svh;overflow-y:auto;margin:-10px 0 16px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.dcmp{display:flex;gap:10px;align-items:center;padding:8px;border-radius:11px;background:var(--chill);margin-bottom:7px}
+.dcmp.new{background:var(--brand-tint)}
+.dcmp img,.dcmp .ph{width:68px;height:68px;border-radius:8px;object-fit:contain;background:var(--card);flex:none}
+.dcmp .ph{display:grid;place-items:center;font-size:22px}
+.dcmp .tx{flex:1;min-width:0;font-size:11.5px;line-height:1.35;color:var(--mute);word-break:break-word}
+.dcmp .tx .e{font-size:10.5px}
+.dcmp .lb{font-size:11px;font-weight:700;color:var(--brand);margin-bottom:2px}
+.dcmp .nm{font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.dcmp .nm .e{font-size:11px;font-weight:500}
 #askBox .acts .btn{flex:1;padding:12px 8px;font-size:14.5px}
 
-#lightbox{position:fixed;inset:0;z-index:70;background:#0C1519;display:flex;flex-direction:column}
+/* z-index 87：要高過確認窗（#askScrim 85），因為「係咪重複咗？」入面撳相要放大；
+   低過 toast（88）同 busy（90）。 */
+#lightbox{position:fixed;inset:0;z-index:87;background:#0C1519;display:flex;flex-direction:column}
 .lbbar{display:flex;align-items:center;gap:8px;padding:calc(var(--safe-t) + 10px) 12px 10px;flex:none}
 /* 千祈唔好喺呢個捲動容器度用 place-items:center 或者 justify-content:center。
    內容大過容器嗰陣，居中會令左邊同上面嗰截捲唔到 —— 放大之後就移唔到位。
@@ -994,6 +1014,7 @@ details.more .inner{padding-top:14px}
 <div id="askScrim" class="hide"><div id="askBox" role="alertdialog" aria-modal="true">
   <div class="t" id="askT"></div>
   <div class="m" id="askM"></div>
+  <div id="askX" class="hide"></div>
   <div class="acts">
     <button id="askNo" class="btn plain"><span class="z">取消</span><span class="e">Cancel</span></button>
     <button id="askYes" class="btn"></button>
@@ -1011,7 +1032,7 @@ details.more .inner{padding-top:14px}
 /* 版本號用日期：yyyy-mm-dd 再加一個大楷字母。
    同一日出多過一次，就 A → B → C 咁行落去。
    格式排得好，所以直接字串比大細就已經係啱嘅時序。 */
-const APP_VERSION = "2026-09-20A";
+const APP_VERSION = "2026-09-20B";
 
 /* ═══════════════════════════════════════════════════════
    FIRESTORE SECURITY RULES —— 呢度係一份副本，方便日後查閱
@@ -1206,8 +1227,11 @@ function ask(o){
     yes.innerHTML = bi(o.yz||"確定", o.ye||"Confirm");
     $("#askNo").innerHTML = bi(o.noZ||"取消", o.noE||"Cancel");
     yes.className = "btn" + (o.danger?" danger":"");
+    /* o.extra：額外嘅 HTML（例如相片比較）。一定要自己用 bi() 砌好中英 */
+    const x=$("#askX"); x.innerHTML=o.extra||""; x.classList.toggle("hide",!o.extra); x.scrollTop=0;
     $("#askScrim").classList.remove("hide");
-    const done=v=>{ $("#askScrim").classList.add("hide"); yes.onclick=null; $("#askNo").onclick=null; res(v); };
+    const done=v=>{ $("#askScrim").classList.add("hide"); x.innerHTML=""; x.classList.add("hide");
+      yes.onclick=null; $("#askNo").onclick=null; res(v); };
     yes.onclick=()=>done(true);
     $("#askNo").onclick=()=>done(false);
   });
@@ -1722,7 +1746,9 @@ function listen(){
   },e=>toast("讀唔到食物："+e.code,"Could not load food")));
 
   unsub.push(F.onSnapshot(F.doc(db,"meta","board"),snap=>{
-    board = snap.exists() ? snap.data() : {};
+    /* estimate：啱啱撳完盤點、伺服器未回覆嗰一兩秒，用手機時間估住先，
+       唔會閃一下「未做過」 */
+    board = snap.exists() ? snap.data({serverTimestamps:"estimate"}) : {};
     render(); if(!$("#planSheet").classList.contains("hide")) renderPlan();
   },()=>{}));
 
@@ -2582,6 +2608,25 @@ $("#pickLib").onclick=()=>$("#fileLib").click();
   if(out){ pendingPhoto=out; setPreview(out.thumb); }
 });
 
+/* 「係咪重複咗？」嘅相片比較。cur = 你而家入緊嗰件（未儲存） */
+function dupCmpHTML(hit, cur){
+  const card=(img,zid,lab,obj,rows,cls)=>`<div class="dcmp${cls?" "+cls:""}">
+      ${img ? `<img src="${esc(img)}" alt="" data-zoom="${esc(zid)}">` : `<div class="ph">🍽</div>`}
+      <div class="tx"><div class="lb">${lab}</div><div class="nm">${nameBI(obj)}</div>${rows.map(r=>`<div>${r}</div>`).join("")}</div>
+    </div>`;
+  const whenRow = i => {
+    const t=fmtDT(ms(i.createdAt)), b=who(i.createdBy||i.updatedBy);
+    const tz = t ? t.zh : (i.addedOn||""), te = t ? t.en : (i.addedOn||"");
+    return bi(b+" 喺 "+tz+" 入", "Added by "+b+(te?" on "+te:""));
+  };
+  let h=`<p class="hintline" style="margin:0 0 8px">${bi("撳張相可以全屏放大，睇清楚價錢或者重量貼紙上面嘅數字。","Tap a photo to see it full screen and read the numbers on the price or weight sticker.")}</p>`;
+  h+=card(cur.thumb, NEW_SHOT, bi("你而家入緊呢件","The one you are adding now"), cur,
+    [bi(fmtZh(cur.expiry)+" 到期", fmtEn(cur.expiry)+" expiry"), secBI(cur.sectionId)], "new");
+  for(const i of hit)
+    h+=card(i.thumb, i.id, bi("清單入面已經有","Already on the list"), i,
+      [bi(fmtZh(i.expiry)+" 到期", fmtEn(i.expiry)+" expiry"), secBI(i.sectionId), whenRow(i)]);
+  return h;
+}
 async function save(next){
   const expiry=pkISO();
   if(!expiry){
@@ -2605,13 +2650,12 @@ async function save(next){
       return i.expiry===expiry && i.sectionId===formSection;
     });
     if(hit.length){
-      const lines=hit.map(i=>{
-        const n=nameLines(i), t=fmtDT(ms(i.createdAt));
-        return `・${n?n.top:"未命名"}（${who(i.createdBy||i.updatedBy)} ${t?t.zh:i.addedOn||""} 入嘅，${fmtZh(i.expiry)}到期）`;
-      }).join("\n");
+      /* 之前淨係得文字（英文版仲完全冇講係邊件），睇唔到相就答唔到。
+         而家並排出相：你啱啱影嗰張排頂，下面係清單入面似嘅嗰幾件，撳相全屏放大。 */
       const go=await ask({ tz:"係咪重複咗？", te:"Is this a duplicate?",
-        mz:`已經有好似嘅嘢：\n${lines}\n\n係咪已經有人影過？如果真係兩件唔同嘅嘢，就照入。`,
-        me:`Something similar is already logged. Check who added it and when. If these really are two separate items, go ahead.`,
+        mz:"清單入面已經有好似嘅嘢。對一對下面啲相：係同一件就撳「取消」；真係兩件唔同嘅嘢就照入。",
+        me:"Something similar is already on the list. Compare the photos below. If it is the same pack, tap Cancel. If these really are two separate items, tap Add anyway.",
+        extra: dupCmpHTML(hit, {...me, thumb: pendingPhoto ? pendingPhoto.thumb : ""}),
         yz:"照入，係兩件", ye:"Add anyway" });
       if(!go) return;
     }
@@ -3085,14 +3129,20 @@ async function runTranslate(list){
    縮圖細到睇唔到貼紙上面啲字，就答唔到「係咪同一件」。
    撳張相攞返 1000px 原相全屏睇。
    ═══════════════════════════════════════════════════ */
-async function zoomPhoto(id){
-  const o=items.find(x=>x.id===id)||library.find(x=>x.id===id)||waste.find(x=>x.id===id);
-  if(!o) return;
-  const g=$("#lbImg");
-  g.src=o.thumb||"";
+/* 啱啱影、未儲存嘅相冇 id，用呢個記號代替（「係咪重複咗？」要放大佢嚟比較） */
+const NEW_SHOT="__new_shot";
+function openBig(src){
+  $("#lbImg").src=src||"";
   $("#lightbox").classList.remove("hide");
   setZoom(0);
   document.body.style.overflow="hidden";
+}
+async function zoomPhoto(id){
+  if(id===NEW_SHOT){ if(pendingPhoto) openBig(pendingPhoto.full||pendingPhoto.thumb); return; }
+  const o=items.find(x=>x.id===id)||library.find(x=>x.id===id)||waste.find(x=>x.id===id);
+  if(!o) return;
+  const g=$("#lbImg");
+  openBig(o.thumb||"");
   try{
     const sn=await F.getDoc(F.doc(db,"photos",photoRef(o)));
     if(sn.exists() && !$("#lightbox").classList.contains("hide")) g.src=sn.data().full;
@@ -3300,16 +3350,24 @@ async function finishTake(){
 }
 $("#takeBtn").onclick=openTake;
 /* 提醒：隔太耐冇盤點，份清單就唔再可信 */
+/* 用「日曆日」計（手機本地時間），唔用「過咗幾多個 24 小時」。
+   舊寫法係「而家減盤點時間，除一日，再向下取整」，有兩個問題：
+   ① 盤點時間係 Google 伺服器時間，「而家」係手機時間。手機慢咗幾秒，
+      相減就係負幾秒，Math.floor(−0.00002) = −1 ——「-1 日前做咗」就係咁嚟。
+   ② 尋晚 11 點做、今朝 8 點睇，只係過咗 9 個鐘，舊寫法會講「今日做咗」。 */
 const stockAge = () => {
   const t=ms(board.stockAt);
-  return t ? Math.floor((Date.now()-t)/86400000) : null;
+  if(!t) return null;
+  const a=new Date(t), n=new Date();
+  const d=Math.round((new Date(n.getFullYear(),n.getMonth(),n.getDate()) - new Date(a.getFullYear(),a.getMonth(),a.getDate()))/86400000);
+  return Math.max(0,d);
 };
 function paintNag(){
   const b=$("#takeBtn"); if(!b) return;
   const d=stockAge(), due = d===null || d>=STOCK_NAG;
   b.classList.toggle("nag", !!due && canWrite());
-  const z=d===null ? "☑️ 盤點（未做過）" : d===0 ? "☑️ 盤點（今日做咗）" : due ? `☑️ 盤點（${d} 日冇做）` : `☑️ 盤點（${d} 日前做咗）`;
-  const e=d===null ? "Stocktake — never done" : d===0 ? "Stocktake — done today" : due ? `Stocktake — ${d} days since the last one` : `Stocktake — last done ${d} days ago`;
+  const z=d===null ? "☑️ 盤點（未做過）" : d===0 ? "☑️ 盤點（今日做咗）" : d===1 ? "☑️ 盤點（尋日做咗）" : due ? `☑️ 盤點（${d} 日冇做）` : `☑️ 盤點（${d} 日前做咗）`;
+  const e=d===null ? "Stocktake — never done" : d===0 ? "Stocktake — done today" : d===1 ? "Stocktake — done yesterday" : due ? `Stocktake — ${d} days since the last one` : `Stocktake — last done ${d} days ago`;
   b.innerHTML=bi(z,e);
 }
 $("#takeAdd").onclick=()=>openForm(null,true);
@@ -3765,16 +3823,30 @@ function openPlan(){
 }
 $("#planBtn").onclick=openPlan;
 
+/* 急凍（而且唔係廠家急凍製品）嘅嘢，包裝日期唔再作準，睇凍咗幾耐。
+   呢個只係「點樣顯示、點樣排」—— 判斷照樣係 verdict() 話事。 */
+function frozenInfo(e){
+  if(!e.v.frozen) return null;
+  const win=winDays(e.o); if(!win) return null;
+  const age=daysSince(loggedOn(e.o));
+  return {age, win, left:win-age};
+}
+/* 同一組入面邊件先：急凍嘢用「品質期仲剩幾多日」，其他用包裝日期 */
+const urgency = e => { const f=frozenInfo(e); return f ? f.left : (e.v.d ?? 999); };
 function planItems(){
   const r = filterSection==="all" ? items : items.filter(i=>i.sectionId===filterSection);
-  return r.map(o=>({o, v:verdict(o)})).sort((a,b)=>a.v.rank-b.v.rank || (a.v.d??999)-(b.v.d??999));
+  return r.map(o=>({o, v:verdict(o)})).sort((a,b)=>a.v.rank-b.v.rank || urgency(a)-urgency(b));
 }
 function vLine(e){
-  const nl=nameLines(e.o), d=e.v.d;
+  const d=e.v.d, fz=frozenInfo(e);
+  const dd = fz ? bi(`凍咗 ${fz.age} 日`, `Frozen ${fz.age} days`)
+           : d===null ? "—" : d<0 ? bi("過咗 "+(-d)+" 日",(-d)+" days over") : bi("仲有 "+d+" 日",d+" days");
+  const sub = fz ? `<div class="vsub">${bi(`急凍緊：建議 ${showWin(fz.win)}內食完，包裝上面個日期唔再作準`,
+                   `In the freezer: best used within ${showWinEn(fz.win)}, and the printed date no longer applies`)}</div>` : "";
   return `<div class="vitem ${e.v.cls==="bad"?"bad":""}">
     ${e.o.thumb?`<img src="${e.o.thumb}" alt="">`:`<div style="width:40px;height:40px;border-radius:7px;background:var(--card);display:grid;place-items:center;flex:none">🍽</div>`}
-    <div class="nm">${nameBI(e.o)}</div>
-    <div class="dd">${d===null?"—":d<0?bi("過咗 "+(-d)+" 日",(-d)+" days over"):bi("仲有 "+d+" 日",d+" days")}</div>
+    <div class="nm">${nameBI(e.o)}${sub}</div>
+    <div class="dd">${dd}</div>
   </div>`;
 }
 function renderPlan(){
@@ -3786,6 +3858,18 @@ function renderPlan(){
   const st = storageOf(sec || {zh:"雪櫃"});
   const note = STORAGE_NOTE[st];
   let h="";
+
+  /* 之前冇講明揀嘢嘅規矩，睇落似「隨便揀咗幾樣」。而家講清楚，
+     冇列出嚟嘅嘢喺最底逐樣列返，講埋點解。 */
+  if(sec){
+    const nOther=items.length-all.length;
+    h+=`<div class="vnote vsec"><div class="txt">${bi("淨係計緊「"+(sec.zh||sec.name||"")+"」入面嘅 "+all.length+" 樣嘢。其他分區仲有 "+nOther+" 樣冇計。",
+        "Only the "+all.length+" items in "+(sec.en||sec.zh||"this area")+" are counted here. "+nOther+" items in other areas are left out.")}</div>
+      ${nOther?`<button id="planAll">${bi("睇晒全部","Show all areas")}</button>`:""}</div>`;
+  }
+  h+=`<p class="vwhy" style="margin-bottom:14px">${bi(
+    "呢度按安全判斷排，最急排最頂：過咗期、今日到期、3 日內、7 日內。急凍嘅嘢唔睇包裝日期，睇凍咗幾耐。仲有時間同冇入到期日嘅唔會列喺上面，喺最底撳開就睇到，逐樣講埋點解。",
+    "This list is ordered by the safety check, most urgent first: past its date, due today, due within 3 days, then due within 7 days. Frozen food goes by how long it has been frozen, not by the printed date. Food with plenty of time left, or with no expiry date, is not listed above — open the section at the bottom to see each one and the reason.")}</p>`;
 
   if(sec) h+=`<div class="vnote">${bi(note[0],note[1])}</div>`;
 
@@ -3807,7 +3891,22 @@ function renderPlan(){
     h+=`<div class="kids">${bi("兩個女（2 歲半同 6 歲）唔好食任何過咗期嘅嘢。細路腸胃未夠成熟，同樣份量嘅細菌，大人可能冇事，佢哋就會發燒同腸胃炎。",
       "Neither child (2½ and 6) should eat anything past its date. The same dose of bacteria that an adult shrugs off can give a small child a fever and gastroenteritis.")}</div>`;
   }
-  if(!any) h+=`<div class="empty" style="padding:30px 10px"><div class="big">👍</div><p>冇嘢趕住煮。<span class="e">Nothing urgent right now.</span></p></div>`;
+  if(!any) h+=`<div class="empty" style="padding:30px 10px"><div class="big">👍</div><p>${bi("冇嘢趕住煮。","Nothing urgent right now.")}</p></div>`;
+
+  /* 冇列出嚟嘅：分三類，每類講原因，排法同主畫面一樣（按包裝日期）*/
+  const rest=all.filter(e=>e.v.rank>=5);
+  if(rest.length){
+    const byDate=(a,b)=>(a.v.d??99999)-(b.v.d??99999);
+    const fzOk=rest.filter(e=>frozenInfo(e)).sort(byDate);
+    const noDate=rest.filter(e=>!frozenInfo(e) && e.v.d===null);
+    const later=rest.filter(e=>!frozenInfo(e) && e.v.d!==null).sort(byDate);
+    const part=(g,z,en)=> g.length ? `<div class="vgroup"><div class="vhead">${bi(z,en)}<span class="n">${g.length}</span></div>${g.map(vLine).join("")}</div>` : "";
+    h+=`<details class="more vrest"><summary><span>${bi("仲有 "+rest.length+" 樣冇列喺上面：撳開睇點解", rest.length+" more items are not listed above — tap to see why")}</span></summary><div class="inner">
+      ${part(fzOk,"急凍緊，品質期仲未到：入櫃嗰陣未過期，所以包裝日期唔再作準（前提係中間冇解凍過）","In the freezer and still within the quality window: it went in before its date, so the printed date no longer applies (as long as it has never thawed)")}
+      ${part(later,"仲有超過 "+T_WATCH+" 日先到期","More than "+T_WATCH+" days until the expiry date")}
+      ${part(noDate,"冇入到期日（撳入去補返）","No expiry date recorded — open the item and add one")}
+    </div></details>`;
+  }
 
   const safe=all.filter(e=>e.v.rank>=2 && e.v.d!==null && e.v.d<=10 && hasName(e.o));
   if(aiReady()){
@@ -3826,6 +3925,7 @@ function renderPlan(){
   $("#planBody").innerHTML=h;
   const b=$("#planAI"); if(b) b.onclick=()=>askDishes(safe);
   const pw=$("#planWaste"); if(pw) pw.onclick=()=>{ show("plan",false); openWaste(); };
+  const pa=$("#planAll"); if(pa) pa.onclick=()=>{ filterSection="all"; renderChips(); render(); renderPlan(); };
 }
 function planHTML(p){
   return `<div style="margin-top:18px">${(p.plan||[]).map(x=>`<div class="dish">
